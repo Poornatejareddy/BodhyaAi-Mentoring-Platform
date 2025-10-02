@@ -1,0 +1,103 @@
+version: '3.8'
+
+services:
+  # --- DATABASE SERVICES ---
+  postgres:
+    image: postgres:15-alpine
+    container_name: bodhyai_postgres
+    env_file:
+      - ./db.env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - bodhyai-net
+
+  mongo:
+    image: mongo:latest
+    container_name: bodhyai_mongo
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "27017:27017"
+    networks:
+      - bodhyai-net
+
+  # --- BACKEND API GATEWAY ---
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: bodhyai_backend
+    env_file:
+      - ../backend/.env
+    ports:
+      - "4000:4000"
+    depends_on:
+      - postgres
+      - mongo
+    networks:
+      - bodhyai-net
+
+  # --- AI MICROSERVICES ---
+  risk-svc:
+    build:
+      context: ../ai-services/risk-svc
+    container_name: bodhyai_risk_svc
+    ports:
+      - "8000:8000"
+    networks:
+      - bodhyai-net
+
+  xai-svc:
+    build:
+      context: ../ai-services/xai-svc
+    container_name: bodhyai_xai_svc
+    ports:
+      - "8001:8000" # Expose container's 8000 port on host's 8001 port
+    networks:
+      - bodhyai-net
+      
+  cog-svc:
+    build:
+      context: ../ai-services/cog-svc
+    container_name: bodhyai_cog_svc
+    ports:
+      - "8002:8000"
+    networks:
+      - bodhyai-net
+
+  behavior-svc:
+    build:
+      context: ../ai-services/behavior-svc
+    container_name: bodhyai_behavior_svc
+    ports:
+      - "8003:8000"
+    networks:
+      - bodhyai-net
+
+  # --- FRONTEND (for development) ---
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile.dev # We'll create this next for hot-reloading
+    container_name: bodhyai_frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ../frontend:/app
+      - /app/node_modules # Use the node_modules from the container, not the host
+    depends_on:
+      - backend
+    networks:
+      - bodhyai-net
+
+# --- NETWORKS AND VOLUMES DEFINITIONS ---
+networks:
+  bodhyai-net:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  mongo_data:

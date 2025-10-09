@@ -21,3 +21,4 @@ build/
 # Others
 .DS_Store
 *.log
+*.gguf

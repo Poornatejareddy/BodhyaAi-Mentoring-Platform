@@ -67,4 +67,13 @@ export const assignStudentToSelf = async (studentId) => {
 };
 
 
-// ...
+export const updateMenteeAcademics = async (studentId, academicData) => {
+  const response = await fetch(`${API_URL}/mentors/mentees/${studentId}`, {
+    method: 'PUT',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(academicData), // { CGPA, Attendance, Backlogs }
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message || 'Failed to update academics');
+  return data.data;
+};

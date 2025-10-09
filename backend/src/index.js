@@ -9,6 +9,8 @@ const authRoutes = require('./routes/authRoutes');
 const studentRoutes = require('./routes/studentRoutes');
 const mentorRoutes = require('./routes/mentorRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const chatRoutes = require('./routes/chatRoutes'); // <-- IMPORT
+
 
 
 // Import middleware
@@ -36,6 +38,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/students', studentRoutes);
 app.use('/api/mentors', mentorRoutes);
+app.use('/api/chat', chatRoutes); // <-- MOUNT THE NEW ROUTE
+
 
 // Protected test routes
 app.get('/api/me', protect, (req, res) => {

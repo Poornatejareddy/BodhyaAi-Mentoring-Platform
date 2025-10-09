@@ -15,6 +15,10 @@ function StudentNavLinks() {
         <span>📝</span>
         <span>Take Survey</span>
       </NavLink>
+      <NavLink to="/dashboard/student/profile" className={({isActive}) => `${baseLinkClass} ${isActive ? activeLinkClass : ''}`}>
+        <span>⚙️</span>
+        <span>Profile</span>
+      </NavLink>
     </>
   );
 }

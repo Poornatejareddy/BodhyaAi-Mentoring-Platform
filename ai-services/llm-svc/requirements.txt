@@ -1,7 +1,5 @@
 fastapi
-uvicorn[standard]
+uvicorn
+pymongo
+llama-cpp-python
 pydantic
-torch
-transformers
-sentence-transformers
-chromadb

@@ -68,7 +68,7 @@ def explain_risk_model(input_df):
         feature_importance = {}
 
     warnings = []
-    if input_df['Attendance'].iloc[0] < 75:
+    if input_df['Attendance'].iloc[0] < 70:
         warnings.append("⚠️ Low attendance.")
     if input_df['CGPA'].iloc[0] < 6.5:
         warnings.append("⚠️ CGPA below recommended level.")

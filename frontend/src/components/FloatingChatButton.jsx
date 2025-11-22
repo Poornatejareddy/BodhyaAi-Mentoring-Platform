@@ -1,25 +1,43 @@
 import React, { useState } from 'react';
-import { ChatBubbleLeftRightIcon } from '@heroicons/react/24/solid'; // npm install @heroicons/react
-import Chatbot from '../dashboard/student/components/Chatbot';
+import { MessageCircle, X } from 'lucide-react';
+import ChatWindow from './ChatWindow';
+import { useAuth } from '../context/AuthContext';
 
-function FloatingChatButton() {
-  const [isChatOpen, setIsChatOpen] = useState(false);
+const FloatingChatButton = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const { user } = useAuth();
+
+  // AI Chatbot - always available
+  const aiBot = {
+    id: 'ai-bot',
+    name: 'BodhyaAI Assistant',
+    role: 'ai',
+  };
 
   return (
     <>
-      {/* Floating Chat Button */}
-      <button
-        onClick={() => setIsChatOpen(prev => !prev)}
-        className="fixed bottom-6 right-6 w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full text-white flex items-center justify-center shadow-xl hover:scale-105 transition-transform duration-200 z-50"
-        aria-label="Open chat"
-      >
-        <ChatBubbleLeftRightIcon className="w-8 h-8" />
-      </button>
+      {!isOpen && (
+        <button
+          onClick={() => setIsOpen(true)}
+          className="fixed bottom-6 right-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 rounded-full shadow-2xl hover:shadow-3xl transform hover:scale-110 transition-all duration-200 z-40 flex items-center gap-2"
+          aria-label="Chat with AI Assistant"
+        >
+          <MessageCircle className="w-6 h-6" />
+        </button>
+      )}
 
-      {/* Chatbot Modal */}
-      <Chatbot isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
+      {isOpen && (
+        <div className="fixed bottom-6 right-6 z-50 w-96 h-[600px] shadow-2xl rounded-2xl overflow-hidden">
+          <ChatWindow
+            recipientId={aiBot.id}
+            recipientName={aiBot.name}
+            recipientRole={aiBot.role}
+            onClose={() => setIsOpen(false)}
+          />
+        </div>
+      )}
     </>
   );
-}
+};
 
 export default FloatingChatButton;

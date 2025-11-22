@@ -9,12 +9,13 @@ const getAuthHeaders = () => {
 };
 
 export const sendMessage = async (message) => {
-  const response = await fetch(`${API_URL}/chat`, {
+  const response = await fetch(`${API_URL}/chat/ai-chat`, {
     method: 'POST',
     headers: getAuthHeaders(),
     body: JSON.stringify({ message }),
   });
   const data = await response.json();
   if (!response.ok) throw new Error(data.message || 'Failed to get a response');
-  return data.reply;
+  // The backend returns data.data.content for AI messages
+  return data.data?.content || data.reply || data.message || 'No response received';
 };

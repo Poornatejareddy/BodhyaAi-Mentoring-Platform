@@ -1,0 +1,118 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:6
+    container_name: bodhyai-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=bodhyai
+    networks:
+      - bodhyai-network
+
+  # Backend Service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: bodhyai-backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
+      - MONGO_URI=mongodb://mongodb:27017/bodhyai
+      - JWT_SECRET=${JWT_SECRET}
+      - FRONTEND_URL=http://localhost:5173
+      - LLM_SERVICE_URL=http://llmservice:8003
+      - RISK_SERVICE_URL=http://riskservice:8001
+      - XAI_SERVICE_URL=http://xaiservice:8002
+    depends_on:
+      - mongodb
+      - llmservice
+    networks:
+      - bodhyai-network
+
+  # Frontend Service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: bodhyai-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:5000
+    depends_on:
+      - backend
+    networks:
+      - bodhyai-network
+
+  # LLM Service
+  llmservice:
+    build:
+      context: ./ai-services/llm-svc
+      dockerfile: Dockerfile
+    container_name: bodhyai-llm
+    restart: unless-stopped
+    ports:
+      - "8003:8003"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - HOST=0.0.0.0
+      - PORT=8003
+    volumes:
+      - llm_data:/app/data
+    networks:
+      - bodhyai-network
+
+  # Risk Prediction Service (Optional)
+  riskservice:
+    build:
+      context: ./ai-services/risk-svc
+      dockerfile: Dockerfile
+    container_name: bodhyai-risk
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8001
+    networks:
+      - bodhyai-network
+    profiles:
+      - ai-services
+
+  # XAI Service (Optional)
+  xaiservice:
+    build:
+      context: ./ai-services/xai-svc
+      dockerfile: Dockerfile
+    container_name: bodhyai-xai
+    restart: unless-stopped
+    ports:
+      - "8002:8002"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8002
+    networks:
+      - bodhyai-network
+    profiles:
+      - ai-services
+
+networks:
+  bodhyai-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+    driver: local
+  llm_data:
+    driver: local

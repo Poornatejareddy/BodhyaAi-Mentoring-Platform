@@ -1,20 +1,46 @@
 # app/inference.py
-from llama_cpp import Llama
+try:
+    from llama_cpp import Llama
+except ImportError:
+    class Llama:
+        def __call__(self, *args, **kwargs):
+            return {"choices": [{"text": "[Dummy response – llama_cpp not installed]"}]}
+
 import os
 import time
 
 # -------------------------------
 # Load Phi-3 Mini Model (CPU-friendly)
 # -------------------------------
-model_path = os.path.join(os.path.dirname(__file__), "../models/Phi-3-mini-4k-instruct-Q5_K_S.gguf")
+# Use pathlib for robust path handling
+from pathlib import Path
 
-llm = Llama(
-    model_path=model_path,
-    n_ctx=2048,
-    n_threads=4,
-    n_batch=32,
-    verbose=False
-)
+# Determine the base directory of the current script
+base_dir = Path(__file__).parent.parent
+model_name = "Phi-3-mini-4k-instruct-Q5_K_S.gguf"
+model_path = base_dir / "models" / model_name
+
+# Attempt to load the model; if missing or initialization fails, fall back to a dummy implementation
+try:
+    if not model_path.exists():
+        raise FileNotFoundError(
+            f"Model file not found at: {model_path}\n"
+            "Using dummy Llama for development/testing."
+        )
+    llm = Llama(
+        model_path=str(model_path),
+        n_ctx=2048,
+        n_threads=4,
+        n_batch=32,
+        verbose=False,
+    )
+except Exception as exc:
+    # Dummy fallback that mimics Llama's call signature
+    class DummyLlama:
+        def __call__(self, *args, **kwargs):
+            return {"choices": [{"text": "[Dummy response – model not available]"}]}
+    llm = DummyLlama()
+    print(f"⚠️ Llama initialization failed: {exc}")
 
 # -------------------------------
 # Non-streaming response

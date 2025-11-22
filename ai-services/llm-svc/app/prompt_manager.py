@@ -28,6 +28,7 @@ def build_prompt(role: str, context: str, message: str, docs: Optional[List[str]
     else:
         system_prompt = "You are BodhyaAI, a helpful AI assistant."
 
+
     # -------------------------------
     # Intent-aware guidance for mental health
     # -------------------------------
@@ -38,6 +39,16 @@ def build_prompt(role: str, context: str, message: str, docs: Optional[List[str]
             "respond with empathy, encourage breaks, and provide supportive advice "
             "while guiding academically."
         )
+
+    # -------------------------------
+    # Risk-aware guidance
+    # -------------------------------
+    if "Risk=HIGH" in context:
+        system_prompt += (
+            " The student is at high academic risk. Be extra encouraging, break down concepts into very small steps, "
+            "and frequently check for understanding. Suggest specific resources from the docs."
+        )
+
 
     # -------------------------------
     # Construct final prompt

@@ -7,6 +7,7 @@ import DashboardLayout from './layouts/DashboardLayout';
 
 // Components
 import ProtectedRoute from './components/ProtectedRoute';
+import SocketManager from './components/SocketManager';
 
 // Public Pages
 import HomePage from './pages/HomePage';
@@ -28,9 +29,14 @@ import StudentOverviewPage from './dashboard/student/pages/StudentOverviewPage';
 import StudentProfilePage from './dashboard/student/pages/StudentProfilePage';
 import SurveyPage from './dashboard/student/pages/SurveyPage'; // <-- IMPORT
 import ChatbotPage from './dashboard/student/pages/ChatbotPage'; // <-- IMPORT
+import StudyPlanGeneratorPage from './dashboard/student/pages/StudyPlanGeneratorPage';
+import RiskExplanationPage from './dashboard/student/pages/RiskExplanationPage';
+import CognitiveProfilePage from './dashboard/student/pages/CognitiveProfilePage';
 
 
 import AdminDashboard from './dashboard/admin/AdminDashboard';
+import AdminOverviewPage from './dashboard/admin/pages/AdminOverviewPage';
+import ChatListPage from './dashboard/common/ChatListPage';
 
 const router = createBrowserRouter([
   {
@@ -54,12 +60,13 @@ const router = createBrowserRouter([
           {
             element: <MentorDashboard />,
             children: [
-              { index: true, element: <Navigate to="mentees" replace /> },
+              { index: true, element: <Navigate to="overview" replace /> },
               { path: 'overview', element: <MentorOverviewPage /> },
               { path: 'mentees', element: <MenteesListPage /> },
               { path: 'mentees/:studentId', element: <MenteeDetailPage /> },
               { path: 'assign-student', element: <AssignStudentPage /> },
               { path: 'settings', element: <MentorSettingsPage /> },
+              { path: 'chat', element: <ChatListPage /> },
             ]
           }
         ]
@@ -75,7 +82,11 @@ const router = createBrowserRouter([
               { path: 'overview', element: <StudentOverviewPage /> },
               { path: 'profile', element: <StudentProfilePage /> },
               { path: 'survey', element: <SurveyPage /> },
-              { path: 'chatbot', element: <ChatbotPage /> }
+              { path: 'chatbot', element: <ChatbotPage /> },
+              { path: 'chat', element: <ChatListPage /> },
+              { path: 'study-plan', element: <StudyPlanGeneratorPage /> },
+              { path: 'risk-explanation', element: <RiskExplanationPage /> },
+              { path: 'personality', element: <CognitiveProfilePage /> },
             ]
           }
         ]
@@ -83,7 +94,11 @@ const router = createBrowserRouter([
       {
         path: 'admin',
         element: <ProtectedRoute allowedRoles={['admin']} />,
-        children: [{ path: '', element: <AdminDashboard /> }]
+        children: [
+          { index: true, element: <AdminOverviewPage /> },
+          { path: 'overview', element: <AdminOverviewPage /> },
+          { path: 'chat', element: <ChatListPage /> },
+        ]
       },
     ],
   },
@@ -94,7 +109,12 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <>
+      <SocketManager />
+      <RouterProvider router={router} />
+    </>
+  );
 }
 
 export default App;

@@ -1,43 +1,126 @@
 const Student = require('../models/Student');
-const axios = require('axios'); // Import axios
+const axios = require('axios');
 
 // @desc    Update the logged-in student's own profile
 // @route   PUT /api/students/my-profile
 // @access  Private (Students only)
 exports.updateMyProfile = async (req, res) => {
   try {
-    // Find the student profile linked to the logged-in user
     const student = await Student.findOne({ user: req.user.id });
 
     if (!student) {
       return res.status(404).json({ success: false, message: 'Student profile not found' });
     }
 
-    // Define which fields the student is allowed to update
-    const allowedUpdates = [
-      'StressScore', 'SleepHours', 'StudyHoursPerDay',
+    // -----------------------------------------------
+    // 1. Update core profile fields (NEW FIELDS ADDED)
+    // -----------------------------------------------
+    const coreFields = ['name', 'usn', 'department', 'section'];
+    coreFields.forEach(field => {
+      if (req.body[field] !== undefined) {
+        student[field] = req.body[field];
+      }
+    });
+
+    // ----------------------------------------------------
+    // 2. Update riskInputs (self-reported / numeric fields)
+    // ----------------------------------------------------
+    const riskInputUpdates = [
+      'CGPA', 'Attendance', 'StressScore', 'SleepHours', 'StudyHoursPerDay',
       'FatherIncome', 'MotherIncome', 'HasSiblings', 'SiblingCount',
-      'MentalHealthIndex', 'ExerciseHours', 'ScreenTime'
+      'MentalHealthIndex', 'ExerciseHours', 'ScreenTime',
+      'InternetAccess', 'PartTimeJob', 'SocialHours'
     ];
-    
-    // Update the fields
-    for (const key of allowedUpdates) {
+
+    riskInputUpdates.forEach(key => {
       if (req.body[key] !== undefined) {
         student.riskInputs[key] = req.body[key];
       }
+    });
+
+    // ----------------------------------------------------
+    // 3. Update Academic History (SGPA & IAT Maps)
+    // ----------------------------------------------------
+
+    // SGPA Map
+    if (req.body.sgpa && typeof req.body.sgpa === 'object') {
+      const sgpaMap = student.academicHistory.sgpa || new Map();
+      for (const [key, value] of Object.entries(req.body.sgpa)) {
+        if (typeof value === 'number' && key.startsWith('Sem')) {
+          sgpaMap.set(key, value);
+        }
+      }
+      student.academicHistory.sgpa = sgpaMap;
     }
 
+    // IAT Map
+    if (req.body.iat && typeof req.body.iat === 'object') {
+      const iatMap = student.academicHistory.internalAssessments || new Map();
+      for (const [key, value] of Object.entries(req.body.iat)) {
+        if (typeof value === 'number' && key.startsWith('IAT')) {
+          iatMap.set(key, value);
+        }
+      }
+      student.academicHistory.internalAssessments = iatMap;
+    }
+
+    // Parent Education
+    if (req.body.parentEducation !== undefined) {
+      student.academicHistory.parentEducation = req.body.parentEducation;
+    }
+
+    // ----------------------------------------------------
+    // 4. Support Engagement Inputs
+    // ----------------------------------------------------
+    const supportFields = ['clubParticipation', 'mentorMeetings', 'counselingSessions'];
+    supportFields.forEach(field => {
+      if (req.body[field] !== undefined) {
+        student.supportEngagement[field] = req.body[field];
+      }
+    });
+
+    // Save before triggering alerts
+    const oldAttendance = student.riskInputs?.Attendance;
+    const oldCGPA = student.riskInputs?.CGPA;
+
     await student.save();
+
+    // ----------------------------------------------------
+    // 5. TRIGGER ALERT RULES (Async - don't wait)
+    // ----------------------------------------------------
+    const {
+      checkAttendanceDropAlert,
+      checkLowPerformanceAlert,
+    } = require('../services/alertRules');
+
+    // Check attendance alert
+    if (req.body.Attendance !== undefined && oldAttendance !== undefined) {
+      checkAttendanceDropAlert(student._id, oldAttendance, req.body.Attendance).catch(err =>
+        console.error('Error triggering attendance alert:', err)
+      );
+    }
+
+    // Check performance alert
+    if (req.body.CGPA !== undefined && oldCGPA !== undefined) {
+      checkLowPerformanceAlert(student._id, oldCGPA, req.body.CGPA).catch(err =>
+        console.error('Error triggering performance alert:', err)
+      );
+    }
+
     res.status(200).json({ success: true, data: student });
+
   } catch (error) {
     res.status(500).json({ success: false, message: 'Server Error', error: error.message });
   }
 };
 
+// =====================================================================
+// SUBMIT SURVEY + CALL COG-SVC + CALL XAI-SVC
+// =====================================================================
 
-// @desc    Submit survey, get profile from cog-svc, and get insights from xai-svc
+// @desc    Submit survey responses and update personality profile
 // @route   POST /api/students/my-profile/survey
-// @access  Private (Students only)
+// @access  Private
 exports.submitSurvey = async (req, res) => {
   try {
     const student = await Student.findOne({ user: req.user.id });
@@ -46,24 +129,32 @@ exports.submitSurvey = async (req, res) => {
     }
 
     const surveyAnswers = req.body.answers;
+
     if (!surveyAnswers || Object.keys(surveyAnswers).length < 50) {
-      return res.status(400).json({ success: false, message: 'All 50 survey answers are required' });
+      return res.status(400).json({
+        success: false,
+        message: 'All 50 survey answers are required'
+      });
     }
 
-    // 1. Save the raw answers to the database
+    // Save raw survey answers
     student.surveyResponses = surveyAnswers;
 
-    // 2. Call the external cog-svc to get the personality profile
-    const cogSvcUrl = 'http://localhost:8001/predict'; // Your cog-svc URL
-    const cogResponse = await axios.post(cogSvcUrl, surveyAnswers);
+    // COG-SVC call
+    const cogResponse = await axios.post(
+      'http://localhost:8001/predict',
+      surveyAnswers
+    );
     const personalityPredictions = cogResponse.data.predictions;
 
-    // 3. Call the external xai-svc to get insights for the profile
-    const xaiSvcUrl = 'http://localhost:8002/explain/cog-extended'; // Your xai-svc URL
-    const xaiResponse = await axios.post(xaiSvcUrl, surveyAnswers);
+    // XAI-SVC call
+    const xaiResponse = await axios.post(
+      'http://localhost:8002/explain/cog-extended',
+      surveyAnswers
+    );
     const personalityInsights = xaiResponse.data.insights;
 
-    // 4. Save the combined results to the student's profile
+    // Save AI results
     student.personalityProfile = {
       predictions: personalityPredictions,
       insights: personalityInsights,
@@ -72,8 +163,10 @@ exports.submitSurvey = async (req, res) => {
 
     await student.save();
 
-    // 5. Send the updated profile back to the frontend
-    res.status(200).json({ success: true, data: student.personalityProfile });
+    res.status(200).json({
+      success: true,
+      data: student.personalityProfile
+    });
 
   } catch (error) {
     console.error('Error in submitSurvey:', error.message);
@@ -81,33 +174,114 @@ exports.submitSurvey = async (req, res) => {
   }
 };
 
-// @desc    Get a list of all students not assigned to any mentor
-// @route   GET /api/students/unassigned
-// @access  Private (Mentors and Admins)
+// =====================================================================
+// GET UNASSIGNED STUDENTS
+// =====================================================================
+
 exports.getUnassignedStudents = async (req, res) => {
   try {
-    // Find students where the 'mentor' field is null or does not exist
     const students = await Student.find({ mentor: { $exists: false } })
       .populate('user', 'name email');
-      
+
     res.status(200).json({ success: true, data: students });
+
   } catch (error) {
     res.status(500).json({ success: false, message: 'Server Error' });
   }
 };
 
+// =====================================================================
+// GET MY PROFILE
+// =====================================================================
 
-// @desc    Get the logged-in student's own complete profile
+// @desc    Get logged-in student's complete profile
 // @route   GET /api/students/my-profile
-// @access  Private (Students only)
+// @access  Private
 exports.getMyProfile = async (req, res) => {
   try {
-    const student = await Student.findOne({ user: req.user.id }).populate('user', 'name email');
+    const student = await Student.findOne({ user: req.user.id })
+      .populate('user', 'name email');
+
     if (!student) {
-      return res.status(404).json({ success: false, message: 'Student profile not found' });
+      return res.status(404).json({
+        success: false,
+        message: 'Student profile not found'
+      });
     }
-    res.status(200).json({ success: true, data: student });
+
+    res.status(200).json({
+      success: true,
+      data: student
+    });
+
   } catch (error) {
     res.status(500).json({ success: false, message: 'Server Error' });
+  }
+};
+
+// =====================================================================
+// UPDATE CONSENT SETTINGS
+// =====================================================================
+
+// @desc    Update consent settings
+// @route   PUT /api/students/my-profile/consent
+// @access  Private (Students only)
+exports.updateConsent = async (req, res) => {
+  try {
+    const student = await Student.findOne({ user: req.user.id });
+
+    if (!student) {
+      return res.status(404).json({
+        success: false,
+        message: 'Student profile not found'
+      });
+    }
+
+    // Update consent fields
+    const consentFields = [
+      'shareRisk',
+      'sharePersonality',
+      'shareBehavior',
+      'shareAcademicHistory',
+      'allowChat',
+      'shareWithResearch'
+    ];
+
+    consentFields.forEach(field => {
+      if (req.body[field] !== undefined) {
+        student.consent[field] = req.body[field];
+      }
+    });
+
+    await student.save();
+
+    // Trigger consent change alert to mentor (async)
+    const { notifyConsentChange } = require('../services/alertRules');
+    if (student.mentor) {
+      const changes = {};
+      consentFields.forEach(field => {
+        if (req.body[field] !== undefined) {
+          changes[field] = req.body[field];
+        }
+      });
+
+      notifyConsentChange(student._id, changes).catch(err =>
+        console.error('Error notifying consent change:', err)
+      );
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Consent settings updated successfully',
+      data: student.consent
+    });
+
+  } catch (error) {
+    console.error('Error updating consent:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server Error',
+      error: error.message
+    });
   }
 };

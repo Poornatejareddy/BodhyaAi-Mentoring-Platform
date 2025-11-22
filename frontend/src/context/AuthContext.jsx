@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { useSocket } from './SocketContext';
 
 const AuthContext = createContext(null);
 

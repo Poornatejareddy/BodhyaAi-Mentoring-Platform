@@ -26,7 +26,19 @@ exports.updateMenteeData = async (req, res) => {
     }
 
     // 4. Define which fields the mentor can update
-    const allowedUpdates = ['CGPA', 'Attendance', 'Backlogs'];
+    const allowedUpdates = [
+      'CGPA',
+      'Attendance',
+      'Backlogs',
+      'StudyHoursPerDay',
+      'SleepHours',
+      'StressScore',
+      'MentalHealthIndex',
+      'PhysicalActivity',
+      'SocialSupport',
+      'FamilyIncome',
+      'ExtracurricularParticipation'
+    ];
     for (const key of allowedUpdates) {
       if (req.body[key] !== undefined) {
         student.riskInputs[key] = req.body[key];
@@ -46,68 +58,86 @@ exports.updateMenteeData = async (req, res) => {
 // @access  Private (Mentors only)
 exports.calculateStudentRisk = async (req, res) => {
   try {
-    // 1. Verify mentor and mentee relationship (security check)
-    const mentor = await Mentor.findOne({ user: req.user.id });
+    const riskService = require('../services/riskService');
+    const Alert = require('../models/Alert');
+
     const studentId = req.params.studentId;
 
-    if (!mentor || !mentor.mentees.includes(studentId)) {
-      return res.status(403).json({ success: false, message: 'Unauthorized' });
+    // Get student data (middleware already verified mentor relationship)
+    const student = await Student.findById(studentId).populate('user', 'name email').populate('mentor');
+    if (!student) {
+      return res.status(404).json({ success: false, message: 'Student not found' });
     }
 
-    // 2. Get the student's data from the database
-    const student = await Student.findById(studentId);
-    if (!student || !student.riskInputs) {
-      return res.status(404).json({ success: false, message: 'Student data not found or incomplete' });
-    }
+    // Call AI risk prediction service
+    const predictionResult = await riskService.predictRisk(student.riskInputs || {});
 
-    const riskInputs = student.riskInputs;
+    // Get explainability insights from XAI service
+    const xaiService = require('../services/xaiService');
+    const explanation = await xaiService.generateFullExplanation(
+      student.riskInputs || {},
+      predictionResult.prediction
+    );
 
-    // 3. Call the external risk-svc for the prediction
-    const riskSvcUrl = 'http://localhost:8000/predict'; // Your risk-svc URL
-    const riskResponse = await axios.post(riskSvcUrl, riskInputs);
-    const prediction = riskResponse.data.prediction;
-
-    // 4. Call the external xai-svc for the explanation
-    const xaiSvcUrl = 'http://localhost:8002/explain/risk'; // Your xai-svc URL
-    const xaiResponse = await axios.post(xaiSvcUrl, riskInputs);
-    const { warnings, feature_importance } = xaiResponse.data;
-    
-    // 5. Save the complete, explained results to the student's profile
+    // Update student's academic risk with prediction AND explanations
     student.academicRisk = {
-      prediction: prediction,
-      warnings: warnings,
-      featureImportance: feature_importance,
-      lastCalculated: Date.now(),
+      prediction: predictionResult.prediction,
+      confidence: predictionResult.confidence,
+      calculatedAt: new Date(),
+      calculatedBy: req.user.id,
+      model: predictionResult.model,
+      warnings: explanation.warnings || [],
+      insights: explanation.insights || [],
+      recommendations: explanation.recommendations || [],
     };
 
-    await student.save();
+    await student.save({ validateModifiedOnly: true });
 
-    // 6. Send the new risk profile back as a response
-    res.status(200).json({ success: true, data: student.academicRisk });
+    // Create HIGH risk alert if needed
+    if (predictionResult.prediction === 'HIGH' && student.mentor) {
+      const existingAlert = await Alert.findOne({
+        recipient: student.mentor.user, // Mentor's user ID
+        type: 'ACADEMIC',
+        read: false,
+        createdAt: { $gte: new Date(Date.now() - 48 * 60 * 60 * 1000) },
+      });
 
-  } // Inside the calculateStudentRisk function...
-   catch (error) {
-    // --- THIS IS THE NEW, MORE DETAILED LOGGING ---
-    console.error('--- DETAILED ERROR in calculateStudentRisk ---');
-    if (error.response) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
-      console.error('Data:', error.response.data);
-      console.error('Status:', error.response.status);
-      console.error('Headers:', error.response.headers);
-    } else if (error.request) {
-      // The request was made but no response was received
-      console.error('Request:', error.request);
-    } else {
-      // Something happened in setting up the request that triggered an Error
-      console.error('Error Message:', error.message);
+      if (!existingAlert) {
+        await Alert.create({
+          recipient: student.mentor.user, // Mentor's user ID
+          recipientRole: 'mentor',
+          sender: req.user.id, // System/mentor who triggered calculation
+          type: 'ACADEMIC',
+          priority: 'URGENT',
+          title: 'High Academic Risk Detected',
+          message: `${student.user.name} identified as HIGH risk. CGPA: ${student.riskInputs?.CGPA || 'N/A'}, Attendance: ${student.riskInputs?.Attendance || 'N/A'}%`,
+          actionRequired: true,
+          read: false,
+        });
+      }
     }
-    console.error('--- END OF ERROR ---');
-    // --- END OF NEW LOGGING ---
 
-    res.status(500).json({ success: false, message: 'Server Error' });
+    res.status(200).json({
+      success: true,
+      data: {
+        studentId: student._id,
+        studentName: student.user.name,
+        prediction: predictionResult.prediction,
+        confidence: predictionResult.confidence,
+        model: predictionResult.model,
+        timestamp: predictionResult.timestamp,
+      },
+    });
+  } catch (error) {
+    console.error('Error calculating student risk:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to calculate risk',
+      error: error.message,
+    });
   }
 };
+
 
 
 
@@ -125,7 +155,7 @@ exports.getMenteeById = async (req, res) => {
     if (!mentor || !mentor.mentees.includes(studentId)) {
       return res.status(403).json({ success: false, message: 'Unauthorized to view this student' });
     }
-    
+
     const student = await Student.findById(studentId).populate('user', 'name email');
     if (!student) {
       return res.status(404).json({ success: false, message: 'Student not found' });
@@ -165,11 +195,18 @@ exports.assignMenteeToSelf = async (req, res) => {
     await student.save();
     await mentor.save();
 
+    // Trigger mentee assignment alert (async)
+    const { notifyMenteeAssignment } = require('../services/alertRules');
+    notifyMenteeAssignment(student._id, mentor._id).catch(err =>
+      console.error('Error notifying mentee assignment:', err)
+    );
+
     res.status(200).json({ success: true, message: 'Student assigned successfully' });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Server Error' });
   }
 };
+
 
 // ...
 // @desc    Get the logged-in mentor's profile and their list of mentees
@@ -194,4 +231,52 @@ exports.getMyProfile = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server Error' });
   }
 };
-// ...
+
+// @desc    Generate AI-driven class report
+// @route   POST /api/mentors/report
+// @access  Private (Mentors only)
+exports.generateClassReport = async (req, res) => {
+  try {
+    const mentor = await Mentor.findOne({ user: req.user.id });
+    if (!mentor) {
+      return res.status(404).json({ success: false, message: 'Mentor profile not found' });
+    }
+
+    // Aggregate student data
+    const classData = [];
+    // We need to fetch mentees manually or populate them. 
+    // Since mentor.mentees is an array of IDs, let's fetch them.
+    const students = await Student.find({ _id: { $in: mentor.mentees } });
+
+    for (const student of students) {
+      classData.push({
+        id: student._id,
+        cgpa: student.riskInputs?.CGPA || 0,
+        attendance: student.riskInputs?.Attendance || 0,
+        risk: student.academicRisk?.prediction || 'UNKNOWN',
+      });
+    }
+
+    // Call LLM Service
+    // Note: In production, use an environment variable for the LLM service URL
+    const llmResponse = await axios.post('http://localhost:8003/rag/report', {
+      mentor_id: mentor._id,
+      class_data: classData,
+      focus_area: req.body.focus_area || 'general'
+    });
+
+    if (llmResponse.data.success) {
+      res.status(200).json({
+        success: true,
+        report: llmResponse.data.report,
+        confidence: llmResponse.data.confidence
+      });
+    } else {
+      throw new Error(llmResponse.data.error || 'LLM service returned failure');
+    }
+
+  } catch (error) {
+    console.error('Error generating class report:', error);
+    res.status(500).json({ success: false, message: 'Failed to generate report', error: error.message });
+  }
+};

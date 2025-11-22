@@ -1,4 +1,5 @@
 const express = require('express');
+const http = require('http'); // <-- For Socket.IO
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const cors = require('cors'); // <-- 1. IMPORT CORS
@@ -10,11 +11,19 @@ const studentRoutes = require('./routes/studentRoutes');
 const mentorRoutes = require('./routes/mentorRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const chatRoutes = require('./routes/chatRoutes'); // <-- IMPORT
+const auditRoutes = require('./routes/auditRoutes'); // <-- IMPORT AUDIT ROUTES
+const alertRoutes = require('./routes/alertRoutes'); // <-- IMPORT ALERT ROUTES
+const interventionRoutes = require('./routes/interventionRoutes'); // <-- INTERVENTION ROUTES
+
+
 
 
 
 // Import middleware
 const { protect, authorize } = require('./middleware/authMiddleware');
+
+// Import Socket.IO server
+const { initializeSocket } = require('./socket/socketServer');
 
 // Load environment variables
 dotenv.config({ path: './.env' });
@@ -23,6 +32,12 @@ dotenv.config({ path: './.env' });
 connectDB();
 
 const app = express();
+
+// Create HTTP server (needed for Socket.IO)
+const server = http.createServer(app);
+
+// Initialize Socket.IO
+initializeSocket(server);
 
 // --- USE MIDDLEWARE ---
 app.use(cors()); // <-- 2. USE CORS MIDDLEWARE
@@ -39,6 +54,12 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/students', studentRoutes);
 app.use('/api/mentors', mentorRoutes);
 app.use('/api/chat', chatRoutes); // <-- MOUNT THE NEW ROUTE
+app.use('/api/audit', auditRoutes); // <-- MOUNT AUDIT ROUTES
+app.use('/api/alerts', alertRoutes); // <-- MOUNT ALERT ROUTES
+app.use('/api/interventions', interventionRoutes); // <-- MOUNT INTERVENTION ROUTES
+
+
+
 
 
 // Protected test routes
@@ -59,6 +80,8 @@ app.get('/api/mentor-dashboard', protect, authorize('mentor', 'admin'), (req, re
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
+// Use server.listen instead of app.listen (for Socket.IO)
+server.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🔌 Socket.IO ready for connections`);
 });

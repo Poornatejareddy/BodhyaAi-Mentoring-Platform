@@ -792,7 +792,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 <div align="center">
 
-**Built with ❤️ using AI-assisted development**
+**Built with ❤️ From Poorna Teja Reddy K**
 
 [⬆ back to top](#bodhyai-platform)
 

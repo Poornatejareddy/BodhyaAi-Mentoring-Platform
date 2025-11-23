@@ -358,6 +358,41 @@ const checkLowPerformanceAlert = async (studentId, oldCGPA, newCGPA) => {
 };
 
 /**
+ * Rule 7: Mentor Reassignment Alert
+ * Triggered when a student is reassigned to a new mentor
+ */
+const notifyMentorReassignment = async (studentId, newMentorId) => {
+    try {
+        const student = await Student.findById(studentId);
+        const newMentor = await Mentor.findById(newMentorId).populate('user');
+
+        if (!student || !newMentor) {
+            return null;
+        }
+
+        const alert = await createAndEmitAlert({
+            type: 'MENTEE_REASSIGNED',
+            student: studentId,
+            recipient: newMentor.user._id,
+            recipientRole: 'mentor',
+            title: 'Mentee Reassigned to You',
+            message: `${student.name} (${student.usn}) has been reassigned to you by an administrator.`,
+            priority: 'MEDIUM',
+            actionLink: `/mentees/${studentId}`,
+            metadata: {
+                studentName: student.name,
+                studentUsn: student.usn,
+            },
+        });
+
+        return alert;
+    } catch (error) {
+        console.error('Error notifying mentor reassignment:', error);
+        return null;
+    }
+};
+
+/**
  * Scheduled task: Check all mentor inactivity
  * Should be run periodically (e.g., daily)
  */
@@ -381,6 +416,7 @@ module.exports = {
     checkAttendanceDropAlert,
     checkMentorInactivityAlert,
     notifyMenteeAssignment,
+    notifyMentorReassignment,
     notifyConsentChange,
     checkLowPerformanceAlert,
     runMentorInactivityCheck,

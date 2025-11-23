@@ -17,8 +17,12 @@ class RiskService {
      */
     async predictRisk(studentData) {
         try {
+            console.log('🔍 [RISK-SERVICE] predictRisk called with data:', JSON.stringify(studentData, null, 2));
+
             // Transform student data to match risk-svc schema
             const features = this.transformFeatures(studentData);
+            console.log('🔄 [RISK-SERVICE] Transformed features:', JSON.stringify(features, null, 2));
+            console.log(`📡 [RISK-SERVICE] Calling risk-svc at: ${RISK_SERVICE_URL}/predict`);
 
             const response = await axios.post(
                 `${RISK_SERVICE_URL}/predict`,
@@ -26,16 +30,20 @@ class RiskService {
                 { timeout: REQUEST_TIMEOUT }
             );
 
+            console.log('✅ [RISK-SERVICE] Got response from risk-svc:', JSON.stringify(response.data, null, 2));
             logger.info(`Risk prediction successful for features: ${JSON.stringify(features)}`);
 
             return {
                 success: true,
                 prediction: response.data.prediction, // HIGH/MEDIUM/LOW
                 confidence: response.data.confidence || 0.8,
+                featureContributions: response.data.feature_contributions || [],
+                overrideReason: response.data.override_reason, // Capture business rule override
                 model: 'academic_risk_pipeline',
                 timestamp: new Date().toISOString(),
             };
         } catch (error) {
+            console.error('❌ [RISK-SERVICE] Error calling risk-svc:', error.message);
             logger.error('Risk service error:', error.message);
 
             // Fallback to rule-based prediction
@@ -44,25 +52,49 @@ class RiskService {
     }
 
     /**
-     * Transform student data to risk-svc feature format
+     * Transform student data to risk-svc feature format (Extended with 21 features)
      * @param {Object} studentData - Raw student data
-     * @returns {Object} - Formatted features
+     * @returns {Object} - Formatted features for enhanced model
      */
     transformFeatures(studentData) {
+        // Helper to safely convert categorical values
+        const encodeCategorical = (value, options) => {
+            if (!value) return 0;
+            const index = options.indexOf(value);
+            return index >= 0 ? index : 0;
+        };
+
         return {
+            // Academic features
             CGPA: parseFloat(studentData.CGPA) || 0.0,
             Attendance: parseInt(studentData.Attendance) || 0,
-            StressScore: parseInt(studentData.StressScore) || 5,
-            SleepHours: parseInt(studentData.SleepHours) || 6,
-            Backlogs: parseInt(studentData.Backlogs) || 0,
             StudyHoursPerDay: parseInt(studentData.StudyHoursPerDay) || 2,
+            Backlogs: parseInt(studentData.Backlogs) || 0,
+
+            // Internal Assessment Tests (new features)
+            IAT1: parseInt(studentData.IAT1) || 25,
+            IAT2: parseInt(studentData.IAT2) || 25,
+            IAT3: parseInt(studentData.IAT3) || 25,
+
+            // Socio-economic features
             FatherIncome: parseInt(studentData.FatherIncome) || 30000,
             MotherIncome: parseInt(studentData.MotherIncome) || 20000,
-            HasSiblings: studentData.HasSiblings ? 1 : 0,
-            SiblingCount: parseInt(studentData.SiblingCount) || 0,
+            ParentEducation: studentData.ParentEducation || "Graduate",
+            InternetAccess: studentData.InternetAccess === 'Yes' || studentData.InternetAccess === true ? "Yes" : "No",
+            PartTimeJob: studentData.PartTimeJob === 'Yes' || studentData.PartTimeJob === true ? "Yes" : "No",
+
+            // Lifestyle & Health features
+            StressScore: parseInt(studentData.StressScore) || 5,
+            SleepHours: parseInt(studentData.SleepHours) || 6,
             MentalHealthIndex: parseFloat(studentData.MentalHealthIndex) || 5.0,
-            ExerciseHours: parseInt(studentData.ExerciseHours) || 1,
-            ScreenTime: parseInt(studentData.ScreenTime) || 6,
+            ExerciseHours: parseInt(studentData.ExerciseHours) || 2,
+            ScreenTime: parseInt(studentData.ScreenTime) || 5,
+            SocialHours: parseInt(studentData.SocialHours) || 4,
+
+            // Engagement features
+            ClubParticipation: studentData.ClubParticipation === 'Yes' || studentData.ClubParticipation === true ? "Yes" : "No",
+            MentorMeetings: parseInt(studentData.MentorMeetings) || 0,
+            CounselingSessions: parseInt(studentData.CounselingSessions) || 0,
         };
     }
 

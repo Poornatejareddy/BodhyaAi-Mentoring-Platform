@@ -1,6 +1,7 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import FloatingChatButton from '../../components/FloatingChatButton';
+import MessageNotificationManager from '../../components/notifications/MessageNotificationManager';
 import { Shield, BarChart3, Users, Activity } from 'lucide-react';
 
 function AdminDashboard() {
@@ -61,6 +62,9 @@ function AdminDashboard() {
 
       {/* AI Chat Bot */}
       <FloatingChatButton />
+
+      {/* Message Notifications */}
+      <MessageNotificationManager />
     </div>
   );
 }

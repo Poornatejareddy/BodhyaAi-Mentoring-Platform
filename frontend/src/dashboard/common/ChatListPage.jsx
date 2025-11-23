@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useSocket } from '../../context/SocketContext';
+import { useLocation } from 'react-router-dom';
 import ChatWindow from '../../components/ChatWindow';
 import { MessageCircle, Search, User } from 'lucide-react';
 
 const ChatListPage = () => {
     const { token, user } = useAuth();
     const { unreadMessagesCount } = useSocket();
+    const location = useLocation();
     const [contacts, setContacts] = useState([]);
     const [filteredContacts, setFilteredContacts] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -16,6 +18,16 @@ const ChatListPage = () => {
     useEffect(() => {
         fetchContacts();
     }, [token, user]);
+
+    // Handle opening chat from notification click
+    useEffect(() => {
+        if (location.state?.openChatWith && contacts.length > 0) {
+            const contactToOpen = contacts.find(c => c.id === location.state.openChatWith);
+            if (contactToOpen) {
+                setSelectedContact(contactToOpen);
+            }
+        }
+    }, [location.state, contacts]);
 
     useEffect(() => {
         if (searchTerm) {
@@ -183,7 +195,7 @@ const ChatListPage = () => {
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center justify-between">
                                             <h3 className="font-semibold text-gray-800 truncate">
-                                                {contact.name}
+                                                {contact.name || 'Unknown User'}
                                             </h3>
                                             {contact.risk && (
                                                 <span

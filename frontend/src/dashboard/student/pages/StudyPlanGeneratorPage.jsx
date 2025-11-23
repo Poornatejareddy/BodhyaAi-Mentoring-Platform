@@ -26,18 +26,16 @@ const StudyPlanGeneratorPage = () => {
         setLoading(true);
 
         try {
-            const response = await fetch('http://localhost:8003/rag/study-plan', {
+            const response = await fetch('http://localhost:5000/api/llm/study-plan', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
-                    student_id: user._id,
-                    current_cgpa: parseFloat(formData.currentCGPA) || 0,
-                    weak_subjects: formData.weakSubjects.split(',').map((s) => s.trim()),
-                    available_hours_per_week: parseInt(formData.availableHours),
-                    target_cgpa: formData.targetCGPA ? parseFloat(formData.targetCGPA) : null,
+                    targetCgpa: formData.targetCGPA ? parseFloat(formData.targetCGPA) : null,
                     weeks: parseInt(formData.weeks),
+                    studyHours: parseInt(formData.availableHours)
                 }),
             });
 

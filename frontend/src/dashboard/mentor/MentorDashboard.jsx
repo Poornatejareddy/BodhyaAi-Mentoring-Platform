@@ -1,9 +1,39 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import FloatingChatButton from '../../components/FloatingChatButton';
+import MessageNotificationManager from '../../components/notifications/MessageNotificationManager';
 import { Users, UserCheck, AlertCircle, TrendingUp } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 function MentorDashboard() {
+  const { token } = useAuth();
+  const [stats, setStats] = useState({
+    totalMentees: 0,
+    riskCounts: { HIGH: 0, MEDIUM: 0, LOW: 0 },
+    avgCGPA: 0
+  });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/mentors/dashboard-stats', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        if (data.success) {
+          setStats(data.data);
+        }
+      } catch (error) {
+        console.error('Error fetching dashboard stats:', error);
+      }
+    };
+
+    fetchStats();
+    // Poll every 30 seconds for updates
+    const interval = setInterval(fetchStats, 30000);
+    return () => clearInterval(interval);
+  }, [token]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       {/* Hero Section - Matches login/register design */}
@@ -27,7 +57,7 @@ function MentorDashboard() {
                   <UserCheck className="w-5 h-5 text-green-200" />
                   <div>
                     <p className="text-xs text-green-200">Total Mentees</p>
-                    <p className="text-xl font-bold text-white">12</p>
+                    <p className="text-xl font-bold text-white">{stats.totalMentees}</p>
                   </div>
                 </div>
               </div>
@@ -36,7 +66,7 @@ function MentorDashboard() {
                   <AlertCircle className="w-5 h-5 text-yellow-200" />
                   <div>
                     <p className="text-xs text-yellow-200">At Risk</p>
-                    <p className="text-xl font-bold text-white">3</p>
+                    <p className="text-xl font-bold text-white">{stats.riskCounts?.HIGH || 0}</p>
                   </div>
                 </div>
               </div>
@@ -45,7 +75,7 @@ function MentorDashboard() {
                   <TrendingUp className="w-5 h-5 text-blue-200" />
                   <div>
                     <p className="text-xs text-blue-200">Avg CGPA</p>
-                    <p className="text-xl font-bold text-white">7.8</p>
+                    <p className="text-xl font-bold text-white">{stats.avgCGPA || '0.00'}</p>
                   </div>
                 </div>
               </div>
@@ -61,6 +91,9 @@ function MentorDashboard() {
 
       {/* AI Chat Bot */}
       <FloatingChatButton />
+
+      {/* Message Notifications */}
+      <MessageNotificationManager />
     </div>
   );
 }

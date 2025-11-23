@@ -11,12 +11,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please provide an email'],
     unique: true,
-    match: [ /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please provide a valid email' ],
+    match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please provide a valid email'],
   },
   password: {
     type: String,
     // Password is not required if using an OAuth provider in the future
-    required: function() { return !this.googleId; },
+    required: function () { return !this.googleId; },
     minlength: 6,
     select: false, // Prevents password from being sent in API responses
   },
@@ -31,6 +31,10 @@ const userSchema = new mongoose.Schema({
   isVerified: { // For potential email verification flows
     type: Boolean,
     default: false,
+  },
+  profilePicture: {
+    type: String,
+    default: '', // URL to the image
   },
 }, { timestamps: true }); // Automatically adds createdAt and updatedAt fields
 

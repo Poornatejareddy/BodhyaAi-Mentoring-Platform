@@ -3,6 +3,7 @@ import {
   getStudentProfile,
   updateStudentProfile
 } from '../../../services/studentService';
+import { UserCircle, Camera, Save, Loader } from 'lucide-react';
 
 // Convert mongoose Map/objects safely
 const mapToObject = (data) => {
@@ -20,6 +21,7 @@ function StudentProfilePage() {
     usn: "",
     department: "",
     section: "",
+    profilePicture: "", // New field
 
     sgpa: {},
     iat: {},
@@ -49,6 +51,7 @@ function StudentProfilePage() {
           usn: data.usn || "",
           department: data.department || "",
           section: data.section || "",
+          profilePicture: data.user?.profilePicture || "", // Load profile picture
 
           // risk inputs
           ...baseData,
@@ -125,6 +128,8 @@ function StudentProfilePage() {
       await updateStudentProfile(payload);
 
       setMessage('Profile updated successfully!');
+      // Reload page to refresh sidebar image if changed
+      setTimeout(() => window.location.reload(), 1000);
     } catch (err) {
       setIsError(true);
       setMessage(err.message || 'Failed to update profile');
@@ -136,7 +141,7 @@ function StudentProfilePage() {
   // -------------------------
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen bg-gray-900 text-white">
+      <div className="flex justify-center items-center h-screen bg-transparent text-white">
         <div className="animate-spin h-10 w-10 rounded-full border-t-2 border-b-2 border-blue-500"></div>
         <p className="ml-3">Loading profile...</p>
       </div>
@@ -148,13 +153,13 @@ function StudentProfilePage() {
   // -------------------------
   const renderInputField = (name, label, type = "number", props = {}) => (
     <div className="mb-4" key={name}>
-      <label className="block text-sm mb-1 text-gray-300">{label}</label>
+      <label className="block text-sm mb-1 text-gray-400 font-medium">{label}</label>
       <input
         type={type}
         name={name}
         value={formData[name] ?? ''}
         onChange={handleChange}
-        className="w-full p-2 bg-gray-700 text-white rounded border border-gray-600 focus:ring-2 ring-blue-500"
+        className="w-full p-3 bg-gray-900/50 text-white rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
         {...props}
       />
     </div>
@@ -162,13 +167,13 @@ function StudentProfilePage() {
 
   const renderNestedField = (group, key, label) => (
     <div className="mb-4" key={key}>
-      <label className="block text-sm mb-1 text-gray-300">{label}</label>
+      <label className="block text-sm mb-1 text-gray-400 font-medium">{label}</label>
       <input
         type="number"
         name={key}
         value={formData[group]?.[key] ?? ''}
         onChange={handleChange}
-        className="w-full p-2 bg-gray-700 text-white rounded border border-gray-600 focus:ring-2 ring-blue-500"
+        className="w-full p-3 bg-gray-900/50 text-white rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
         step="0.1"
       />
     </div>
@@ -176,12 +181,12 @@ function StudentProfilePage() {
 
   const renderSelectField = (name, label, options) => (
     <div className="mb-4" key={name}>
-      <label className="block text-sm mb-1 text-gray-300">{label}</label>
+      <label className="block text-sm mb-1 text-gray-400 font-medium">{label}</label>
       <select
         name={name}
         value={formData[name]}
         onChange={handleChange}
-        className="w-full p-2 bg-gray-700 text-white rounded border border-gray-600 focus:ring-2 ring-blue-500"
+        className="w-full p-3 bg-gray-900/50 text-white rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
       >
         {options.map(([val, text]) => (
           <option key={val} value={val}>{text}</option>
@@ -194,109 +199,159 @@ function StudentProfilePage() {
   // MAIN UI
   // -------------------------
   return (
-    <div className="w-full">
-      <div className="max-w-5xl mx-auto">
+    <div className="w-full max-w-6xl mx-auto space-y-8">
 
-        <h1 className="text-3xl font-bold mb-8 text-blue-400">Update Your Profile</h1>
+      {/* Header Section */}
+      <div className="bg-gray-800/50 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-xl relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-r from-blue-600 to-purple-600 opacity-20"></div>
 
-        <form onSubmit={handleSubmit} className="bg-gray-800 p-8 rounded-xl shadow-lg">
-
-          {message && (
-            <p className={`p-4 mb-6 rounded-lg ${isError ? 'bg-red-900/50 text-red-300' : 'bg-green-900/50 text-green-300'}`}>
-              {message}
-            </p>
-          )}
-
-          {/* ------------------ Basic Info ------------------ */}
-          <section className="border-b border-gray-700 pb-8 mb-8">
-            <h2 className="text-2xl mb-4 font-semibold">Basic Details</h2>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {renderInputField('name', 'Full Name', 'text')}
-              {renderInputField('usn', 'USN', 'text')}
-              {renderInputField('department', 'Department', 'text')}
-              {renderInputField('section', 'Section', 'text')}
+        <div className="relative flex flex-col md:flex-row items-center gap-8 mt-4">
+          {/* Profile Picture */}
+          <div className="relative group">
+            <div className="w-32 h-32 rounded-full p-1 bg-gradient-to-br from-blue-500 to-purple-600 shadow-2xl">
+              <div className="w-full h-full rounded-full bg-gray-900 overflow-hidden flex items-center justify-center">
+                {formData.profilePicture ? (
+                  <img src={formData.profilePicture} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  <UserCircle className="w-20 h-20 text-gray-500" />
+                )}
+              </div>
             </div>
-          </section>
-
-          {/* ------------------ Academic ------------------ */}
-          <section className="border-b border-gray-700 pb-8 mb-8">
-            <h2 className="text-2xl mb-4 font-semibold">Academic Data</h2>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {renderInputField('CGPA', 'Cumulative GPA')}
-              {renderInputField('Attendance', 'Attendance (%)', "number", { max: 100 })}
+            <div className="absolute bottom-0 right-0 bg-blue-600 p-2 rounded-full shadow-lg border-2 border-gray-900 cursor-pointer hover:bg-blue-500 transition-colors">
+              <Camera className="w-5 h-5 text-white" />
             </div>
+          </div>
 
-            <h3 className="text-lg mt-6 mb-3 font-medium">Semester SGPA</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {SEMESTER_KEYS.map(k => renderNestedField('sgpa', k, k))}
+          <div className="text-center md:text-left flex-1">
+            <h1 className="text-3xl font-bold text-white">{formData.name || 'Student Name'}</h1>
+            <p className="text-blue-400 font-medium text-lg">{formData.usn || 'USN'}</p>
+            <div className="flex flex-wrap justify-center md:justify-start gap-3 mt-3">
+              <span className="px-3 py-1 rounded-full bg-blue-500/10 text-blue-300 border border-blue-500/20 text-sm">
+                {formData.department || 'Department'}
+              </span>
+              <span className="px-3 py-1 rounded-full bg-purple-500/10 text-purple-300 border border-purple-500/20 text-sm">
+                Section: {formData.section || 'N/A'}
+              </span>
             </div>
-
-            <h3 className="text-lg mt-6 mb-3 font-medium">IAT Scores</h3>
-            <div className="grid grid-cols-3 gap-4">
-              {IAT_KEYS.map(k => renderNestedField('iat', k, k))}
-            </div>
-          </section>
-
-          {/* ------------------ Lifestyle ------------------ */}
-          <section className="border-b border-gray-700 pb-8 mb-8">
-            <h2 className="text-2xl mb-4 font-semibold">Lifestyle & Socio-Economic</h2>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              {renderInputField('StressScore', 'Stress Score')}
-              {renderInputField('SleepHours', 'Sleep Hours')}
-              {renderInputField('StudyHoursPerDay', 'Study Hours')}
-              {renderInputField('FatherIncome', "Father's Income")}
-              {renderInputField('MotherIncome', "Mother's Income")}
-              {renderInputField('MentalHealthIndex', 'Mental Health Index')}
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-6">
-              {renderSelectField('InternetAccess', 'Internet Access?', [['1', 'Yes'], ['0', 'No']])}
-              {renderSelectField('PartTimeJob', 'Part Time Job?', [['1', 'Yes'], ['0', 'No']])}
-              {renderInputField('SocialHours', 'Weekly Social Hours')}
-            </div>
-          </section>
-
-          {/* ------------------ Engagement ------------------ */}
-          <section className="border-b border-gray-700 pb-8 mb-8">
-            <h2 className="text-2xl mb-4 font-semibold">Engagement</h2>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              {renderInputField('ExerciseHours', 'Exercise Hours')}
-              {renderInputField('ScreenTime', 'Daily Screen Time')}
-              {renderInputField('parentEducation', 'Parent Education', 'text')}
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-6">
-              {renderInputField('clubParticipation', 'Club Participation')}
-              {renderInputField('mentorMeetings', 'Mentor Meetings')}
-              {renderInputField('counselingSessions', 'Counseling Sessions')}
-            </div>
-          </section>
-
-          {/* ------------------ Family ------------------ */}
-          <section className="pb-6 mb-6">
-            <h2 className="text-2xl mb-4 font-semibold">Family</h2>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {renderSelectField('HasSiblings', 'Have Siblings?', [['0', 'No'], ['1', 'Yes']])}
-              {formData.HasSiblings === '1' &&
-                renderInputField('SiblingCount', 'Number of Siblings')
-              }
-            </div>
-          </section>
-
-          <button
-            type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 py-4 rounded-lg mt-8 font-bold text-lg transition-all hover:shadow-xl transform hover:-translate-y-0.5"
-          >
-            Save Profile
-          </button>
-
-        </form>
+          </div>
+        </div>
       </div>
+
+      <form onSubmit={handleSubmit} className="bg-gray-800/50 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-xl">
+
+        {message && (
+          <div className={`p-4 mb-6 rounded-xl flex items-center gap-3 ${isError ? 'bg-red-500/10 text-red-300 border border-red-500/20' : 'bg-green-500/10 text-green-300 border border-green-500/20'}`}>
+            {isError ? <div className="w-2 h-2 rounded-full bg-red-500"></div> : <div className="w-2 h-2 rounded-full bg-green-500"></div>}
+            {message}
+          </div>
+        )}
+
+        {/* ------------------ Basic Info ------------------ */}
+        <section className="border-b border-gray-700/50 pb-8 mb-8">
+          <h2 className="text-xl mb-6 font-semibold text-white flex items-center gap-2">
+            <span className="w-1 h-6 bg-blue-500 rounded-full"></span>
+            Basic Details
+          </h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {renderInputField('name', 'Full Name', 'text')}
+            {renderInputField('usn', 'USN', 'text')}
+            {renderInputField('department', 'Department', 'text')}
+            {renderInputField('section', 'Section', 'text')}
+            {renderInputField('profilePicture', 'Profile Picture URL', 'text', { placeholder: 'https://example.com/photo.jpg' })}
+          </div>
+        </section>
+
+        {/* ------------------ Academic ------------------ */}
+        <section className="border-b border-gray-700/50 pb-8 mb-8">
+          <h2 className="text-xl mb-6 font-semibold text-white flex items-center gap-2">
+            <span className="w-1 h-6 bg-purple-500 rounded-full"></span>
+            Academic Data
+          </h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {renderInputField('CGPA', 'Cumulative GPA')}
+            {renderInputField('Attendance', 'Attendance (%)', "number", { max: 100 })}
+          </div>
+
+          <h3 className="text-lg mt-8 mb-4 font-medium text-gray-300">Semester SGPA</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {SEMESTER_KEYS.map(k => renderNestedField('sgpa', k, k))}
+          </div>
+
+          <h3 className="text-lg mt-8 mb-4 font-medium text-gray-300">IAT Scores</h3>
+          <div className="grid grid-cols-3 gap-4">
+            {IAT_KEYS.map(k => renderNestedField('iat', k, k))}
+          </div>
+        </section>
+
+        {/* ------------------ Lifestyle ------------------ */}
+        <section className="border-b border-gray-700/50 pb-8 mb-8">
+          <h2 className="text-xl mb-6 font-semibold text-white flex items-center gap-2">
+            <span className="w-1 h-6 bg-green-500 rounded-full"></span>
+            Lifestyle & Socio-Economic
+          </h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {renderInputField('StressScore', 'Stress Score')}
+            {renderInputField('SleepHours', 'Sleep Hours')}
+            {renderInputField('StudyHoursPerDay', 'Study Hours')}
+            {renderInputField('FatherIncome', "Father's Income")}
+            {renderInputField('MotherIncome', "Mother's Income")}
+            {renderInputField('MentalHealthIndex', 'Mental Health Index')}
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-6">
+            {renderSelectField('InternetAccess', 'Internet Access?', [['1', 'Yes'], ['0', 'No']])}
+            {renderSelectField('PartTimeJob', 'Part Time Job?', [['1', 'Yes'], ['0', 'No']])}
+            {renderInputField('SocialHours', 'Weekly Social Hours')}
+          </div>
+        </section>
+
+        {/* ------------------ Engagement ------------------ */}
+        <section className="border-b border-gray-700/50 pb-8 mb-8">
+          <h2 className="text-xl mb-6 font-semibold text-white flex items-center gap-2">
+            <span className="w-1 h-6 bg-orange-500 rounded-full"></span>
+            Engagement
+          </h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {renderInputField('ExerciseHours', 'Exercise Hours')}
+            {renderInputField('ScreenTime', 'Daily Screen Time')}
+            {renderInputField('parentEducation', 'Parent Education', 'text')}
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-6">
+            {renderInputField('clubParticipation', 'Club Participation')}
+            {renderInputField('mentorMeetings', 'Mentor Meetings')}
+            {renderInputField('counselingSessions', 'Counseling Sessions')}
+          </div>
+        </section>
+
+        {/* ------------------ Family ------------------ */}
+        <section className="pb-6 mb-6">
+          <h2 className="text-xl mb-6 font-semibold text-white flex items-center gap-2">
+            <span className="w-1 h-6 bg-pink-500 rounded-full"></span>
+            Family
+          </h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {renderSelectField('HasSiblings', 'Have Siblings?', [['0', 'No'], ['1', 'Yes']])}
+            {formData.HasSiblings === '1' &&
+              renderInputField('SiblingCount', 'Number of Siblings')
+            }
+          </div>
+        </section>
+
+        <button
+          type="submit"
+          className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 py-4 rounded-xl mt-8 font-bold text-lg text-white transition-all hover:shadow-2xl hover:scale-[1.01] flex items-center justify-center gap-2"
+        >
+          <Save className="w-5 h-5" />
+          Save Profile Changes
+        </button>
+
+      </form>
     </div>
   );
 }

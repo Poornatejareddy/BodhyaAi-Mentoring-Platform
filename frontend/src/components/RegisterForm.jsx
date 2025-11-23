@@ -9,6 +9,9 @@ function RegisterForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('student');
+  const [usn, setUsn] = useState('');
+  const [department, setDepartment] = useState('');
+  const [section, setSection] = useState('');
   const [message, setMessage] = useState('');
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -21,7 +24,8 @@ function RegisterForm() {
     setMessage('');
 
     try {
-      await registerUser(name, email, password, role);
+      const additionalData = { usn, department, section };
+      await registerUser(name, email, password, role, additionalData);
       setMessage('Registration successful! Redirecting to login...');
       setTimeout(() => navigate('/login'), 2000);
     } catch (error) {
@@ -166,6 +170,73 @@ function RegisterForm() {
                   </div>
                 </div>
               </div>
+
+              {/* Conditional Fields based on Role */}
+              {role === 'student' && (
+                <div className="space-y-5 animate-in fade-in slide-in-from-top-4 duration-300">
+                  <div>
+                    <label htmlFor="usn" className="block text-sm font-medium text-gray-300 mb-1.5">
+                      USN (University Seat Number)
+                    </label>
+                    <input
+                      id="usn"
+                      type="text"
+                      value={usn}
+                      onChange={(e) => setUsn(e.target.value)}
+                      required
+                      className="block w-full px-3 py-3 border border-gray-700 rounded-xl leading-5 bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors sm:text-sm"
+                      placeholder="e.g., 1RV21CS001"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="department" className="block text-sm font-medium text-gray-300 mb-1.5">
+                        Department
+                      </label>
+                      <input
+                        id="department"
+                        type="text"
+                        value={department}
+                        onChange={(e) => setDepartment(e.target.value)}
+                        required
+                        className="block w-full px-3 py-3 border border-gray-700 rounded-xl leading-5 bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors sm:text-sm"
+                        placeholder="e.g., CSE"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="section" className="block text-sm font-medium text-gray-300 mb-1.5">
+                        Section
+                      </label>
+                      <input
+                        id="section"
+                        type="text"
+                        value={section}
+                        onChange={(e) => setSection(e.target.value)}
+                        required
+                        className="block w-full px-3 py-3 border border-gray-700 rounded-xl leading-5 bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors sm:text-sm"
+                        placeholder="e.g., A"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {role === 'mentor' && (
+                <div className="animate-in fade-in slide-in-from-top-4 duration-300">
+                  <label htmlFor="department" className="block text-sm font-medium text-gray-300 mb-1.5">
+                    Department
+                  </label>
+                  <input
+                    id="department"
+                    type="text"
+                    value={department}
+                    onChange={(e) => setDepartment(e.target.value)}
+                    required
+                    className="block w-full px-3 py-3 border border-gray-700 rounded-xl leading-5 bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors sm:text-sm"
+                    placeholder="e.g., CSE"
+                  />
+                </div>
+              )}
             </div>
 
             <div>

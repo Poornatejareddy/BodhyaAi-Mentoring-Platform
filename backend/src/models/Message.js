@@ -9,29 +9,27 @@ const messageSchema = new Schema(
     {
         // Sender (user who sent the message)
         sender: {
-            type: Schema.Types.ObjectId,
-            ref: 'User',
+            type: Schema.Types.Mixed, // Allow ObjectId or "ai-bot" string
             required: true,
         },
 
         // Sender role for easier filtering
         senderRole: {
             type: String,
-            enum: ['student', 'mentor', 'admin'],
+            enum: ['student', 'mentor', 'admin', 'ai'],
             required: true,
         },
 
         // Receiver (user who should receive the message)
         receiver: {
-            type: Schema.Types.ObjectId,
-            ref: 'User',
+            type: Schema.Types.Mixed,
             required: true,
         },
 
         // Receiver role
         receiverRole: {
             type: String,
-            enum: ['student', 'mentor', 'admin'],
+            enum: ['student', 'mentor', 'admin', 'ai'],
             required: true,
         },
 
@@ -89,6 +87,15 @@ const messageSchema = new Schema(
         deleted: {
             type: Boolean,
             default: false,
+        },
+
+        // Edit tracking
+        edited: {
+            type: Boolean,
+            default: false,
+        },
+        editedAt: {
+            type: Date,
         },
 
         deletedAt: Date,

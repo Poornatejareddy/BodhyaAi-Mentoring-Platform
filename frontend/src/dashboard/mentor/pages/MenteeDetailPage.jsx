@@ -3,9 +3,11 @@ import { useParams } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { getMenteeDetails, triggerRiskCalculation } from '../../../services/mentorService';
 import InterventionModal from '../components/InterventionModal';
+import AIInterventionModal from '../components/AIInterventionModal';
 import InterventionTimeline from '../components/InterventionTimeline';
 import UpdateMenteeModal from '../components/UpdateMenteeModal';
 import ExportButton from '../../common/components/ExportButton';
+import ChatWindow from '../../../components/ChatWindow';
 import RiskBadge from '../../../components/RiskBadge';
 import {
   User,
@@ -17,8 +19,22 @@ import {
   RefreshCw,
   FileText,
   Plus,
-  Edit
+  Edit,
+  MessageCircle,
+  Sparkles
 } from 'lucide-react';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  ReferenceLine,
+  Cell
+} from 'recharts';
 
 function MenteeDetailPage() {
   const { studentId } = useParams();
@@ -30,7 +46,11 @@ function MenteeDetailPage() {
   const [activeTab, setActiveTab] = useState('overview');
   const [interventions, setInterventions] = useState([]);
   const [showInterventionModal, setShowInterventionModal] = useState(false);
+  const [showAIModal, setShowAIModal] = useState(false);
+  const [aiRecommendations, setAiRecommendations] = useState(null);
+  const [aiLoading, setAiLoading] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [showChat, setShowChat] = useState(false);
 
   const fetchDetails = useCallback(() => {
     setLoading(true);
@@ -62,13 +82,44 @@ function MenteeDetailPage() {
   const handleCalculateRisk = async () => {
     setIsCalculating(true);
     try {
+      // Wait for backend to calculate and save risk
       await triggerRiskCalculation(studentId);
-      fetchDetails();
+
+      console.log('✅ Risk calculation complete - reloading page to show fresh data');
+
+      // Force full page reload to bypass React state caching
+      window.location.reload();
     } catch (err) {
+      console.error('❌ Risk calculation error:', err);
       setError(err.message || 'Failed to calculate risk.');
-    } finally {
       setIsCalculating(false);
     }
+  };
+
+  const handleGetAIRecommendations = async () => {
+    setShowAIModal(true);
+    setAiLoading(true);
+    try {
+      const response = await fetch(`http://localhost:5000/api/llm/interventions/${studentId}`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await response.json();
+      if (data.success) {
+        setAiRecommendations(data.data);
+      }
+    } catch (error) {
+      console.error('Error getting AI recommendations:', error);
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  const handleApplyAIRecommendation = () => {
+    // Logic to convert AI recommendation to actual intervention
+    // For now, just close modal and open manual creation with pre-filled data (optional)
+    setShowAIModal(false);
+    setShowInterventionModal(true);
   };
 
   const handleCreateIntervention = async (data) => {
@@ -149,6 +200,13 @@ function MenteeDetailPage() {
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setShowChat(true)}
+              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+            >
+              <MessageCircle className="w-4 h-4" />
+              Chat
+            </button>
             <button
               onClick={() => setShowUpdateModal(true)}
               className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
@@ -263,49 +321,163 @@ function MenteeDetailPage() {
 
       {activeTab === 'risk' && (
         <div className="space-y-6">
-          {/* Risk Assessment Summary */}
+          {/* Risk Assessment Summary with Charts */}
           <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-            <h3 className="text-xl font-semibold text-white mb-4">Risk Assessment & Analysis</h3>
+            <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
+              <Brain className="w-6 h-6 text-purple-400" />
+              Comprehensive Risk Analysis
+            </h3>
             {student.academicRisk?.prediction ? (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div>
-                  <h4 className="text-lg font-medium text-white mb-3">Risk Level</h4>
-                  <div className="flex items-center gap-4 mb-4">
+              <div className="space-y-6">
+                {/* Risk Level and Confidence */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <div className="bg-gray-700/50 rounded-lg p-6 text-center">
+                    <p className="text-sm text-gray-400 mb-2">Risk Level</p>
                     <RiskBadge risk={student.academicRisk.prediction} size="lg" />
-                    <div>
-                      <p className="text-sm text-gray-400">Confidence</p>
-                      <p className="text-2xl font-bold text-white">
-                        {(student.academicRisk.confidence * 100).toFixed(1)}%
-                      </p>
+                    <p className="text-xs text-gray-500 mt-2">AI-Powered Assessment</p>
+                  </div>
+                  <div className="bg-gray-700/50 rounded-lg p-6 text-center">
+                    <p className="text-sm text-gray-400 mb-2">Model Confidence</p>
+                    <p className="text-4xl font-bold text-blue-400">
+                      {(student.academicRisk.confidence * 100).toFixed(1)}%
+                    </p>
+                    <p className="text-xs text-gray-500 mt-2">Prediction Accuracy</p>
+                  </div>
+                  <div className="bg-gray-700/50 rounded-lg p-6 text-center">
+                    <p className="text-sm text-gray-400 mb-2">Last Calculated</p>
+                    <p className="text-lg font-semibold text-white">
+                      {new Date(student.academicRisk.calculatedAt).toLocaleDateString()}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-2">
+                      {new Date(student.academicRisk.calculatedAt).toLocaleTimeString()}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Feature Importance Chart - WHY they are at risk */}
+                <div className="bg-gray-700/30 rounded-lg p-6">
+                  <h4 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                    <TrendingUp className="w-5 h-5 text-yellow-400" />
+                    Risk Factor Analysis (AI Explainability)
+                  </h4>
+
+                  {student.academicRisk?.featureContributions && student.academicRisk.featureContributions.length > 0 ? (
+                    <div className="h-[400px] w-full">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart
+                          layout="vertical"
+                          data={student.academicRisk.featureContributions.slice(0, 10)}
+                          margin={{ top: 5, right: 30, left: 40, bottom: 5 }}
+                        >
+                          <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                          <XAxis type="number" stroke="#9CA3AF" />
+                          <YAxis
+                            type="category"
+                            dataKey="feature"
+                            stroke="#9CA3AF"
+                            width={100}
+                            tick={{ fontSize: 12 }}
+                          />
+                          <Tooltip
+                            contentStyle={{ backgroundColor: '#1F2937', borderColor: '#374151', color: '#F3F4F6' }}
+                            cursor={{ fill: 'rgba(255, 255, 255, 0.1)' }}
+                            formatter={(value) => [value.toFixed(4), 'Impact Value']}
+                          />
+                          <ReferenceLine x={0} stroke="#6B7280" />
+                          <Bar dataKey="value" name="Impact on Risk">
+                            {student.academicRisk.featureContributions.slice(0, 10).map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={entry.value > 0 ? '#EF4444' : '#10B981'} />
+                            ))}
+                          </Bar>
+                        </BarChart>
+                      </ResponsiveContainer>
+                      <div className="mt-4 flex justify-center gap-6 text-sm">
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 bg-red-500 rounded-sm"></div>
+                          <span className="text-gray-300">Increases Risk</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 bg-green-500 rounded-sm"></div>
+                          <span className="text-gray-300">Decreases Risk</span>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-gray-400">
+                      <p>Detailed feature analysis not available for this prediction.</p>
+                      <button
+                        onClick={handleCalculateRisk}
+                        className="mt-2 text-blue-400 hover:text-blue-300 underline"
+                      >
+                        Recalculate Risk
+                      </button>
+                    </div>
+                  )}
+
+                  <div className="mt-4 p-3 bg-blue-900/30 rounded-lg border border-blue-700/50">
+                    <p className="text-xs text-blue-300">
+                      <strong>XAI Insight:</strong> This chart shows the top factors influencing the risk prediction.
+                      Red bars push the risk higher, while green bars lower the risk.
+                      The magnitude indicates the strength of the influence.
+                    </p>
+                  </div>
+
+                  {/* Feature Impact Analysis List */}
+                  <div className="mt-6 border-t border-gray-700 pt-6">
+                    <h4 className="text-lg font-semibold text-white mb-4">Feature Impact Analysis</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {student.academicRisk.featureContributions.slice(0, 6).map((feature, idx) => (
+                        <div key={idx} className="bg-gray-700/50 p-4 rounded-lg flex justify-between items-center border border-gray-600">
+                          <div>
+                            <p className="text-gray-300 font-medium">{feature.feature}</p>
+                            <p className="text-xs text-gray-500 mt-1">
+                              Impact: {Math.abs(feature.value).toFixed(2)}
+                            </p>
+                          </div>
+                          <div className={`px-3 py-1 rounded-full text-xs font-medium ${feature.value > 0 ? 'bg-red-900/50 text-red-400' : 'bg-green-900/50 text-green-400'
+                            }`}>
+                            {feature.value > 0 ? 'Increases Risk' : 'Decreases Risk'}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
 
-                {/* Cognitive Profile Summary */}
-                {student.cognitiveProfile && (
-                  <div className="bg-purple-900/20 rounded-lg p-4 border border-purple-700/50">
+                {/* Personality Profile Impact */}
+                {student.personalityProfile && (
+                  <div className="bg-purple-900/20 rounded-lg p-5 border border-purple-700/50">
                     <h4 className="text-lg font-medium text-white mb-3 flex items-center gap-2">
                       <Brain className="w-5 h-5 text-purple-400" />
-                      Personality Insights
+                      Personality Profile (OCEAN Traits)
                     </h4>
-                    <div className="grid grid-cols-2 gap-2 text-sm">
-                      <div>
-                        <p className="text-gray-400">Openness</p>
-                        <p className="text-white font-medium">{student.cognitiveProfile.openness}/10</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-400">Conscientiousness</p>
-                        <p className="text-white font-medium">{student.cognitiveProfile.conscientiousness}/10</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-400">Stress Resilience</p>
-                        <p className="text-white font-medium">{student.cognitiveProfile.neuroticism}/10</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-400">Team work</p>
-                        <p className="text-white font-medium">{student.cognitiveProfile.agreeableness}/10</p>
-                      </div>
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                      {Object.entries(student.personalityProfile.predictions || {}).map(([trait, value]) => (
+                        <div key={trait} className="bg-gray-800/50 rounded-lg p-3">
+                          <p className="text-xs text-gray-400 mb-1">{trait}</p>
+                          <p className="text-2xl font-bold text-purple-400">{Math.round(value)}</p>
+                          <div className="h-1 bg-gray-700 rounded-full mt-2 overflow-hidden">
+                            <div
+                              className="h-full bg-purple-500"
+                              style={{ width: `${value}%` }}
+                            />
+                          </div>
+                        </div>
+                      ))}
                     </div>
+                    {student.personalityProfile.insights && student.personalityProfile.insights.length > 0 && (
+                      <div className="mt-4">
+                        <p className="text-sm font-semibold text-white mb-2">Behavioral Insights:</p>
+                        <div className="space-y-2">
+                          {student.personalityProfile.insights.slice(0, 3).map((insight, idx) => (
+                            <p key={idx} className="text-xs text-gray-300 flex items-start gap-2">
+                              <span className="text-purple-400">•</span>
+                              {insight}
+                            </p>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -314,29 +486,84 @@ function MenteeDetailPage() {
             )}
           </div>
 
-          {/* Warnings & Actionable Recommendations */}
+          {/* Warnings & Critical Issues */}
           {student.academicRisk?.warnings && student.academicRisk.warnings.length > 0 && (
-            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+            <div className="bg-gray-800 rounded-xl p-6 border border-red-700/50">
               <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
                 <AlertTriangle className="w-6 h-6 text-red-400" />
-                Critical Issues Identified
+                Critical Issues Identified (Detailed Analysis)
               </h3>
               <div className="space-y-3">
                 {student.academicRisk.warnings.map((warning, i) => (
                   <div key={i} className="p-4 bg-red-900/20 rounded-lg border border-red-700/50 flex items-start gap-3">
                     <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-                    <p className="text-gray-300">{warning}</p>
+                    <div className="flex-1">
+                      <p className="text-gray-300 font-medium">{warning}</p>
+                      {warning.includes('attendance') && (
+                        <p className="text-xs text-gray-500 mt-1">
+                          Impact: High - Attendance below 75% is a critical risk factor
+                        </p>
+                      )}
+                      {warning.includes('CGPA') && (
+                        <p className="text-xs text-gray-500 mt-1">
+                          Impact: High - CGPA affects academic progression and opportunities
+                        </p>
+                      )}
+                      {warning.includes('backlog') && (
+                        <p className="text-xs text-gray-500 mt-1">
+                          Impact: Critical - Backlogs may affect degree completion
+                        </p>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
           )}
 
+          {/* Real-time Academic Metrics Dashboard */}
+          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+            <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+              <BookOpen className="w-6 h-6 text-blue-400" />
+              Real-Time Academic Metrics
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="bg-blue-900/30 rounded-lg p-4 border border-blue-700/50">
+                <p className="text-xs text-gray-400 mb-1">CGPA</p>
+                <p className="text-3xl font-bold text-white">{student.riskInputs?.CGPA?.toFixed(2) || 'N/A'}</p>
+                <p className={`text-xs mt-1 ${student.riskInputs?.CGPA >= 7.0 ? 'text-green-400' : 'text-red-400'}`}>
+                  {student.riskInputs?.CGPA >= 7.0 ? '✓ Good' : '⚠ Needs Improvement'}
+                </p>
+              </div>
+              <div className="bg-green-900/30 rounded-lg p-4 border border-green-700/50">
+                <p className="text-xs text-gray-400 mb-1">Attendance</p>
+                <p className="text-3xl font-bold text-white">{student.riskInputs?.Attendance || 'N/A'}%</p>
+                <p className={`text-xs mt-1 ${student.riskInputs?.Attendance >= 85 ? 'text-green-400' : 'text-red-400'}`}>
+                  {student.riskInputs?.Attendance >= 85 ? '✓ Excellent' : '⚠ Below Target'}
+                </p>
+              </div>
+              <div className="bg-red-900/30 rounded-lg p-4 border border-red-700/50">
+                <p className="text-xs text-gray-400 mb-1">Backlogs</p>
+                <p className="text-3xl font-bold text-white">{student.riskInputs?.Backlogs || 0}</p>
+                <p className={`text-xs mt-1 ${student.riskInputs?.Backlogs === 0 ? 'text-green-400' : 'text-red-400'}`}>
+                  {student.riskInputs?.Backlogs === 0 ? '✓ Clear' : '⚠ Action Required'}
+                </p>
+              </div>
+              <div className="bg-purple-900/30 rounded-lg p-4 border border-purple-700/50">
+                <p className="text-xs text-gray-400 mb-1">Study Hrs/Day</p>
+                <p className="text-3xl font-bold text-white">{student.riskInputs?.StudyHoursPerDay || 'N/A'}</p>
+                <p className={`text-xs mt-1 ${student.riskInputs?.StudyHoursPerDay >= 4 ? 'text-green-400' : 'text-yellow-400'}`}>
+                  {student.riskInputs?.StudyHoursPerDay >= 4 ? '✓ Good' : '⚠ Increase'}
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* Personalized Action Plan */}
           <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
             <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
               <TrendingUp className="w-6 h-6 text-green-400" />
-              Recommended Actions
+              Recommended Intervention Actions
             </h3>
             <div className="space-y-4">
               {/* Attendance-based recommendation */}
@@ -436,34 +663,69 @@ function MenteeDetailPage() {
         </div>
       )}
 
+      {/* Interventions Tab */}
       {activeTab === 'interventions' && (
-        <div className="space-y-4">
+        <div className="space-y-6">
           <div className="flex justify-between items-center">
             <h3 className="text-xl font-semibold text-white">Intervention History</h3>
-            <button
-              onClick={() => setShowInterventionModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
-            >
-              <Plus className="w-4 h-4" />
-              New Intervention
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={handleGetAIRecommendations}
+                className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+              >
+                <Sparkles className="w-4 h-4" />
+                Get AI Recommendations
+              </button>
+              <button
+                onClick={() => setShowInterventionModal(true)}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                Add Intervention
+              </button>
+            </div>
           </div>
-          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-            <InterventionTimeline
-              interventions={interventions}
-              onUpdate={handleUpdateIntervention}
-            />
-          </div>
+          <InterventionTimeline
+            interventions={interventions}
+            onUpdateStatus={handleUpdateIntervention}
+          />
         </div>
       )}
 
-      {/* Update Modal */}
+      {/* Modals */}
+      <InterventionModal
+        isOpen={showInterventionModal}
+        onClose={() => setShowInterventionModal(false)}
+        onSubmit={handleCreateIntervention}
+        studentId={studentId}
+      />
+
+      <AIInterventionModal
+        isOpen={showAIModal}
+        onClose={() => setShowAIModal(false)}
+        recommendations={aiRecommendations}
+        loading={aiLoading}
+        onApply={handleApplyAIRecommendation}
+      />
+
       <UpdateMenteeModal
         isOpen={showUpdateModal}
         onClose={() => setShowUpdateModal(false)}
         student={student}
-        onUpdate={handleUpdateStudent}
+        onUpdate={async (data) => {
+          await handleUpdateStudent(data);
+          setShowUpdateModal(false);
+        }}
       />
+
+      {showChat && (
+        <ChatWindow
+          recipientId={student.user._id}
+          recipientName={student.name}
+          recipientRole="student"
+          onClose={() => setShowChat(false)}
+        />
+      )}
     </div>
   );
 }

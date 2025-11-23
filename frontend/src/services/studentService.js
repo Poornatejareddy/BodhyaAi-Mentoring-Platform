@@ -37,3 +37,12 @@ export const submitSurvey = async (answers) => {
   if (!response.ok) throw new Error(data.message || 'Failed to submit survey');
   return data.data;
 };
+
+export const getStudentInterventions = async (studentId) => {
+  const response = await fetch(`${API_URL}/interventions/student/${studentId}`, {
+    headers: getAuthHeaders(),
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message || 'Failed to fetch interventions');
+  return data.data;
+};

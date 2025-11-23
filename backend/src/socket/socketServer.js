@@ -147,10 +147,42 @@ const emitToRole = (role, event, data) => {
     console.log(`📡 Event "${event}" emitted to role: ${role}`);
 };
 
+/**
+ * Emit message edit event
+ * @param {String} userId - User ID to send update to
+ * @param {Object} message - Updated message object
+ */
+const emitMessageEdit = (userId, message) => {
+    if (!io) {
+        console.error('Socket.IO not initialized');
+        return;
+    }
+
+    io.to(`user:${userId}`).emit('message:edited', message);
+    console.log(`✏️ Message edit emitted to user ${userId}`);
+};
+
+/**
+ * Emit message delete event
+ * @param {String} userId - User ID to send update to
+ * @param {String} messageId - ID of deleted message
+ */
+const emitMessageDelete = (userId, messageId) => {
+    if (!io) {
+        console.error('Socket.IO not initialized');
+        return;
+    }
+
+    io.to(`user:${userId}`).emit('message:deleted', messageId);
+    console.log(`🗑️ Message delete emitted to user ${userId}`);
+};
+
 module.exports = {
     initializeSocket,
     getIO,
     emitAlertToUser,
     emitMessageToUser,
     emitToRole,
+    emitMessageEdit,
+    emitMessageDelete,
 };

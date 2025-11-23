@@ -20,6 +20,7 @@ const alertSchema = new Schema(
                 'LOW_PERFORMANCE',     // Academic performance decline
                 'CONSENT_CHANGED',     // Student changed consent settings
                 'NEW_MENTEE_ASSIGNED', // New student assigned to mentor
+                'MENTEE_REASSIGNED',   // Student reassigned to new mentor
                 'MESSAGE_RECEIVED',    // New chat message (optional notification)
                 'SURVEY_COMPLETED',    // Student completed personality survey
                 'ACADEMIC',            // Academic/risk-related alerts

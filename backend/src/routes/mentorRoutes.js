@@ -4,7 +4,8 @@ const {
   calculateStudentRisk,
   getMyProfile,
   getMenteeById,
-  generateClassReport
+  generateClassReport,
+  getDashboardStats
 } = require('../controllers/mentorController');
 const { generateStudentPDFReport, generateStudentCSVExport } = require('../services/reportService');
 const { protect, authorize } = require('../middleware/authMiddleware');
@@ -17,6 +18,7 @@ const { assignMenteeToSelf } = require('../controllers/mentorController');
 const router = express.Router();
 
 router.get('/me', protect, authorize('mentor'), getMyProfile);
+router.get('/dashboard-stats', protect, authorize('mentor'), getDashboardStats);
 router.post('/report', protect, authorize('mentor'), audit('GENERATE_REPORT'), generateClassReport);
 router.get('/report/pdf/:studentId', protect, authorize('mentor'), generateStudentPDFReport);
 router.get('/report/csv/:studentId', protect, authorize('mentor'), generateStudentCSVExport);

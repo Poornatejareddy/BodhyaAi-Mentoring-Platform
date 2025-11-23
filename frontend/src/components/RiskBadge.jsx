@@ -43,7 +43,7 @@ const RiskBadge = ({ risk, confidence, size = 'md', showIcon = true, showConfide
         lg: 'w-5 h-5',
     };
 
-    const config = riskConfig[risk] || riskConfig.MEDIUM;
+    const config = riskConfig[risk?.toUpperCase()] || riskConfig.MEDIUM;
     const Icon = config.icon;
 
     if (!risk) {

@@ -1,4 +1,7 @@
 # app/main.py
+from dotenv import load_dotenv
+load_dotenv() 
+
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -27,6 +30,7 @@ class RAGChatRequest(BaseModel):
     student_id: str
     context: Optional[Dict] = None
     conversation_history: Optional[List[Dict]] = None
+    model: Optional[str] = "gemini-2.5-flash"
 
 class StudyPlanRequest(BaseModel):
     student_id: str
@@ -69,18 +73,28 @@ async def startup_event():
 # ------------------------
 @app.post("/chat", response_model=ChatResponse)
 def chat(req: ChatRequest):
+    # Adapt new schema to old logic
+    user_id = req.student_id or "unknown"
+    role = "student" # Default since role was removed from schema
+    
     intent = detect_intent(req.message)
-    recent_history = get_recent(req.userId)
-    user_context = req.context
+    recent_history = get_recent(user_id)
+    
+    user_context = ""
+    if req.context:
+        import json
+        user_context = json.dumps(req.context)
+        
     if recent_history:
         user_context += "\nRecent conversation:\n" + "\n".join(recent_history)
 
     # Build prompt differently based on intent
-    prompt = build_prompt(req.role, user_context, req.message, req.docs, intent)
+    # Note: req.docs is removed from schema, passing empty list
+    prompt = build_prompt(role, user_context, req.message, [], intent)
 
-    reply = generate_response(prompt, max_tokens=128)
-    safe_reply = sanitize_reply(reply, req.role)
-    save_message(req.userId, req.role, req.message, safe_reply)
+    reply = generate_response(prompt, model_name=req.model)
+    safe_reply = sanitize_reply(reply, role)
+    save_message(user_id, role, req.message, safe_reply)
     return ChatResponse(reply=safe_reply)
 
 # ------------------------
@@ -135,22 +149,28 @@ def rag_chat(req: RAGChatRequest):
     try:
         rag_engine = get_rag_engine()
         
-        # Build context from conversation history
+        # Build context from request
         context_str = ""
         if req.context:
-            context_str = f"Student context: CGPA={req.context.get('cgpa', 'N/A')}, Risk={req.context.get('risk', 'UNKNOWN')}, Role={req.context.get('role', 'student')}"
+            import json
+            # Pretty print the context dictionary to string
+            context_str = f"User Context:\n{json.dumps(req.context, indent=2)}"
         
         # Get RAG response
         result = rag_engine.query(
             question=req.message,
             k=3,
-            include_sources=False  # Don't expose sources in chat
+            filters=None,
+            include_sources=False,
+            external_context=context_str,  # Pass external context
+            model_name=req.model # Pass requested model
         )
         
         return {
             "success": True,
             "reply": result.get('answer', 'I apologize, but I encountered an error.'),
-            "confidence": result.get('confidence', 0.0)
+            "confidence": result.get('confidence', 0.0),
+            "model": result.get('model')
         }
     except Exception as e:
         logger.error(f"RAG chat error: {e}")

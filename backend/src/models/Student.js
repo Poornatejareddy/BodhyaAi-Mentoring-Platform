@@ -35,6 +35,9 @@ const studentSchema = new Schema(
       SleepHours: Number,
       Backlogs: Number,
       StudyHoursPerDay: Number,
+      IAT1: Number,
+      IAT2: Number,
+      IAT3: Number,
       FatherIncome: Number,
       MotherIncome: Number,
       HasSiblings: Number,
@@ -61,6 +64,10 @@ const studentSchema = new Schema(
       insights: [String],
       recommendations: [{ type: Schema.Types.Mixed }],
       featureImportance: { type: Map, of: Number },
+      featureContributions: [{
+        feature: String,
+        value: Number
+      }],
       calculatedAt: Date,
       calculatedBy: { type: Schema.Types.ObjectId, ref: 'User' },
       model: String,
@@ -74,6 +81,17 @@ const studentSchema = new Schema(
         Agreeableness: Number,
         Neuroticism: Number,
       },
+      learningStyle: {
+        visual: Number,
+        auditory: Number,
+        kinesthetic: Number,
+      },
+      strengths: [String],
+      growthAreas: [String],
+      careerSuggestions: [{
+        title: String,
+        compatibility: Number,
+      }],
       insights: [String],
       lastCalculated: Date,
     },

@@ -46,7 +46,11 @@ const auditLogSchema = new Schema(
                 'VIEW_CONSENT_SETTINGS',
                 'UPDATE_CONSENT_SETTINGS',
                 'ASSIGN_MENTOR',
+                'REASSIGN_MENTOR',
                 'EXPORT_DATA',
+                'CREATE_USER',
+                'UPDATE_USER',
+                'DELETE_USER',
             ],
         },
 

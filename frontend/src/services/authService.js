@@ -20,11 +20,11 @@ export const loginUser = async (email, password) => {
 };
 
 // Function to handle user registration
-export const registerUser = async (name, email, password, role) => {
+export const registerUser = async (name, email, password, role, additionalData = {}) => {
   const response = await fetch(`${API_URL}/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name, email, password, role }),
+    body: JSON.stringify({ name, email, password, role, ...additionalData }),
   });
   return handleResponse(response);
 };

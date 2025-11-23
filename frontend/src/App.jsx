@@ -21,6 +21,7 @@ import MenteeDetailPage from './dashboard/mentor/pages/MenteeDetailPage';
 import AssignStudentPage from './dashboard/mentor/pages/AssignStudentPage';
 import MentorSettingsPage from './dashboard/mentor/pages/MentorSettingsPage';
 import MentorOverviewPage from './dashboard/mentor/pages/MentorOverviewPage';
+import MentorAlertsPage from './dashboard/mentor/pages/MentorAlertsPage';
 
 
 // Student and Admin Imports
@@ -32,10 +33,14 @@ import ChatbotPage from './dashboard/student/pages/ChatbotPage'; // <-- IMPORT
 import StudyPlanGeneratorPage from './dashboard/student/pages/StudyPlanGeneratorPage';
 import RiskExplanationPage from './dashboard/student/pages/RiskExplanationPage';
 import CognitiveProfilePage from './dashboard/student/pages/CognitiveProfilePage';
+import SettingsPage from './dashboard/common/SettingsPage';
 
 
 import AdminDashboard from './dashboard/admin/AdminDashboard';
 import AdminOverviewPage from './dashboard/admin/pages/AdminOverviewPage';
+import UserManagementPage from './dashboard/admin/pages/UserManagementPage';
+import AlertsPage from './dashboard/admin/pages/AlertsPage';
+import ActivityLogsPage from './dashboard/admin/pages/ActivityLogsPage';
 import ChatListPage from './dashboard/common/ChatListPage';
 
 const router = createBrowserRouter([
@@ -66,6 +71,7 @@ const router = createBrowserRouter([
               { path: 'mentees/:studentId', element: <MenteeDetailPage /> },
               { path: 'assign-student', element: <AssignStudentPage /> },
               { path: 'settings', element: <MentorSettingsPage /> },
+              { path: 'alerts', element: <MentorAlertsPage /> },
               { path: 'chat', element: <ChatListPage /> },
             ]
           }
@@ -87,6 +93,7 @@ const router = createBrowserRouter([
               { path: 'study-plan', element: <StudyPlanGeneratorPage /> },
               { path: 'risk-explanation', element: <RiskExplanationPage /> },
               { path: 'personality', element: <CognitiveProfilePage /> },
+              { path: 'settings', element: <SettingsPage /> },
             ]
           }
         ]
@@ -95,9 +102,18 @@ const router = createBrowserRouter([
         path: 'admin',
         element: <ProtectedRoute allowedRoles={['admin']} />,
         children: [
-          { index: true, element: <AdminOverviewPage /> },
-          { path: 'overview', element: <AdminOverviewPage /> },
-          { path: 'chat', element: <ChatListPage /> },
+          {
+            path: '',
+            element: <AdminDashboard />,
+            children: [
+              { index: true, element: <AdminOverviewPage /> },
+              { path: 'overview', element: <AdminOverviewPage /> },
+              { path: 'users', element: <UserManagementPage /> },
+              { path: 'alerts', element: <AlertsPage /> },
+              { path: 'activity', element: <ActivityLogsPage /> },
+              { path: 'chat', element: <ChatListPage /> },
+            ]
+          }
         ]
       },
     ],

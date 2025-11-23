@@ -146,6 +146,7 @@ exports.submitSurvey = async (req, res) => {
       surveyAnswers
     );
     const personalityPredictions = cogResponse.data.predictions;
+    const extendedProfile = cogResponse.data.extended_profile;
 
     // XAI-SVC call
     const xaiResponse = await axios.post(
@@ -157,6 +158,10 @@ exports.submitSurvey = async (req, res) => {
     // Save AI results
     student.personalityProfile = {
       predictions: personalityPredictions,
+      learningStyle: extendedProfile.learningStyle,
+      strengths: extendedProfile.strengths,
+      growthAreas: extendedProfile.growthAreas,
+      careerSuggestions: extendedProfile.careerSuggestions,
       insights: personalityInsights,
       lastCalculated: Date.now(),
     };
@@ -200,7 +205,14 @@ exports.getUnassignedStudents = async (req, res) => {
 exports.getMyProfile = async (req, res) => {
   try {
     const student = await Student.findOne({ user: req.user.id })
-      .populate('user', 'name email');
+      .populate('user', 'name email')
+      .populate({
+        path: 'mentor',
+        populate: {
+          path: 'user',
+          select: 'name email'
+        }
+      });
 
     if (!student) {
       return res.status(404).json({
@@ -285,3 +297,92 @@ exports.updateConsent = async (req, res) => {
     });
   }
 };
+
+// =====================================================================
+// GET FULL STUDENT PROFILE (for Mentor Dashboard)
+// =====================================================================
+
+// @desc    Get complete student profile with risk, personality, and academic data
+// @route   GET /api/students/:id/full-profile
+// @access  Private (Mentors only)
+exports.getFullProfile = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const student = await Student.findById(id)
+      .populate('user', 'name email')
+      .populate({
+        path: 'mentor',
+        populate: {
+          path: 'user',
+          select: 'name email'
+        }
+      });
+
+    if (!student) {
+      return res.status(404).json({
+        success: false,
+        message: 'Student not found',
+      });
+    }
+
+    // Build response with consent-aware data
+    const response = {
+      success: true,
+      data: {
+        // Basic Info (always visible)
+        studentId: student._id,
+        name: student.name,
+        usn: student.usn,
+        department: student.department,
+        section: student.section,
+        email: student.user.email,
+        mentor: student.mentor,
+
+        // Academic History (consent-based)
+        academicHistory: student.consent.shareAcademicHistory
+          ? student.academicHistory
+          : null,
+
+        // Risk Data (consent-based)
+        academicRisk: student.consent.shareRisk
+          ? student.academicRisk
+          : {
+            message: 'Student has not consented to share risk data',
+          },
+
+        // Personality Profile (consent-based)
+        personalityProfile: student.consent.sharePersonality
+          ? student.personalityProfile
+          : {
+            message: 'Student has not consented to share personality data',
+          },
+
+        // Risk Inputs (consent-based)
+        riskInputs: student.consent.shareRisk
+          ? student.riskInputs
+          : null,
+
+        // Support Engagement
+        supportEngagement: student.supportEngagement,
+
+        // Consent Status
+        consentStatus: student.consent,
+
+        // Timestamps
+        createdAt: student.createdAt,
+        updatedAt: student.updatedAt,
+      },
+    };
+
+    res.status(200).json(response);
+  } catch (error) {
+    console.error('Error fetching full student profile:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server Error',
+      error: error.message,
+    });
+  }
+};
+

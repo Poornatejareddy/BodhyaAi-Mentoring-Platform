@@ -8,6 +8,7 @@ const {
     markMessagesAsRead,
     getUnreadCount,
     handleAIChat,
+    editMessage,
     deleteMessage,
 } = require('../controllers/chatController');
 
@@ -26,10 +27,11 @@ router.put('/mark-read/:userId', markMessagesAsRead);
 // Get unread message count
 router.get('/unread-count', getUnreadCount);
 
-// AI chat (student helper / mentor assistant)
-router.post('/ai', handleAIChat);
+// AI chat route
+router.post('/ai-chat', handleAIChat);
 
-// Delete a message
-router.delete('/:messageId', deleteMessage);
+// Edit and delete routes
+router.put('/edit/:messageId', editMessage);
+router.delete('/delete/:messageId', deleteMessage);
 
 module.exports = router;

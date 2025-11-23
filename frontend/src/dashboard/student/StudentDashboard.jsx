@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
+import Sidebar from '../../components/navigation/Sidebar';
 import FloatingChatButton from '../../components/FloatingChatButton';
+import MessageNotificationManager from '../../components/notifications/MessageNotificationManager';
 import { GraduationCap, BookOpen, TrendingUp, MessageSquare } from 'lucide-react';
 
 function StudentDashboard() {
@@ -52,6 +54,9 @@ function StudentDashboard() {
 
       {/* AI Chat Bot */}
       <FloatingChatButton />
+
+      {/* Message Notifications */}
+      <MessageNotificationManager />
     </div>
   );
 }

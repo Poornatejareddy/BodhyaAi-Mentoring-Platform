@@ -19,8 +19,21 @@ const CognitiveProfilePage = () => {
             });
             const data = await response.json();
 
-            if (data.success && data.data.cognitiveProfile) {
-                setCognitiveData(data.data.cognitiveProfile);
+            if (data.success && data.data.personalityProfile && data.data.personalityProfile.predictions) {
+                const profile = data.data.personalityProfile;
+                setCognitiveData({
+                    bigFive: {
+                        openness: profile.predictions.Openness,
+                        conscientiousness: profile.predictions.Conscientiousness,
+                        extraversion: profile.predictions.Extraversion,
+                        agreeableness: profile.predictions.Agreeableness,
+                        neuroticism: profile.predictions.Neuroticism
+                    },
+                    learningStyle: profile.learningStyle || { visual: 50, auditory: 50, kinesthetic: 50 },
+                    strengths: profile.strengths || [],
+                    growthAreas: profile.growthAreas || [],
+                    careerSuggestions: profile.careerSuggestions || []
+                });
             } else {
                 // Generate mock data for demo
                 setCognitiveData(generateMockProfile());
@@ -150,7 +163,7 @@ const CognitiveProfilePage = () => {
                         <h3 className="text-sm text-gray-400 mb-2 capitalize">{trait}</h3>
                         <div className="relative pt-1">
                             <div className="flex items-center justify-between mb-2">
-                                <span className={`text-3xl font-bold ${getTraitColor(value)}`}>{value}</span>
+                                <span className={`text-3xl font-bold ${getTraitColor(value)}`}>{Math.round(value)}</span>
                                 <span className="text-xs text-gray-500">/ 100</span>
                             </div>
                             <div className="overflow-hidden h-2 text-xs flex rounded-full bg-gray-700">

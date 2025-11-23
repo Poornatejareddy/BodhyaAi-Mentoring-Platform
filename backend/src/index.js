@@ -14,6 +14,9 @@ const chatRoutes = require('./routes/chatRoutes'); // <-- IMPORT
 const auditRoutes = require('./routes/auditRoutes'); // <-- IMPORT AUDIT ROUTES
 const alertRoutes = require('./routes/alertRoutes'); // <-- IMPORT ALERT ROUTES
 const interventionRoutes = require('./routes/interventionRoutes'); // <-- INTERVENTION ROUTES
+const riskRoutes = require('./routes/riskRoutes'); // <-- RISK PREDICTION ROUTES
+const cogRoutes = require('./routes/cogRoutes'); // <-- PERSONALITY/COG ROUTES
+const llmRoutes = require('./routes/llmRoutes'); // <-- LLM ROUTES
 
 
 
@@ -57,7 +60,9 @@ app.use('/api/chat', chatRoutes); // <-- MOUNT THE NEW ROUTE
 app.use('/api/audit', auditRoutes); // <-- MOUNT AUDIT ROUTES
 app.use('/api/alerts', alertRoutes); // <-- MOUNT ALERT ROUTES
 app.use('/api/interventions', interventionRoutes); // <-- MOUNT INTERVENTION ROUTES
-
+app.use('/api/risk', riskRoutes); // <-- MOUNT RISK PREDICTION ROUTES
+app.use('/api/personality', cogRoutes); // <-- MOUNT PERSONALITY/COG ROUTES
+app.use('/api/llm', llmRoutes); // <-- MOUNT LLM ROUTES
 
 
 

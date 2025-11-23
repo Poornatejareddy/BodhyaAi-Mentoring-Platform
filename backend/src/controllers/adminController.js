@@ -40,6 +40,76 @@ exports.assignMentee = async (req, res) => {
 };
 
 /**
+ * @desc    Reassign a student to a different mentor
+ * @route   PUT /api/admin/reassign-mentor
+ * @access  Private (Admin only)
+ */
+exports.reassignMentor = async (req, res) => {
+    const { studentId, newMentorId } = req.body;
+    console.log('🔄 [REASSIGN-MENTOR] Request received:', { studentId, newMentorId });
+
+    try {
+        // Find student and new mentor
+        const student = await Student.findById(studentId);
+        const newMentor = await Mentor.findById(newMentorId);
+
+        console.log('🔍 [REASSIGN-MENTOR] Found:', {
+            studentExists: !!student,
+            studentName: student?.name,
+            newMentorExists: !!newMentor,
+            newMentorDept: newMentor?.department
+        });
+
+        if (!student || !newMentor) {
+            console.log('❌ [REASSIGN-MENTOR] Student or Mentor not found');
+            return res.status(404).json({ success: false, message: 'Student or Mentor not found' });
+        }
+
+        const oldMentorId = student.mentor;
+
+        // Remove student from old mentor if exists
+        if (oldMentorId) {
+            await Mentor.findByIdAndUpdate(
+                oldMentorId,
+                { $pull: { mentees: student._id } }
+            );
+            console.log('🗑️ [REASSIGN-MENTOR] Removed from old mentor');
+        }
+
+        // Add student to new mentor's mentees list
+        await Mentor.findByIdAndUpdate(
+            newMentorId,
+            { $addToSet: { mentees: student._id } }
+        );
+        console.log('➕ [REASSIGN-MENTOR] Added to new mentor');
+
+        // Update student's mentor field
+        await Student.findByIdAndUpdate(
+            studentId,
+            { mentor: newMentorId }
+        );
+        console.log('🔗 [REASSIGN-MENTOR] Updated student mentor reference');
+
+        // Trigger reassignment alert
+        console.log('🔔 [REASSIGN-MENTOR] Sending notification');
+        const { notifyMentorReassignment } = require('../services/alertRules');
+        notifyMentorReassignment(student._id, newMentor._id).catch(err =>
+            console.error('Error notifying mentor reassignment:', err)
+        );
+
+        console.log('✅ [REASSIGN-MENTOR] Success!');
+        res.status(200).json({
+            success: true,
+            message: 'Mentor reassigned successfully',
+            data: { studentId: student._id, newMentorId: newMentor._id }
+        });
+    } catch (error) {
+        console.error('❌ [REASSIGN-MENTOR] Error:', error);
+        res.status(500).json({ success: false, message: 'Server Error', error: error.message });
+    }
+}
+
+/**
  * @desc    Get system dashboard statistics
  * @route   GET /api/admin/dashboard-stats
  * @access  Private (Admin only)
@@ -267,6 +337,103 @@ exports.getAllMentors = async (req, res) => {
 };
 
 /**
+ * @desc    Create a new user (and associated profile)
+ * @route   POST /api/admin/users
+ * @access  Private (Admin only)
+ */
+exports.createUser = async (req, res) => {
+    try {
+        const { name, email, password, role, ...profileData } = req.body;
+
+        // Check if user exists
+        const userExists = await User.findOne({ email });
+        if (userExists) {
+            return res.status(400).json({ success: false, message: 'User already exists' });
+        }
+
+        // Create User
+        const user = await User.create({
+            name,
+            email,
+            password,
+            role
+        });
+
+        // Create associated profile based on role
+        if (role === 'student') {
+            await Student.create({
+                user: user._id,
+                usn: profileData.usn || `TEMP-${Date.now()}`,
+                department: profileData.department,
+                section: profileData.section,
+                batch: profileData.batch
+            });
+        } else if (role === 'mentor') {
+            await Mentor.create({
+                user: user._id,
+                department: profileData.department,
+                specialization: profileData.specialization
+            });
+        }
+
+        res.status(201).json({
+            success: true,
+            data: user,
+            message: `New ${role} created successfully`
+        });
+    } catch (error) {
+        console.error('Error creating user:', error);
+        res.status(500).json({ success: false, message: 'Server Error', error: error.message });
+    }
+};
+
+/**
+ * @desc    Update user details
+ * @route   PUT /api/admin/users/:userId
+ * @access  Private (Admin only)
+ */
+exports.updateUser = async (req, res) => {
+    try {
+        const { name, email, role, ...profileData } = req.body;
+        const user = await User.findById(req.params.userId);
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        // Update User fields
+        user.name = name || user.name;
+        user.email = email || user.email;
+        if (role) user.role = role;
+        await user.save();
+
+        // Update associated profile
+        if (user.role === 'student') {
+            await Student.findOneAndUpdate(
+                { user: user._id },
+                { $set: profileData },
+                { new: true, upsert: true } // Create if doesn't exist (handling legacy data)
+            );
+        } else if (user.role === 'mentor') {
+            await Mentor.findOneAndUpdate(
+                { user: user._id },
+                { $set: profileData },
+                { new: true, upsert: true }
+            );
+        }
+
+        res.status(200).json({
+            success: true,
+            data: user,
+            message: 'User updated successfully'
+        });
+    } catch (error) {
+        console.error('Error updating user:', error);
+        res.status(500).json({ success: false, message: 'Server Error', error: error.message });
+    }
+};
+
+/**
  * @desc    Delete a user (and associated student/mentor profile)
  * @route   DELETE /api/admin/users/:userId
  * @access  Private (Admin only)
@@ -358,6 +525,110 @@ exports.createCustomAlert = async (req, res) => {
             message: 'Server Error',
             error: error.message,
         });
+    }
+};
+
+/**
+ * @desc    Get all alerts for admin
+ * @route   GET /api/admin/alerts
+ * @access  Private (Admin only)
+ */
+exports.getAllAlerts = async (req, res) => {
+    try {
+        const { limit = 50, priority, read } = req.query;
+
+        let query = {};
+        if (priority) query.priority = priority.toUpperCase();
+        if (read !== undefined) query.read = read === 'true';
+
+        const alerts = await Alert.find(query)
+            .populate('student', 'name usn department')
+            .populate('recipient', 'name email')
+            .sort({ createdAt: -1 })
+            .limit(parseInt(limit));
+
+        res.status(200).json({
+            success: true,
+            data: alerts,
+            count: alerts.length
+        });
+    } catch (error) {
+        console.error('Error fetching alerts:', error);
+        res.status(500).json({ success: false, message: 'Server Error', error: error.message });
+    }
+};
+
+/**
+ * @desc    Mark alert as read
+ * @route   PUT /api/admin/alerts/:id/read
+ * @access  Private (Admin only)
+ */
+exports.markAlertAsRead = async (req, res) => {
+    try {
+        const alert = await Alert.findByIdAndUpdate(
+            req.params.id,
+            { read: true, readAt: new Date() },
+            { new: true }
+        );
+
+        if (!alert) {
+            return res.status(404).json({ success: false, message: 'Alert not found' });
+        }
+
+        res.status(200).json({ success: true, data: alert });
+    } catch (error) {
+        console.error('Error marking alert as read:', error);
+        res.status(500).json({ success: false, message: 'Server Error', error: error.message });
+    }
+};
+
+/**
+ * @desc    Delete alert
+ * @route   DELETE /api/admin/alerts/:id
+ * @access  Private (Admin only)
+ */
+exports.deleteAlert = async (req, res) => {
+    try {
+        const alert = await Alert.findByIdAndDelete(req.params.id);
+
+        if (!alert) {
+            return res.status(404).json({ success: false, message: 'Alert not found' });
+        }
+
+        res.status(200).json({ success: true, message: 'Alert deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting alert:', error);
+        res.status(500).json({ success: false, message: 'Server Error', error: error.message });
+    }
+};
+
+/**
+ * @desc    Get audit logs
+ * @route   GET /api/admin/audit-logs
+ * @access  Private (Admin only)
+ */
+exports.getAuditLogs = async (req, res) => {
+    try {
+        const { limit = 100, action, userRole } = req.query;
+
+        let query = {};
+        if (action) query.action = action;
+        if (userRole) query.userRole = userRole;
+
+        const logs = await AuditLog.find(query)
+            .populate('user', 'name email')
+            .populate('student', 'name usn')
+            .sort({ createdAt: -1 })
+            .limit(parseInt(limit));
+
+        res.status(200).json({
+            success: true,
+            data: logs,
+            count: logs.length
+        });
+    } catch (error) {
+        console.error('Error fetching audit logs:', error);
+        res.status(500).json({ success: false, message: 'Server Error', error: error.message });
     }
 };
 

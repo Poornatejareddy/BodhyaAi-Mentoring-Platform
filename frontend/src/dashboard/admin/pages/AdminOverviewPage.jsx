@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { BarChart, Bar, PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import {
@@ -15,6 +16,7 @@ import StatCard from '../../common/components/StatCard';
 
 const AdminOverviewPage = () => {
     const { token } = useAuth();
+    const navigate = useNavigate();
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -29,7 +31,7 @@ const AdminOverviewPage = () => {
                 headers: { Authorization: `Bearer ${token}` },
             });
             if (res.ok) {
-                const data = await response.json();
+                const data = await res.json();
                 setStats(data.data);
             }
         } catch (error) {
@@ -235,19 +237,28 @@ const AdminOverviewPage = () => {
 
             {/* Quick Actions */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-xl p-6 transition-all cursor-pointer">
+                <div
+                    onClick={() => navigate('/admin/users')}
+                    className="bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-xl p-6 transition-all cursor-pointer transform hover:scale-105"
+                >
                     <UserCheck className="w-8 h-8 text-blue-400 mb-3" />
                     <h4 className="text-white font-semibold text-lg mb-2">Manage Users</h4>
                     <p className="text-gray-400 text-sm">{stats.users.total} total users</p>
                 </div>
 
-                <div className="bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-xl p-6 transition-all cursor-pointer">
+                <div
+                    onClick={() => navigate('/admin/alerts')}
+                    className="bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-xl p-6 transition-all cursor-pointer transform hover:scale-105"
+                >
                     <AlertTriangle className="w-8 h-8 text-red-400 mb-3" />
                     <h4 className="text-white font-semibold text-lg mb-2">Review Alerts</h4>
                     <p className="text-gray-400 text-sm">{stats.alerts.urgent} urgent alerts</p>
                 </div>
 
-                <div className="bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-xl p-6 transition-all cursor-pointer">
+                <div
+                    onClick={() => navigate('/admin/activity')}
+                    className="bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-xl p-6 transition-all cursor-pointer transform hover:scale-105"
+                >
                     <Activity className="w-8 h-8 text-purple-400 mb-3" />
                     <h4 className="text-white font-semibold text-lg mb-2">View Activity</h4>
                     <p className="text-gray-400 text-sm">{stats.activity.recentAuditLogs} recent logs</p>

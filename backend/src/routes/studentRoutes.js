@@ -4,7 +4,8 @@ const {
     submitSurvey,
     getMyProfile,
     getUnassignedStudents,
-    updateConsent
+    updateConsent,
+    getFullProfile
 } = require('../controllers/studentController');
 
 const { getRiskExplanation } = require('../controllers/riskExplanationController');
@@ -30,9 +31,11 @@ router.put('/my-profile/consent', protect, authorize('student'), audit('UPDATE_C
 // Route for getting student's risk explanation
 router.get('/my-profile/risk-explanation', protect, authorize('student'), audit('VIEW_RISK_EXPLANATION'), getRiskExplanation);
 
-// Route to trigger the academic risk calculation
 // Admin/Mentor Routes
 router.get('/unassigned', protect, authorize('mentor', 'admin'), getUnassignedStudents);
+
+// Get complete student profile (for mentor dashboard)
+router.get('/:id/full-profile', protect, authorize('mentor', 'admin'), audit('VIEW_FULL_PROFILE'), getFullProfile);
 
 
 module.exports = router;

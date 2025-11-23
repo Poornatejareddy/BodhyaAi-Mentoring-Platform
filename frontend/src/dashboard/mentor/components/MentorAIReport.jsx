@@ -13,13 +13,13 @@ const MentorAIReport = () => {
             const token = localStorage.getItem('authToken');
             // Using relative path if proxy is set up, otherwise full URL
             // Assuming backend is on port 5000 based on previous files
-            const response = await fetch('http://localhost:5000/api/mentors/report', {
+            const response = await fetch('http://localhost:5000/api/llm/class-report', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({ focus_area: focusArea })
+                body: JSON.stringify({ focusArea })
             });
 
             const data = await response.json();

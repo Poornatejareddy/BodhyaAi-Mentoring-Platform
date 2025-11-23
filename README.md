@@ -13,7 +13,7 @@
 
 [Features](#features) •
 [Quick Start](#quick-start) •
-[Documentation](#documentation) •
+[Architecture](#architecture) •
 [API](#api-documentation) •
 [Deployment](#deployment)
 
@@ -23,49 +23,142 @@
 
 ## 📖 Overview
 
-BodhyaAI is a comprehensive, AI-powered student mentoring platform that combines real-time communication, intelligent risk prediction, personalized learning recommendations, and administrative oversight. Built with modern technologies including FAISS vector search, Socket.IO real-time messaging, and machine learning-based academic risk assessment.
+BodhyaAI is a next-generation AI-powered student mentoring and academic success platform. It combines machine learning-based risk prediction, explainable AI, real-time communication, personality profiling, and comprehensive administrative tools to create a holistic student support ecosystem.
 
 ### 🎯 Key Highlights
 
-- **🤖 AI-Powered Risk Prediction:** Machine learning model predicts academic risk with 80%+ accuracy
-- **💬 Real-time Chat:** Instant messaging with typing indicators and read receipts
-- **📚 RAG Knowledge Assistant:** FAISS-powered semantic search with 15+ educational documents
-- **📊 Admin Dashboard:** Comprehensive statistics and user management
-- **🔔 Smart Alerts:** 6 automated alert rules for proactive intervention
-- **🎨 Modern UI:** Beautiful, responsive design with gradient themes
+- **🤖 Advanced AI Services:** 4 microservices (Risk Prediction, XAI, Cognitive Profiling, LLM/RAG)
+- **📊 Academic Risk Prediction:** XGBoost model with 21 features and SHAP explainability
+- **🧠 Personality Profiling:** OCEAN (Big Five) personality assessment with BFI-44 survey
+- **💬 Real-time Communication:** Socket.IO messaging with typing indicators and notifications
+- **📚 RAG Knowledge Assistant:** FAISS-powered semantic search with contextual recommendations
+- **🎨 Modern Dashboard:** Role-specific dashboards with analytics and charts
+- **🔔 Smart Alerts:** 7 automated alert rules with priority-based notifications
+- **🔐 Enterprise Security:** JWT authentication, RBAC, audit logging, and consent management
 
 ---
 
 ## ✨ Features
 
-### For Students
-- ✅ **Profile Management:** Update CGPA, attendance, and personal information
-- ✅ **AI Chatbot:** Get study advice from RAG-powered assistant
-- ✅ **Study Plan Generator:** Personalized study plans based on goals and constraints
-- ✅ **Risk Explanation:** Understand your academic risk with SHAP-style visualizations
-- ✅ **Real-time Messaging:** Chat with mentors instantly
-- ✅ **Alert Notifications:** Receive important updates and warnings
+### For Students 👨‍🎓
 
-### For Mentors
-- ✅ **Mentee Dashboard:** View all assigned students with risk indicators
-- ✅ **Risk Assessment:** AI-powered risk calculation for each student
-- ✅ **Detailed Analytics:** Track mentee progress, CGPA, attendance
-- ✅ **Communication:** Direct messaging with students
+- ✅ **Profile Management:** Update academic information, CGPA, attendance
+- ✅ **Risk Explanation:** Growth-focused "Academic Health" visualization with actionable insights
+- ✅ **Personality Assessment:** Complete BFI-44 survey for OCEAN personality profile
+- ✅ **Cognitive Profile:** Radar chart visualization of personality traits
+- ✅ **SHAP Analysis:** Understand which factors contribute to academic risk
+- ✅ **AI Chatbot:** Get personalized study advice from RAG-powered assistant
+- ✅ **Study Plan Generator:** AI-generated study plans based on goals and constraints
+- ✅ **Real-time Messaging:** Chat with assigned mentor instantly
+- ✅ **Alert Notifications:** Receive important updates with browser notifications
+
+### For Mentors 👨‍🏫
+
+- ✅ **Mentee Dashboard:** Overview of all assigned students with risk distribution
+- ✅ **Real-time Statistics:** Total mentees, risk counts, average CGPA, attendance/CGPA distributions
+- ✅ **Risk Assessment:** One-click AI-powered risk calculation for each student
+- ✅ **SHAP Explainability:** Feature contribution analysis with interactive charts
+- ✅ **Detailed Analytics:** Track mentee progress, academic history, and trends
+- ✅ **Personality Insights:** View mentee's OCEAN profile for better understanding
 - ✅ **Intervention Recommendations:** AI-suggested actions for at-risk students
+- ✅ **Direct Messaging:** Real-time chat with students
+- ✅ **Alert Management:** View and manage high-risk student alerts
+- ✅ **Class Reports:** Generate comprehensive reports for all mentees
 
-### For Administrators
-- ✅ **System Dashboard:** Real-time statistics (users, risk distribution, activity)
-- ✅ **User Management:** Create, view, and manage all users
-- ✅ **Mentor Assignment:** Assign students to mentors
-- ✅ **Alert Broadcasting:** Send announcements to specific user roles
-- ✅ **Audit Logs:** Track all system activities
+### For Administrators 🛡️
 
-### AI/ML Capabilities
-- ✅ **Academic Risk Prediction:** 13-feature ML model (CGPA, attendance, stress, etc.)
-- ✅ **Explainable AI:** SHAP-inspired feature importance analysis
-- ✅ **Semantic Search:** FAISS vector store with 384-dim embeddings
-- ✅ **Personalized Recommendations:** Context-aware study suggestions
-- ✅ **Fallback Logic:** Graceful degradation when AI services unavailable
+- ✅ **System Dashboard:** Real-time statistics (users, students, mentors, risk distribution)
+- ✅ **User Management:** Full CRUD operations for all users (students, mentors, admins)
+- ✅ **Mentor Assignment:** Assign and reassign students to mentors with one click
+- ✅ **Mentor Reassignment:** Change student's mentor with automatic cleanup and notifications
+- ✅ **Alerts Management:** View, filter, and manage all system alerts by priority
+- ✅ **Activity Logs:** Comprehensive audit trail with filtering by user, action, and role
+- ✅ **Alert Broadcasting:** Send custom alerts to specific users or roles
+- ✅ **Analytics Dashboard:** Charts for user distribution, risk analysis, and activity trends
+- ✅ **Audit Logging:** Track all system activities for compliance and security
+
+### AI/ML Capabilities 🤖
+
+- ✅ **Academic Risk Prediction:** XGBoost model with 21 features (CGPA, attendance, stress, sleep, etc.)
+- ✅ **Explainable AI (XAI):** SHAP-based feature importance with class-specific explanations
+- ✅ **Personality Profiling:** ML models for OCEAN traits (Openness, Conscientiousness, Extraversion, Agreeableness, Neuroticism)
+- ✅ **Semantic Search:** FAISS vector store with 384-dimensional embeddings
+- ✅ **RAG System:** Retrieval-Augmented Generation for contextual responses
+- ✅ **LLM Integration:** Google Gemini for study plans and mentor reports
+- ✅ **Graceful Fallback:** Rule-based logic when AI services are unavailable
+
+---
+
+## 🏗️ Architecture
+
+### System Overview
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│                  Frontend (React + Vite)                      │
+│     Student Dashboard | Mentor Dashboard | Admin Dashboard    │
+│              Modern UI with Tailwind CSS                      │
+└───────────────────────┬──────────────────────────────────────┘
+                        │ REST API + Socket.IO
+                        ↓
+┌──────────────────────────────────────────────────────────────┐
+│              Backend (Node.js + Express)                      │
+│  Authentication │ Chat │ Alerts │ User Management │ API      │
+└──────┬──────────┬─────────┬──────────────────────┬──────────┘
+       │          │         │                      │
+       ↓          ↓         ↓                      ↓
+┌────────────┐ ┌────────────────────────────────────────────┐
+│  MongoDB   │ │          AI Services (Python)               │
+│  Database  │ │  ┌─────────────────────────────────────┐   │
+└────────────┘ │  │ LLM-SVC :8003 (RAG + Study Plans)   │   │
+               │  │ - FAISS Vector Store                 │   │
+               │  │ - Google Gemini Integration          │   │
+               │  └─────────────────────────────────────┘   │
+               │  ┌─────────────────────────────────────┐   │
+               │  │ RISK-SVC :8000 (Risk Prediction)    │   │
+               │  │ - XGBoost Model (21 features)       │   │
+               │  │ - Business Rules Engine              │   │
+               │  └─────────────────────────────────────┘   │
+               │  ┌─────────────────────────────────────┐   │
+               │  │ XAI-SVC :8002 (Explainability)      │   │
+               │  │ - SHAP Feature Importance           │   │
+               │  │ - Class-specific Analysis            │   │
+               │  └─────────────────────────────────────┘   │
+               │  ┌─────────────────────────────────────┐   │
+               │  │ COG-SVC :8001 (Cognitive Profile)   │   │
+               │  │ - OCEAN Personality Models          │   │
+               │  │ - BFI-44 Survey Processing          │   │
+               │  └─────────────────────────────────────┘   │
+               └────────────────────────────────────────────┘
+```
+
+### Tech Stack
+
+**Frontend:**
+- React 18 + Vite (Lightning-fast dev server)
+- Tailwind CSS (Modern styling)
+- React Router v6 (Client-side routing)
+- Socket.IO Client (Real-time features)
+- Recharts (Analytics visualization)
+- Axios (HTTP client)
+
+**Backend:**
+- Node.js 18+ + Express
+- MongoDB + Mongoose (Data modeling)
+- Socket.IO (Real-time bidirectional communication)
+- JWT + bcryptjs (Authentication & encryption)
+- Multer (File uploads)
+- Nodemon (Auto-reload development)
+
+**AI/ML Services:**
+- Python 3.10 + FastAPI (High-performance APIs)
+- Scikit-learn (ML models)
+- XGBoost (Gradient boosting)
+- SHAP (Explainability)
+- FAISS (Vector similarity search)
+- Sentence Transformers (all-MiniLM-L6-v2 embeddings)
+- Google Gemini API (LLM generation)
+- Pandas + NumPy (Data processing)
 
 ---
 
@@ -77,61 +170,110 @@ BodhyaAI is a comprehensive, AI-powered student mentoring platform that combines
 - **Python** 3.10+ ([Download](https://www.python.org/))
 - **MongoDB** 6+ ([Download](https://www.mongodb.com/try/download/community))
 - **npm** or **yarn**
+- **Google Gemini API Key** (optional, for LLM features)
 
 ### Installation
 
-1. **Clone the repository:**
+#### 1. Clone the Repository
+
 ```bash
-git clone https://github.com/yourusername/bodhyai.git
-cd bodhyai
+git clone https://github.com/Poornatejareddy/BodhyaAi-Mentoring-Platform.git
+cd BodhyaAi-Mentoring-Platform
 ```
 
-2. **Install backend dependencies:**
+#### 2. Install Backend Dependencies
+
 ```bash
 cd backend
 npm install
 ```
 
-3. **Install frontend dependencies:**
+#### 3. Install Frontend Dependencies
+
 ```bash
 cd ../frontend
 npm install
 ```
 
-4. **Install LLM service dependencies:**
+#### 4. Install AI Services Dependencies
+
+**Risk Service:**
 ```bash
-cd ../ai-services/llm-svc
+cd ../ai-services/risk-svc
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-5. **Configure environment variables:**
+**XAI Service:**
+```bash
+cd ../xai-svc
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
 
-Create `backend/.env`:
+**Cognitive Service:**
+```bash
+cd ../cog-svc
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+**LLM Service:**
+```bash
+cd ../llm-svc
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+#### 5. Configure Environment Variables
+
+**Backend** (`backend/.env`):
 ```env
-JWT_SECRET=your-super-secret-jwt-key-min-32-chars
+JWT_SECRET=your-super-secret-jwt-key-min-32-chars-change-in-production
 MONGO_URI=mongodb://localhost:27017/bodhyai
 PORT=5000
 FRONTEND_URL=http://localhost:5173
+
+# AI Service URLs
+RISK_SERVICE_URL=http://localhost:8000
+XAI_SERVICE_URL=http://localhost:8002
+COG_SERVICE_URL=http://localhost:8001
 LLM_SERVICE_URL=http://localhost:8003
 ```
 
-Create `frontend/.env`:
+**Frontend** (`frontend/.env`):
 ```env
 VITE_API_URL=http://localhost:5000
 ```
 
-6. **Start MongoDB:**
-```bash
-# macOS/Linux
-mongod
-
-# Windows
-"C:\Program Files\MongoDB\Server\6.0\bin\mongod.exe"
+**LLM Service** (`ai-services/llm-svc/.env`):
+```env
+GEMINI_API_KEY=your-google-gemini-api-key
+MODEL_NAME=gemini-1.5-flash
+BACKEND_URL=http://localhost:5000
 ```
 
-7. **Start all services:**
+#### 6. Initialize the Database (Optional)
+
+```bash
+cd backend
+node setup_test_data.js
+```
+
+This creates:
+- 1 Admin user
+- 2 Mentor users
+- 5 Student users
+- Sample chat messages
+- Sample alerts
+
+#### 7. Start All Services
+
+**Option A: Manual Start (Recommended for Development)**
 
 **Terminal 1 - Backend:**
 ```bash
@@ -145,182 +287,228 @@ cd frontend
 npm run dev
 ```
 
-**Terminal 3 - LLM Service:**
+**Terminal 3 - Risk Service:**
+```bash
+cd ai-services/risk-svc
+source venv/bin/activate
+uvicorn service:app --reload --port 8000
+```
+
+**Terminal 4 - XAI Service:**
+```bash
+cd ai-services/xai-svc
+source venv/bin/activate
+uvicorn service:app --reload --port 8002
+```
+
+**Terminal 5 - Cognitive Service:**
+```bash
+cd ai-services/cog-svc
+source venv/bin/activate
+uvicorn service:app --reload --port 8001
+```
+
+**Terminal 6 - LLM Service:**
 ```bash
 cd ai-services/llm-svc
 source venv/bin/activate
 uvicorn app.main:app --host 0.0.0.0 --port 8003 --reload
 ```
 
-8. **Access the application:**
-- Frontend: http://localhost:5173
-- Backend API: http://localhost:5000
-- LLM Service: http://localhost:8003
+**Option B: All AI Services at Once**
+```bash
+bash ai-services/start_all_services.sh
+```
+
+#### 8. Access the Application
+
+- **Frontend:** http://localhost:5173
+- **Backend API:** http://localhost:5000
+- **API Docs:** http://localhost:5000/api/docs
+- **Risk Service:** http://localhost:8000/docs
+- **XAI Service:** http://localhost:8002/docs
+- **Cognitive Service:** http://localhost:8001/docs
+- **LLM Service:** http://localhost:8003/docs
+
+#### 9. Default Login Credentials
+
+**Admin:**
+```
+Email: admin@bodhyai.com
+Password: Admin@123
+```
+
+**Mentor:**
+```
+Email: mentor1@bodhyai.com
+Password: Mentor@123
+```
+
+**Student:**
+```
+Email: student1@bodhyai.com
+Password: Student@123
+```
 
 ---
 
 ## 🐳 Docker Quick Start
 
-### Using Docker Compose (Recommended)
+### Using Docker Compose
 
-1. **Build and start all services:**
+#### Start All Services:
 ```bash
 docker-compose up -d
 ```
 
-2. **View logs:**
+#### View Logs:
 ```bash
 docker-compose logs -f
 ```
 
-3. **Stop services:**
+#### Stop Services:
 ```bash
 docker-compose down
 ```
 
-**With AI microservices:**
+#### With Volume Persistence:
 ```bash
-docker-compose --profile ai-services up -d
+docker-compose up -d --build
 ```
 
 ---
 
-## 📚 Documentation
-
-### Guides
-- **[API Testing Guide](./docs/api_testing_guide.md)** - Test all 55 endpoints with curl examples
-- **[Deployment Guide](./docs/deployment_guide.md)** - Docker, AWS, GCP, Azure deployment instructions
-- **[Project Summary](./docs/project_summary.md)** - Comprehensive overview and achievements
-
-### Architecture
-
-```
-┌─────────────────────────────────────────────┐
-│         Frontend (React + Vite)             │
-│    Modern UI with Tailwind CSS              │
-└──────────────┬──────────────────────────────┘
-               │ REST API + Socket.IO
-               ↓
-┌─────────────────────────────────────────────┐
-│      Backend (Node.js + Express)            │
-│   Authentication, Chat, Alerts, API         │
-└──────┬──────────────────────┬───────────────┘
-       │                      │
-       ↓                      ↓
-┌──────────────┐      ┌──────────────────────┐
-│  MongoDB     │      │   AI Services        │
-│  Database    │      │   ├─ LLM (RAG)       │
-└──────────────┘      │   ├─ Risk Predict    │
-                      │   └─ XAI             │
-                      └──────────────────────┘
-```
-
-### Tech Stack
-
-**Frontend:**
-- React 18 + Vite
-- Tailwind CSS
-- React Router v6
-- Socket.IO Client
-- Axios
-
-**Backend:**
-- Node.js + Express
-- MongoDB + Mongoose
-- Socket.IO
-- JWT Authentication
-- bcryptjs
-
-**AI/ML:**
-- Python 3.10 + FastAPI
-- FAISS (vector search)
-- Scikit-learn (ML models)
-- Sentence Transformers (embeddings)
-- OpenAI API (optional)
-
----
-
-## 🔌 API Documentation
+## 📚 API Documentation
 
 ### Base URLs
+
 - **Backend:** `http://localhost:5000/api`
+- **Risk Service:** `http://localhost:8000`
+- **XAI Service:** `http://localhost:8002`
+- **Cognitive Service:** `http://localhost:8001`
 - **LLM Service:** `http://localhost:8003`
 
 ### Authentication
 
-All protected endpoints require JWT token in header:
-```
+All protected endpoints require JWT token:
+```bash
 Authorization: Bearer <your-jwt-token>
 ```
 
-### Key Endpoints
+### Key Endpoint Categories
 
-#### Authentication
+#### 🔐 Authentication (`/api/auth`)
 ```bash
-POST /api/auth/register   # Register new user
-POST /api/auth/login      # Login
-GET  /api/auth/me         # Get current user
+POST   /register              # Register new user
+POST   /login                 # Login and get token
+GET    /me                    # Get current user info
+POST   /logout                # Logout (optional)
 ```
 
-#### Chat
+#### 💬 Chat (`/api/chat`)
 ```bash
-POST /api/chat/send                    # Send message
-GET  /api/chat/history/:userId         # Get chat history
-POST /api/chat/ai                      # AI chatbot
-GET  /api/chat/unread-count            # Unread messages
+POST   /send                  # Send message
+GET    /history/:userId       # Get chat history
+POST   /ai                    # AI chatbot conversation
+GET    /unread-count          # Get unread message count
+PUT    /mark-read/:messageId  # Mark message as read
+DELETE /:messageId            # Delete message
+PUT    /:messageId            # Edit message
 ```
 
-#### Students
+#### 👨‍🎓 Students (`/api/students`)
 ```bash
-GET  /api/students/my-profile                    # Get profile
-PUT  /api/students/my-profile                    # Update profile
-GET  /api/students/my-profile/risk-explanation   # Risk analysis
-POST /api/students/my-profile/survey             # Submit survey
+GET    /my-profile                           # Get student profile
+PUT    /my-profile                           # Update profile
+GET    /my-profile/risk-explanation          # Get risk analysis with SHAP
+POST   /my-profile/survey                    # Submit BFI-44 personality survey
+GET    /my-profile/cognitive                 # Get cognitive/personality profile
+POST   /my-profile/calculate-risk            # Trigger risk calculation
 ```
 
-#### Mentors
+#### 👨‍🏫 Mentors (`/api/mentors`)
 ```bash
-GET  /api/mentors/my-mentees                         # Get mentees
-POST /api/mentors/mentees/:id/calculate-risk         # Calculate risk
-GET  /api/mentors/mentees/:id                        # Mentee details
+GET    /my-mentees                           # Get all assigned mentees
+GET    /mentees/:id                          # Get mentee details
+POST   /mentees/:id/calculate-risk           # Calculate student risk
+PUT    /mentees/:id/data                     # Update mentee data
+POST   /me/assign-mentee                     # Self-assign mentee
+GET    /dashboard-stats                      # Get mentor dashboard stats
+GET    /class-report                         # Generate class report
 ```
 
-#### Admin
+#### 🛡️ Admin (`/api/admin`)
 ```bash
-GET  /api/admin/dashboard-stats           # Dashboard statistics
-GET  /api/admin/users                     # All users
-POST /api/admin/assign-mentee             # Assign student
+GET    /dashboard-stats                      # Dashboard statistics
+GET    /users                                # Get all users (paginated)
+POST   /users                                # Create new user
+PUT    /users/:userId                        # Update user
+DELETE /users/:userId                        # Delete user
+GET    /students                             # Get all students
+GET    /mentors                              # Get all mentors
+POST   /assign-mentee                        # Assign student to mentor
+PUT    /reassign-mentor                      # Reassign student's mentor
+GET    /alerts                               # Get all alerts (with filters)
+PUT    /alerts/:id/read                      # Mark alert as read
+DELETE /alerts/:id                           # Delete alert
+GET    /audit-logs                           # Get audit logs (with filters)
+POST   /create-alert                         # Create custom alert
 ```
 
-#### RAG/LLM
+#### 🤖 AI Services
+
+**Risk Prediction (Port 8000):**
 ```bash
-POST /rag/query           # Semantic search
-POST /rag/chat            # Conversational AI
-POST /rag/study-plan      # Generate study plan
-GET  /rag/stats           # Knowledge base stats
+POST   /predict                              # Predict academic risk
+GET    /health                               # Service health check
 ```
 
-**Full API documentation:** See [API Testing Guide](./docs/api_testing_guide.md)
+**XAI/SHAP (Port 8002):**
+```bash
+POST   /explain                              # Get SHAP explanations
+GET    /health                               # Service health check
+```
+
+**Cognitive Profiling (Port 8001):**
+```bash
+POST   /predict                              # Predict OCEAN traits
+GET    /health                               # Service health check
+```
+
+**LLM/RAG (Port 8003):**
+```bash
+POST   /rag/query                            # Semantic search query
+POST   /rag/chat                             # Conversational AI
+POST   /rag/study-plan                       # Generate study plan
+POST   /rag/mentor-report                    # Generate mentor report
+GET    /rag/stats                            # Knowledge base statistics
+GET    /health                               # Service health check
+```
+
+**Full API Documentation:** See individual service `/docs` endpoints (FastAPI auto-generated)
 
 ---
 
 ## 🧪 Testing
 
-### Automated API Tests
-
-Run the comprehensive test suite:
+### Run All Tests
 ```bash
 bash test_api.sh
 ```
 
-This tests all 55 endpoints including:
-- ✅ Health checks
-- ✅ Authentication
-- ✅ CRUD operations
-- ✅ Real-time features
-- ✅ AI/ML services
+### Test Individual Services
 
-### Manual Testing
+**Test Risk Prediction:**
+```bash
+curl -X POST http://localhost:8000/predict \
+  -H "Content-Type: application/json" \
+  -d '{
+    "CGPA": 7.5,
+    "Attendance": 85,
+    "StressScore": 6,
+    "SleepHours": 7
+  }'
+```
 
 **Test AI Chatbot:**
 ```bash
@@ -330,79 +518,118 @@ curl -X POST http://localhost:5000/api/chat/ai \
   -d '{"message": "How can I improve my study habits?"}'
 ```
 
-**Test Risk Prediction:**
+**Test Personality Profiling:**
 ```bash
-curl -X POST http://localhost:5000/api/mentors/mentees/STUDENT_ID/calculate-risk \
-  -H "Authorization: Bearer MENTOR_TOKEN"
+curl -X POST http://localhost:8001/predict \
+  -H "Content-Type: application/json" \
+  -d '{"answers": [4, 3, 5, 2, 4, ...]}'  # 44 answers
 ```
+
+---
+
+## 📊 Features in Detail
+
+### Academic Risk Prediction
+
+**21-Feature XGBoost Model:**
+1. CGPA (Cumulative Grade Point Average)
+2. Attendance Percentage
+3. Stress Score (1-10)
+4. Sleep Hours per Night
+5. Backlogs (Number of failed courses)
+6. Study Hours per Day
+7-9. Internal Assessment Scores (IAT1, IAT2, IAT3)
+10-11. Parental Income (Father, Mother)
+12-13. Sibling Information (HasSiblings, SiblingCount)
+14. Mental Health Index (1-10)
+15. Exercise Hours per Week
+16. Screen Time Hours per Day
+17. Internet Access (Yes/No)
+18. Part-Time Job (Yes/No)
+19. Social Hours per Week
+20. Family Encouragement (1-10)
+21. Previous Semester SGPA
+
+**Prediction Classes:**
+- **Low Risk:** Student is performing well
+- **Medium Risk:** Some concerns, monitoring needed
+- **High Risk:** Immediate intervention required
+
+### SHAP Explainability
+
+For each prediction, the system provides:
+- Feature importance ranking
+- Positive/negative contributions for each feature
+- Class-specific explanations
+- Visual charts (waterfall, force plots)
+
+### Personality Profiling (OCEAN)
+
+**Big Five Traits:**
+1. **Openness:** Creativity, curiosity, open-mindedness
+2. **Conscientiousness:** Organization, responsibility, reliability
+3. **Extraversion:** Social energy, assertiveness, enthusiasm
+4. **Agreeableness:** Compassion, cooperation, trust
+5. **Neuroticism:** Emotional stability, anxiety, mood swings
+
+**BFI-44 Survey:** 44 questions assessed on 5-point Likert scale
+
+### Real-time Communication
+
+**Socket.IO Events:**
+- `sendMessage`: User sends a message
+- `receiveMessage`: User receives a message
+- `typing`: User is typing indicator
+- `stopTyping`: User stopped typing
+- `messageRead`: Message marked as read
+- `newAlert`: New alert notification
+- `userOnline`/`userOffline`: Presence indicators
+
+---
+
+## 🔒 Security Features
+
+- ✅ **JWT Authentication:** Secure token-based authentication
+- ✅ **Password Hashing:** bcrypt with salt rounds
+- ✅ **Role-Based Access Control (RBAC):** Student, Mentor, Admin roles
+- ✅ **Audit Logging:** Comprehensive activity tracking
+- ✅ **Consent Management:** Student data sharing preferences
+- ✅ **CORS Configuration:** Prevents unauthorized access
+- ✅ **MongoDB Injection Prevention:** Mongoose sanitization
+- ✅ **XSS Protection:** Input validation and sanitization
+- ✅ **Rate Limiting:** API request throttling
+- ✅ **Environment Variables:** Sensitive data protection
 
 ---
 
 ## 📦 Deployment
 
-### Docker Deployment
+### Production Checklist
 
-**Build images:**
+- [ ] Set strong `JWT_SECRET` (32+ characters)
+- [ ] Use production MongoDB instance (Atlas, DocumentDB)
+- [ ] Set `NODE_ENV=production`
+- [ ] Enable HTTPS/TLS
+- [ ] Configure CORS properly
+- [ ] Set up monitoring (PM2, New Relic)
+- [ ] Enable rate limiting
+- [ ] Set up logging (Winston, CloudWatch)
+- [ ] Configure backups
+- [ ] Review security settings
+
+### Docker Production Deployment
+
 ```bash
-docker-compose build
+docker-compose -f docker-compose.prod.yml up -d
 ```
 
-**Deploy:**
-```bash
-docker-compose up -d
-```
+### Cloud Platforms
 
-### Cloud Deployment
+**AWS:** EC2 + DocumentDB + S3  
+**GCP:** Compute Engine + Cloud MongoDB + Cloud Storage  
+**Azure:** App Service + Cosmos DB + Blob Storage  
 
-#### AWS (ECS + DocumentDB)
-See [Deployment Guide](./docs/deployment_guide.md#aws-deployment)
-
-#### Google Cloud Platform
-See [Deployment Guide](./docs/deployment_guide.md#gcp-deployment)
-
-#### Azure
-See [Deployment Guide](./docs/deployment_guide.md#azure-deployment)
-
-### CI/CD
-
-GitHub Actions workflow provided in `.github/workflows/deploy.yml`
-
----
-
-## 🔒 Security
-
-- ✅ JWT-based authentication
-- ✅ Password hashing (bcrypt)
-- ✅ Role-based access control
-- ✅ Comprehensive audit logging
-- ✅ Consent management
-- ✅ CORS configuration
-- ✅ MongoDB injection prevention
-- ✅ XSS protection
-
-**Security Checklist:** See [Deployment Guide](./docs/deployment_guide.md#security-checklist)
-
----
-
-## 📊 Project Status
-
-**Current Version:** 1.0.0  
-**Progress:** 135/200 tasks (67.5% complete)  
-**Status:** Production-ready
-
-### Completed Features
-- ✅ Full authentication system
-- ✅ Real-time chat with Socket.IO
-- ✅ Alert system (6 automated rules)
-- ✅ RAG knowledge assistant
-- ✅ Risk prediction (AI + fallback)
-- ✅ Admin dashboard
-- ✅ Modern UI/UX
-
-### In Progress
-- ⏳ Advanced AI services (cognitive profiling, behavioral analysis)
-- ⏳ File upload in chat
-- ⏳ Video call integration
+See [docs/deployment_guide.md](./docs/deployment_guide.md) for detailed instructions.
 
 ---
 
@@ -412,60 +639,100 @@ GitHub Actions workflow provided in `.github/workflows/deploy.yml`
 
 ```
 bodhyai/
-├── backend/              # Node.js backend
+├── backend/                    # Node.js backend
 │   ├── src/
-│   │   ├── controllers/  # Request handlers
-│   │   ├── models/       # MongoDB schemas
-│   │   ├── routes/       # API routes
-│   │   ├── services/     # Business logic
-│   │   ├── middleware/   # Auth, logging
-│   │   └── socket/       # Socket.IO
+│   │   ├── controllers/        # Request handlers
+│   │   ├── models/             # Mongoose schemas
+│   │   ├── routes/             # Express routes
+│   │   ├── services/           # Business logic + AI integration
+│   │   ├── middleware/         # Auth, audit, error handling
+│   │   ├── socket/             # Socket.IO setup
+│   │   └── index.js            # Entry point
+│   ├── .env.example
 │   └── package.json
 │
-├── frontend/             # React frontend
+├── frontend/                   # React frontend
 │   ├── src/
-│   │   ├── components/   # Reusable components
-│   │   ├── dashboard/    # Role-specific pages
-│   │   ├── context/      # React context
-│   │   └── services/     # API clients
+│   │   ├── components/         # Reusable UI components
+│   │   ├── dashboard/          # Role-specific dashboards
+│   │   │   ├── student/        # Student pages
+│   │   │   ├── mentor/         # Mentor pages
+│   │   │   ├── admin/          # Admin pages
+│   │   │   └── common/         # Shared components
+│   │   ├── context/            # React Context (Auth, Socket)
+│   │   └── App.jsx             # Main app with routing
+│   ├── .env.example
 │   └── package.json
 │
-├── ai-services/          # Python AI services
-│   ├── llm-svc/         # RAG/LLM service
-│   ├── risk-svc/        # Risk prediction
-│   └── xai-svc/         # Explainability
+├── ai-services/                # Python AI microservices
+│   ├── risk-svc/               # Risk prediction (XGBoost)
+│   │   ├── service.py          # FastAPI service
+│   │   ├── features.py         # Feature engineering
+│   │   ├── train.py            # Model training
+│   │   ├── models/             # Trained models + artifacts
+│   │   └── requirements.txt
+│   ├── xai-svc/                # Explainability (SHAP)
+│   │   ├── service.py
+│   │   └── requirements.txt
+│   ├── cog-svc/                # Cognitive profiling (OCEAN)
+│   │   ├── service.py
+│   │   ├── models/             # Personality models
+│   │   └── requirements.txt
+│   └── llm-svc/                # RAG + LLM generation
+│       ├── app/
+│       │   ├── main.py         # FastAPI app
+│       │   ├── rag.py          # RAG logic
+│       │   └── knowledge_base/ # PDF documents
+│       └── requirements.txt
 │
-├── docker-compose.yml    # Container orchestration
-├── test_api.sh          # Automated tests
-└── docs/                # Documentation
+├── docs/                       # Documentation
+│   ├── API_TESTING_GUIDE.md
+│   ├── DEPLOYMENT_GUIDE.md
+│   └── PROJECT_SUMMARY.md
+│
+├── docker-compose.yml          # Development containers
+├── docker-compose.prod.yml     # Production containers
+├── test_api.sh                 # Automated API tests
+└── README.md                   # This file
 ```
 
-### Scripts
+### npm Scripts
 
 **Backend:**
 ```bash
-npm run dev      # Development server
-npm start        # Production server
-npm test         # Run tests
+npm run dev          # Development with nodemon
+npm start            # Production server
+npm test             # Run tests
 ```
 
 **Frontend:**
 ```bash
-npm run dev      # Development server
-npm run build    # Production build
-npm run preview  # Preview build
+npm run dev          # Vite dev server
+npm run build        # Production build
+npm run preview      # Preview production build
+npm run lint         # ESLint check
 ```
 
-**AI Services:**
+### AI Service Scripts
+
+**Risk Service:**
 ```bash
-bash start_ai_services.sh   # Start all AI services
+bash train.sh                    # Train XGBoost model
+python generate_dataset.py       # Generate synthetic data
+python test_medium_risk.py       # Test medium risk scenarios
+```
+
+**LLM Service:**
+```bash
+python list_models.py            # List available Gemini models
+python verify_model_update.py    # Verify model configuration
 ```
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please follow these steps:
+Contributions are welcome! Please follow these guidelines:
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
@@ -473,11 +740,14 @@ Contributions are welcome! Please follow these steps:
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-### Development Guidelines
-- Follow ESLint configuration
+### Code Style
+
+- **Backend:** Follow ESLint configuration
+- **Frontend:** Use Prettier + ESLint
+- **Python:** Follow PEP 8 guidelines
 - Write meaningful commit messages
-- Add tests for new features
-- Update documentation
+- Add JSDoc/docstrings for functions
+- Update documentation for new features
 
 ---
 
@@ -489,31 +759,34 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👥 Team
 
-**Development:** AI-assisted full-stack development  
-**Duration:** 40+ hours over multiple sessions  
-**Technologies:** MERN Stack, Python, FastAPI, FAISS, Socket.IO
+**Developer:** Poornate Jareddy  
+**Repository:** [BodhyaAi-Mentoring-Platform](https://github.com/Poornatejareddy/BodhyaAi-Mentoring-Platform)  
+**Development Duration:** 40+ hours of AI-assisted development  
 
 ---
 
-## 📞 Support
+## 📞 Support & Documentation
 
-**Documentation:**
+**Key Documentation:**
 - [API Testing Guide](./docs/api_testing_guide.md)
 - [Deployment Guide](./docs/deployment_guide.md)
 - [Project Summary](./docs/project_summary.md)
+- [Risk Model Training](./ai-services/risk-svc/TRAINING.md)
 
-**Issues:** [GitHub Issues](https://github.com/yourusername/bodhyai/issues)  
-**Email:** support@bodhya.ai
+**Issues:** [GitHub Issues](https://github.com/Poornatejareddy/BodhyaAi-Mentoring-Platform/issues)  
 
 ---
 
 ## 🙏 Acknowledgments
 
-- FAISS by Facebook Research for vector search
-- OpenAI for language models
-- Socket.IO for real-time communication
-- React and Vite teams for excellent frameworks
-- All open-source contributors
+- **FAISS** by Facebook Research for efficient vector similarity search
+- **Google Gemini** for powerful language model capabilities
+- **XGBoost** for gradient boosting framework
+- **SHAP** for explainable AI
+- **Socket.IO** for real-time bidirectional communication
+- **React** and **Vite** teams for excellent frameworks
+- **FastAPI** for high-performance Python APIs
+- All open-source contributors and maintainers
 
 ---
 

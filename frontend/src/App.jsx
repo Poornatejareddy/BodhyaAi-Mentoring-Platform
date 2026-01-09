@@ -13,6 +13,7 @@ import SocketManager from './components/SocketManager';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import PublicSurveyPage from './pages/PublicSurveyPage';
 
 // Mentor Imports
 import MentorDashboard from './dashboard/mentor/MentorDashboard';
@@ -22,6 +23,8 @@ import AssignStudentPage from './dashboard/mentor/pages/AssignStudentPage';
 import MentorSettingsPage from './dashboard/mentor/pages/MentorSettingsPage';
 import MentorOverviewPage from './dashboard/mentor/pages/MentorOverviewPage';
 import MentorAlertsPage from './dashboard/mentor/pages/MentorAlertsPage';
+import StudentSurveyLinksPage from './dashboard/mentor/pages/StudentSurveyLinksPage';
+
 
 
 // Student and Admin Imports
@@ -51,6 +54,7 @@ const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'register', element: <RegisterPage /> },
+      { path: 'survey/:token', element: <PublicSurveyPage /> },
     ],
   },
   {
@@ -70,6 +74,7 @@ const router = createBrowserRouter([
               { path: 'mentees', element: <MenteesListPage /> },
               { path: 'mentees/:studentId', element: <MenteeDetailPage /> },
               { path: 'assign-student', element: <AssignStudentPage /> },
+              { path: 'survey-links', element: <StudentSurveyLinksPage /> },
               { path: 'settings', element: <MentorSettingsPage /> },
               { path: 'alerts', element: <MentorAlertsPage /> },
               { path: 'chat', element: <ChatListPage /> },

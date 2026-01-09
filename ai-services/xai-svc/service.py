@@ -148,3 +148,8 @@ def explain_cog_basic(data: CogInput):
 def explain_cog_extended(data: CogInput):
     df = pd.DataFrame([data.dict()])
     return explain_cog_model(df)
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8002)
+

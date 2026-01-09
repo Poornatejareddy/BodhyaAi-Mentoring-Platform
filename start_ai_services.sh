@@ -88,6 +88,52 @@ else
     deactivate
 fi
 
+# Start cog-svc
+echo -e "\n${YELLOW}[3/4] Starting cog-svc on port 8000...${NC}"
+cd "$BASE_DIR/cog-svc"
+
+if [ ! -f "service.py" ]; then
+    echo -e "${RED}Warning: cog-svc service.py not found${NC}"
+    echo -e "${YELLOW}Skipping cog-svc startup...${NC}"
+else
+    if [ ! -d "venv" ]; then
+        echo "Creating virtual environment..."
+        python3 -m venv venv
+    fi
+    source venv/bin/activate
+    pip install -q -r requirements.txt 2>/dev/null || true
+    echo "Starting FastAPI server..."
+    nohup python service.py > cog-svc.log 2>&1 &
+    COG_PID=$!
+    echo -e "${GREEN}✓ cog-svc started (PID: $COG_PID)${NC}"
+    echo "  URL: http://localhost:8000"
+    echo "  Logs: $BASE_DIR/cog-svc/cog-svc.log"
+    deactivate
+fi
+
+# Start llm-svc
+echo -e "\n${YELLOW}[4/4] Starting llm-svc on port 8003...${NC}"
+cd "$BASE_DIR/llm-svc"
+
+if [ ! -f "run.py" ]; then
+    echo -e "${RED}Warning: llm-svc run.py not found${NC}"
+    echo -e "${YELLOW}Skipping llm-svc startup...${NC}"
+else
+    if [ ! -d "venv" ]; then
+        echo "Creating virtual environment..."
+        python3 -m venv venv
+    fi
+    source venv/bin/activate
+    pip install -q -r requirements.txt 2>/dev/null || true
+    echo "Starting FastAPI server..."
+    nohup python run.py > llm-svc.log 2>&1 &
+    LLM_PID=$!
+    echo -e "${GREEN}✓ llm-svc started (PID: $LLM_PID)${NC}"
+    echo "  URL: http://localhost:8003"
+    echo "  Logs: $BASE_DIR/llm-svc/llm-svc.log"
+    deactivate
+fi
+
 echo ""
 echo -e "${GREEN}════════════════════════════════════════${NC}"
 echo -e "${GREEN}AI Microservices Startup Complete!${NC}"
@@ -96,28 +142,22 @@ echo ""
 echo "Running Services:"
 echo "  • Frontend:    http://localhost:5173"
 echo "  • Backend:     http://localhost:5000"
-echo "  • LLM Service: http://localhost:8003 ✅"
-if [ -n "$RISK_PID" ]; then
-    echo "  • Risk Service: http://localhost:8001 ✅"
-fi
-if [ -n "$XAI_PID" ]; then
-    echo "  • XAI Service:  http://localhost:8002 ✅"
-fi
+if [ -n "$COG_PID" ]; then echo "  • Cog Service:  http://localhost:8000 ✅"; fi
+if [ -n "$RISK_PID" ]; then echo "  • Risk Service: http://localhost:8001 ✅"; fi
+if [ -n "$XAI_PID" ]; then echo "  • XAI Service:  http://localhost:8002 ✅"; fi
+if [ -n "$LLM_PID" ]; then echo "  • LLM Service:  http://localhost:8003 ✅"; fi
 
 echo ""
 echo "To stop services:"
-if [ -n "$RISK_PID" ]; then
-    echo "  kill $RISK_PID  # Stop risk-svc"
-fi
-if [ -n "$XAI_PID" ]; then
-    echo "  kill $XAI_PID  # Stop xai-svc"
-fi
+if [ -n "$COG_PID" ]; then echo "  kill $COG_PID"; fi
+if [ -n "$RISK_PID" ]; then echo "  kill $RISK_PID"; fi
+if [ -n "$XAI_PID" ]; then echo "  kill $XAI_PID"; fi
+if [ -n "$LLM_PID" ]; then echo "  kill $LLM_PID"; fi
 
 echo ""
 echo "View logs:"
-if [ -n "$RISK_PID" ]; then
-    echo "  tail -f $BASE_DIR/risk-svc/risk-svc.log"
-fi
-if [ -n "$XAI_PID" ]; then
-    echo "  tail -f $BASE_DIR/xai-svc/xai-svc.log"
-fi
+if [ -n "$COG_PID" ]; then echo "  tail -f $BASE_DIR/cog-svc/cog-svc.log"; fi
+if [ -n "$RISK_PID" ]; then echo "  tail -f $BASE_DIR/risk-svc/risk-svc.log"; fi
+if [ -n "$XAI_PID" ]; then echo "  tail -f $BASE_DIR/xai-svc/xai-svc.log"; fi
+if [ -n "$LLM_PID" ]; then echo "  tail -f $BASE_DIR/llm-svc/llm-svc.log"; fi
+

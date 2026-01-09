@@ -11,6 +11,7 @@ from xgboost import XGBClassifier
 import matplotlib.pyplot as plt
 import seaborn as sns
 import shap
+import json
 
 # ---------------------------
 # 1. Paths and Config
@@ -125,6 +126,29 @@ cm = confusion_matrix(y_test, y_pred)
 print("\n📉 Confusion Matrix:")
 print(cm)
 
+# Normalized Confusion Matrix
+cm_normalized = confusion_matrix(y_test, y_pred, normalize='true')
+print("\n📉 Normalized Confusion Matrix:")
+print(cm_normalized)
+
+# Save normalized confusion matrix as JSON
+cm_norm_list = cm_normalized.tolist()
+with open(os.path.join(MODEL_DIR, "confusion_matrix_normalized.json"), 'w') as f:
+    json.dump({"matrix": cm_norm_list, "labels": list(le_target.classes_)}, f, indent=2)
+print(f"💾 Saved normalized confusion matrix to {MODEL_DIR}/confusion_matrix_normalized.json")
+
+# Plot normalized confusion matrix
+plt.figure(figsize=(8, 6))
+sns.heatmap(cm_normalized, annot=True, fmt='.2f', cmap='Blues',
+            xticklabels=le_target.classes_, yticklabels=le_target.classes_)
+plt.xlabel("Predicted Label")
+plt.ylabel("True Label")
+plt.title(f"Normalized Confusion Matrix - Academic Risk Prediction\nAccuracy: {acc*100:.2f}%")
+plt.tight_layout()
+plt.savefig(os.path.join(MODEL_DIR, "confusion_matrix_normalized.png"))
+print(f"💾 Saved normalized confusion matrix plot to {MODEL_DIR}/confusion_matrix_normalized.png")
+plt.close()
+
 # Plot confusion matrix
 plt.figure(figsize=(8, 6))
 sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
@@ -173,13 +197,42 @@ with open(os.path.join(MODEL_DIR, "feature_importance.json"), 'w') as f:
     json.dump(fi_dict, f, indent=2)
 
 # ---------------------------
-# 10. Save Model
+# 11. Save Comprehensive Performance Report
+# ---------------------------
+print("\n📝 Generating comprehensive performance report...")
+
+# Get classification report as dict
+clf_report_dict = classification_report(y_test, y_pred, target_names=le_target.classes_, output_dict=True)
+
+performance_report = {
+    "accuracy": acc,
+    "cross_validation": {
+        "mean_accuracy": cv_scores.mean(),
+        "std_accuracy": cv_scores.std(),
+        "fold_scores": cv_scores.tolist()
+    },
+    "classification_report": clf_report_dict,
+    "confusion_matrix": {
+        "raw": cm.tolist(),
+        "normalized": cm_normalized.tolist(),
+        "labels": list(le_target.classes_)
+    },
+    "feature_importance": fi_dict
+}
+
+report_path = os.path.join(MODEL_DIR, "performance_report.json")
+with open(report_path, 'w') as f:
+    json.dump(performance_report, f, indent=2)
+print(f"💾 Saved comprehensive performance report to {report_path}")
+
+# ---------------------------
+# 12. Save Model
 # ---------------------------
 joblib.dump(pipeline, MODEL_FILE)
 print(f"\n💾 Model saved at: {MODEL_FILE}")
 
 # ---------------------------
-# 11. SHAP Interpretability
+# 13. SHAP Interpretability
 # ---------------------------
 print("\n💡 Calculating SHAP values for XAI explainability...")
 
@@ -191,7 +244,7 @@ explainer = shap.Explainer(
 )
 
 # Compute SHAP values on a sample (for speed)
-X_test_sample = X_test.sample(n=min(1000, len(X_test)), random_state=42)
+X_test_sample = X_test.sample(n=min(100, len(X_test)), random_state=42)
 shap_values = explainer(X_test_sample)
 
 # Save SHAP plots for each class
@@ -212,7 +265,36 @@ for i, class_name in enumerate(le_target.classes_):
 print("\n✅ SHAP summary plots saved successfully for all classes!")
 
 # ---------------------------
-# 12. Model Summary
+# 13. Save Comprehensive Performance Report
+# ---------------------------
+print("\n📝 Generating comprehensive performance report...")
+
+# Get classification report as dict
+clf_report_dict = classification_report(y_test, y_pred, target_names=le_target.classes_, output_dict=True)
+
+performance_report = {
+    "accuracy": acc,
+    "cross_validation": {
+        "mean_accuracy": cv_scores.mean(),
+        "std_accuracy": cv_scores.std(),
+        "fold_scores": cv_scores.tolist()
+    },
+    "classification_report": clf_report_dict,
+    "confusion_matrix": {
+        "raw": cm.tolist(),
+        "normalized": cm_normalized.tolist(),
+        "labels": list(le_target.classes_)
+    },
+    "feature_importance": fi_dict
+}
+
+report_path = os.path.join(MODEL_DIR, "performance_report.json")
+with open(report_path, 'w') as f:
+    json.dump(performance_report, f, indent=2)
+print(f"💾 Saved comprehensive performance report to {report_path}")
+
+# ---------------------------
+# 14. Model Summary
 # ---------------------------
 print("\n" + "="*60)
 print("🎉 MODEL TRAINING COMPLETE!")
@@ -223,4 +305,6 @@ print(f"📈 Test Accuracy: {acc * 100:.2f}%")
 print(f"🔁 CV Accuracy: {cv_scores.mean() * 100:.2f}% ± {cv_scores.std() * 100:.2f}%")
 print(f"💾 Model saved: {MODEL_FILE}")
 print(f"💾 Label encoder: {LABEL_ENCODER_FILE}")
+print(f"💾 Performance Report: {report_path}")
 print("="*60)
+

@@ -25,7 +25,7 @@ const MentorAIReport = () => {
             const data = await response.json();
 
             if (data.success) {
-                setReport(data.report);
+                setReport(data.data.report);
             } else {
                 throw new Error(data.message || 'Failed to generate report');
             }

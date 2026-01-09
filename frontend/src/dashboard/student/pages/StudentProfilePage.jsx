@@ -22,6 +22,7 @@ function StudentProfilePage() {
     department: "",
     section: "",
     profilePicture: "", // New field
+    Backlogs: 0, // Default to 0
 
     sgpa: {},
     iat: {},
@@ -272,6 +273,7 @@ function StudentProfilePage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {renderInputField('CGPA', 'Cumulative GPA')}
             {renderInputField('Attendance', 'Attendance (%)', "number", { max: 100 })}
+            {renderInputField('Backlogs', 'Number of Backlogs (Active)', "number", { min: 0 })}
           </div>
 
           <h3 className="text-lg mt-8 mb-4 font-medium text-gray-300">Semester SGPA</h3>

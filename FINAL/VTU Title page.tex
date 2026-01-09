@@ -1,0 +1,57 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{background}
+\geometry{a4paper,total={180mm,250mm},left=15mm,top=30mm,}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\thispagestyle{empty}
+\backgroundsetup{
+scale=8,
+angle=0,
+firstpage=true,
+opacity=0.1,
+color=black,
+contents={\begin{tikzpicture}[remember picture,overlay]
+\node at ([yshift=1pt,xshift=0pt]current page.center)
+{\includegraphics[width=1cm]{CMRIT A++ Logo-01.png}};
+\end{tikzpicture}}}
+\begin{document}
+\begin{tikzpicture}[remember picture,overlay]
+   \draw[line width = 2pt] ($(current page.north west) + (0.5in,-0.5in)$)  rectangle ($(current page.south east) +  (-0.5in,0.5in)$);
+\end{tikzpicture}
+\begin{center}
+\textbf{\large{VISVESVARAYA TECHNOLOGICAL UNIVERSITY}}\\
+Jnana Sangama,Belgaum-590018\\
+\vspace{0.2in}
+\includegraphics[scale=0.3]{vtulogo.jpg}\\
+A PROJECT REPORT\\ON\\
+\textbf{"BODHYAAI: AN AI-POWERED MENTORING AND ACADEMIC RISK
+DETECTION PLATFORM"}\\
+\textit{Submitted in Complete fulfilment of the requirements for the award of the degree of}\\
+\vspace{0.1in}
+\textbf{BACHELOR OF ENGINEERING}\\
+\textbf{IN}\\
+\textbf{Computer Science and Engineering(Artificial Intelligence and Machine Learning)}\\
+Submitted by\\
+\vspace{0.5cm}
+\textbf{POORNA TEJA REDDY K\hspace{4cm} 1CR23CI403\\
+MANIKANTA \hspace{6.7cm} 1CR23CI402\\
+C KARTHIK \hspace{7cm} 1CR22CI013\\
+SREE RANGANATH \hspace{5.2cm} 1CR22CI053\\}
+\vspace{1cm}
+\textbf{Under the Guidance of}\\
+\vspace{0.2cm}
+\textcolor{red}{Ms. Revathi S} \\
+\textcolor{red}{Asst. Professor, Department of AIML, CMRIT}\\
+\vspace{1cm}
+\includegraphics[scale=0.3]{CMRIT A++ Logo-01.png}\\
+\vspace{1cm}
+DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING (ARTIFICIAL INTELLIGENCE AND MACHINE LEARNING)\\
+\vspace{0.2cm}
+\textbf{\large{CMR INSTITUTE OF TECHNOLOGY}}\\
+\vspace{0.2cm}
+AECS LAYOUT, ITPL PARK ROAD, BENGALURU - 560037\\
+2025-2026\\
+\end{center}
+\end{document}

@@ -140,28 +140,52 @@ exports.submitSurvey = async (req, res) => {
     // Save raw survey answers
     student.surveyResponses = surveyAnswers;
 
+    // Service URLs from env or defaults
+    const COG_URL = process.env.COG_SERVICE_URL || 'http://localhost:8000';
+    const XAI_URL = process.env.XAI_SERVICE_URL || 'http://localhost:8002';
+
     // COG-SVC call
+    console.log(`Calling Cog Service at ${COG_URL}...`);
     const cogResponse = await axios.post(
-      'http://localhost:8001/predict',
+      `${COG_URL}/predict`,
       surveyAnswers
     );
+
+    // Safety check for Cog Service response
+    if (!cogResponse.data || !cogResponse.data.predictions) {
+      throw new Error('Invalid response from Cognitive Service');
+    }
+
     const personalityPredictions = cogResponse.data.predictions;
-    const extendedProfile = cogResponse.data.extended_profile;
+    // extended_profile might be missing if service is old version or errored silently
+    const extendedProfile = cogResponse.data.extended_profile || {
+      learningStyle: { visual: 0, auditory: 0, kinesthetic: 0 },
+      strengths: [],
+      growthAreas: [],
+      careerSuggestions: []
+    };
 
     // XAI-SVC call
-    const xaiResponse = await axios.post(
-      'http://localhost:8002/explain/cog-extended',
-      surveyAnswers
-    );
-    const personalityInsights = xaiResponse.data.insights;
+    console.log(`Calling XAI Service at ${XAI_URL}...`);
+    let personalityInsights = {};
+    try {
+      const xaiResponse = await axios.post(
+        `${XAI_URL}/explain/cog-extended`,
+        surveyAnswers
+      );
+      personalityInsights = xaiResponse.data.insights || {};
+    } catch (xaiError) {
+      console.error('XAI Service failed (non-critical):', xaiError.message);
+      // Continue without XAI insights
+    }
 
     // Save AI results
     student.personalityProfile = {
       predictions: personalityPredictions,
-      learningStyle: extendedProfile.learningStyle,
-      strengths: extendedProfile.strengths,
-      growthAreas: extendedProfile.growthAreas,
-      careerSuggestions: extendedProfile.careerSuggestions,
+      learningStyle: extendedProfile.learningStyle || { visual: 0, auditory: 0, kinesthetic: 0 },
+      strengths: extendedProfile.strengths || [],
+      growthAreas: extendedProfile.growthAreas || [],
+      careerSuggestions: extendedProfile.careerSuggestions || [],
       insights: personalityInsights,
       lastCalculated: Date.now(),
     };
@@ -175,7 +199,10 @@ exports.submitSurvey = async (req, res) => {
 
   } catch (error) {
     console.error('Error in submitSurvey:', error.message);
-    res.status(500).json({ success: false, message: 'Server Error' });
+    if (error.response) {
+      console.error('Service Response:', error.response.data);
+    }
+    res.status(500).json({ success: false, message: 'Server Error during AI processing' });
   }
 };
 

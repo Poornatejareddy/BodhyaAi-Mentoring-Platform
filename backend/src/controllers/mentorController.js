@@ -146,6 +146,18 @@ exports.calculateStudentRisk = async (req, res) => {
     };
 
     console.log('💾 [CALCULATE-RISK] Saving student with new academicRisk:', JSON.stringify(student.academicRisk, null, 2));
+
+    // DEBUG: Write to file
+    const fs = require('fs');
+    try {
+      fs.appendFileSync('/home/poornatejareddy007/Desktop/BodhyaAI /bodhyai/backend/debug_risk.log',
+        `\n[${new Date().toISOString()}] Student ID: ${studentId}\n` +
+        `Prediction: ${JSON.stringify(predictionResult, null, 2)}\n` +
+        `Saving Risk: ${JSON.stringify(student.academicRisk, null, 2)}\n` +
+        '---------------------------------------------------\n'
+      );
+    } catch (e) { console.error('Error writing debug log:', e); }
+
     await student.save({ validateModifiedOnly: true });
     console.log('✅ [CALCULATE-RISK] Student saved successfully');
 

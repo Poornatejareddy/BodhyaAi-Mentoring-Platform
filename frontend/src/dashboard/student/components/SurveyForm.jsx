@@ -56,11 +56,11 @@ const questions = [
 ];
 
 const answerOptions = [
-    { label: 'Strongly Disagree', value: 1 },
-    { label: 'Disagree', value: 2 },
-    { label: 'Neutral', value: 3 },
-    { label: 'Agree', value: 4 },
-    { label: 'Strongly Agree', value: 5 },
+  { label: 'Strongly Disagree', value: 1 },
+  { label: 'Disagree', value: 2 },
+  { label: 'Neutral', value: 3 },
+  { label: 'Agree', value: 4 },
+  { label: 'Strongly Agree', value: 5 },
 ];
 
 function SurveyForm() {
@@ -76,9 +76,9 @@ function SurveyForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (Object.keys(answers).length < questions.length) {
-        setMessage('Please answer all questions.');
-        setIsError(true);
-        return;
+      setMessage('Please answer all questions.');
+      setIsError(true);
+      return;
     }
     setMessage('Submitting your survey...');
     setIsError(false);
@@ -97,20 +97,27 @@ function SurveyForm() {
       {questions.map((q, index) => (
         <div key={q.id} className="border-b border-gray-700 pb-6">
           <p className="font-semibold text-lg">{index + 1}. {q.text}</p>
-          <div className="flex flex-wrap gap-x-6 gap-y-2 mt-3 text-sm">
-            {answerOptions.map(opt => (
-              <label key={opt.value} className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="radio"
-                  name={q.id}
-                  value={opt.value}
-                  onChange={(e) => handleAnswerChange(q.id, e.target.value)}
-                  required
-                  className="w-4 h-4"
-                />
-                <span>{opt.label}</span>
-              </label>
-            ))}
+          <div className="mt-4 max-w-xl">
+            <div className="flex justify-between items-center mb-2 text-xs text-gray-400 px-1">
+              <span>Strongly Disagree (1)</span>
+              <span>Neutral</span>
+              <span>Strongly Agree (5)</span>
+            </div>
+            <div className="flex gap-3">
+              {[1, 2, 3, 4, 5].map((val) => (
+                <button
+                  key={val}
+                  type="button"
+                  onClick={() => handleAnswerChange(q.id, val)}
+                  className={`flex-1 py-3 rounded-md font-bold text-lg transition-all duration-200 border-2 ${answers[q.id] === val
+                      ? 'bg-blue-600 border-blue-500 text-white shadow-[0_0_15px_rgba(37,99,235,0.5)] transform scale-105'
+                      : 'bg-gray-700/50 border-gray-600 text-gray-300 hover:bg-gray-600 hover:border-gray-500 hover:text-white'
+                    }`}
+                >
+                  {val}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       ))}

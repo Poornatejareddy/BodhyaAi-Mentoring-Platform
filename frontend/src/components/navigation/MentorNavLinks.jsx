@@ -5,7 +5,8 @@ import {
   Users,
   UserPlus,
   MessageSquare,
-  Settings
+  Settings,
+  Brain
 } from 'lucide-react';
 
 function MentorNavLinks({ isCollapsed }) {
@@ -17,6 +18,7 @@ function MentorNavLinks({ isCollapsed }) {
     { to: "/dashboard/mentor/overview", icon: LayoutDashboard, label: "Overview" },
     { to: "/dashboard/mentor/mentees", icon: Users, label: "My Mentees" },
     { to: "/dashboard/mentor/assign-student", icon: UserPlus, label: "Assign Student" },
+    { to: "/dashboard/mentor/survey-links", icon: Brain, label: "Survey Links" },
     { to: "/dashboard/mentor/chat", icon: MessageSquare, label: "Chat" },
     { to: "/dashboard/mentor/settings", icon: Settings, label: "Settings" },
   ];

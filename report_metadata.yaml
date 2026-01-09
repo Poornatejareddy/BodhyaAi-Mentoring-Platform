@@ -1,0 +1,13 @@
+---
+title: "BodhyaAI Major Project Report"
+subtitle: "An Explainable and Generative AI System for Cognitive-Aware Academic Mentorship"
+author: "Poorna Teja Reddy K"
+date: "2024-2025"
+documentclass: report
+geometry: "top=1in,bottom=1in,left=1.25in,right=1in"
+fontsize: 12pt
+toc: true
+toc-depth: 2
+linkcolor: blue
+urlcolor: blue
+---

@@ -180,6 +180,24 @@ function MenteeDetailPage() {
   if (error) return <div className="text-center py-12 text-red-400">Error: {error}</div>;
   if (!student) return <div className="text-center py-12 text-gray-400">Student not found.</div>;
 
+  // Check if all critical risk inputs are present
+  const isProfileComplete = () => {
+    if (!student?.riskInputs) return false;
+    const requiredFields = [
+      'CGPA', 'Attendance', 'StressScore', 'SleepHours',
+      'StudyHoursPerDay', 'FatherIncome', 'MotherIncome',
+      'MentalHealthIndex', 'ExerciseHours', 'ScreenTime'
+    ];
+    // Check if any required field is missing (undefined, null, or empty string)
+    // Note: 0 is a valid value, so strictly check for null/undefined/''
+    return requiredFields.every(field => {
+      const val = student.riskInputs[field];
+      return val !== undefined && val !== null && val !== '';
+    });
+  };
+
+  const canCalculateRisk = !isCalculating && isProfileComplete();
+
   return (
     <div className="space-y-6">
       {/* Profile Header */}
@@ -198,6 +216,11 @@ function MenteeDetailPage() {
               <span className="text-gray-400">Department: <span className="text-white font-medium">{student.department}</span></span>
               <span className="text-gray-400">Section: <span className="text-white font-medium">{student.section}</span></span>
             </div>
+            {!isProfileComplete() && (
+              <div className="mt-3 inline-block bg-red-900/50 text-red-300 text-xs px-3 py-1 rounded border border-red-700/50">
+                ⚠ Profile incomplete. Please fill "Edit Data" before calculating risk.
+              </div>
+            )}
           </div>
           <div className="flex flex-wrap gap-2">
             <button
@@ -216,8 +239,9 @@ function MenteeDetailPage() {
             </button>
             <button
               onClick={handleCalculateRisk}
-              disabled={isCalculating}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+              disabled={!canCalculateRisk}
+              title={!isProfileComplete() ? "Fill missing student data first" : "Run AI Risk Assessment"}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors flex items-center gap-2"
             >
               <RefreshCw className={`w-4 h-4 ${isCalculating ? 'animate-spin' : ''}`} />
               {isCalculating ? 'Calculating...' : 'Update Risk'}

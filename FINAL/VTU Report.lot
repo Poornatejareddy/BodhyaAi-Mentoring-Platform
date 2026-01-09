@@ -1,0 +1,16 @@
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {2.1}{\ignorespaces Comparative Summary of Existing Methodologies in Academic Performance Prediction}}{8}{}%
+\contentsline {table}{\numberline {2.2}{\ignorespaces Comparative Analysis of Existing Academic Risk Systems and BodhyaAI}}{10}{}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {3.1}{\ignorespaces Structure of the Academic Dataset}}{13}{}%
+\contentsline {table}{\numberline {3.2}{\ignorespaces Structure of the Cognitive Dataset}}{13}{}%
+\contentsline {table}{\numberline {3.3}{\ignorespaces Optimized XGBoost Hyperparameters}}{16}{}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {6.1}{\ignorespaces Hyperparameter Tuning Results (Top 5 Configurations)}}{32}{}%
+\contentsline {table}{\numberline {6.2}{\ignorespaces Classification Report for Risk Prediction}}{32}{}%
+\contentsline {table}{\numberline {6.3}{\ignorespaces Normalized Confusion Matrix (Rows = Actual)}}{33}{}%
+\contentsline {table}{\numberline {6.4}{\ignorespaces System Latency Analysis (Average Response Time)}}{34}{}%
+\addvspace {10\p@ }

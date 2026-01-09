@@ -6,7 +6,7 @@
 const axios = require('axios');
 const logger = console;
 
-const RISK_SERVICE_URL = process.env.RISK_SERVICE_URL || 'http://localhost:8000';
+const RISK_SERVICE_URL = process.env.RISK_SERVICE_URL || 'http://localhost:8001';
 const REQUEST_TIMEOUT = 10000; // 10 seconds
 
 class RiskService {

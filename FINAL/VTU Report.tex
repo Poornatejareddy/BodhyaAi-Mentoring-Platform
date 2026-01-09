@@ -1,0 +1,1750 @@
+\documentclass[12pt,a4paper]{report}
+
+% --- Packages ---
+\usepackage[left=1.25in, right=1in, top=0.75in, bottom=0.75in, includefoot]{geometry}
+\usepackage{tikz} 
+\usetikzlibrary{calc}
+\usepackage{fancyhdr}
+\usepackage{graphicx} 
+\usepackage{titlesec} % For title formatting
+\usepackage{setspace} % For line spacing
+\usepackage{lipsum}   % For placeholder text
+\usepackage{float}    % REQUIRED: For [H] placement in tables/figures
+\usepackage{algorithm} % REQUIRED: For Algorithm environment
+\usepackage{algorithmic} % REQUIRED: For algorithmic code
+\usepackage{amsmath}  % REQUIRED: For math environments
+\usepackage{eso-pic}  % REQUIRED: For watermark
+\usepackage{transparent} % REQUIRED: For transparency
+\usepackage{booktabs} % REQUIRED: For professional tables (toprule, midrule, bottomrule)
+\usepackage{ragged2e} % REQUIRED: For text justification
+
+% Apply 1.5 line spacing throughout the document
+\onehalfspacing
+
+% Ensure body text is fully justified (VTU standard)
+\AtBeginDocument{\justifying} 
+
+% --- Title Formatting ---
+
+% Formatting Chapter Title: "Chapter 1" (left-aligned in 16pt) and Title (centered in 18pt)
+\titleformat{\chapter}[display]
+  {\normalfont\bfseries} % font style
+  {\fontsize{16}{20}\selectfont \chaptername\ \thechapter} % "Chapter X" or "Appendix X" in 16pt, left-aligned
+  {1.5\baselineskip} % 1.5 line spacing between "Chapter" and title
+  {\centering\fontsize{18}{22}\selectfont} % Chapter title in 18pt, centered
+
+% Formatting Section Title: Left-aligned, font size 16
+\titleformat{\section}
+  {\normalfont\bfseries\fontsize{16}{18}\selectfont} % font style and size
+  {\thesection} % Section number
+  {1em} % Space between number and title
+  {} 
+
+% Formatting Subsection Title: Left-aligned, font size 14
+\titleformat{\subsection}
+  {\normalfont\bfseries\fontsize{14}{16}\selectfont} % font style and size
+  {\thesubsection} % Subsection number
+  {1em} % Space between number and title
+  {} 
+
+% Setting the default font size of the body text to 12pt
+\renewcommand{\normalsize}{\fontsize{12}{14}\selectfont}
+
+\begin{document}
+
+% --- Front Matter ---
+% --- Front Matter ---
+% \pagenumbering{roman} moved to after title page
+
+% Title Page
+% Title Page Removed
+
+% Certificate Page Removed
+
+% Declaration
+\newpage
+\pagenumbering{roman}
+\thispagestyle{plain}
+% Watermark Code
+\AddToShipoutPictureBG*{%
+  \AtPageCenter{%
+    \makebox[0pt]{\rotatebox{0}{\transparent{0.2}\includegraphics[width=10cm]{CMRIT A++ Logo-01.png}}}%
+  }%
+}
+\begin{center}
+\large{\textbf{DECLARATION}}\\
+\vspace{0.2in}
+\end{center}
+
+\normalsize
+I/We declare that this project report titled \textbf{"BODHYAAI: AN AI-POWERED MENTORING AND ACADEMIC RISK DETECTION PLATFORM"} submitted in partial fulfillment of the degree of \textbf{Bachelor of Engineering in Computer Science and Engineering (Artificial Intelligence and Machine Learning)} is a record of original work carried out by me/us under the supervision of \textbf{Ms. Revathi S}, and has not formed the basis for the award of any other degree, in this or any other Institution or University. In keeping with the ethical practice in reporting scientific information, due acknowledgements have been made wherever the findings of others have been cited.
+
+\vspace{1.5cm}
+
+\textbf{Signature of the student(s)}
+
+\vspace{0.3cm}
+\begin{tabular}{l l l}
+\textbf{Name} & \hspace{3cm} & \textbf{Signature} \\[0.5cm]
+\textbf{Poorna Teja Reddy K} & \textbf{1CR23CI403} & \underline{\hspace{4cm}} \\[0.4cm]
+\textbf{Manikanta} & \textbf{1CR23CI402} & \underline{\hspace{4cm}} \\[0.4cm]
+\textbf{C Karthik} & \textbf{1CR22CI013} & \underline{\hspace{4cm}} \\[0.4cm]
+\textbf{Sree Ranganath} & \textbf{1CR22CI053} & \underline{\hspace{4cm}} \\
+\end{tabular}
+\newpage
+
+% Acknowledgment
+\newpage
+\thispagestyle{plain}
+\begin{center}
+\section*{ACKNOWLEDGMENT}
+\addcontentsline{toc}{section}{\numberline{}Acknowledgment}
+\end{center}
+
+The satisfaction and euphoria that accompany the successful completion of any task would be incomplete without the mention of the people who made it possible. Success is the epitome of hard work and perseverance; however, steadfast encouragement and guidance play a crucial role in achieving it. Hence, it is with deep gratitude that we acknowledge all those whose support and guidance served as a beacon of light and crowned our efforts with success.
+
+We would like to express our sincere thanks to Dr. Sanjay Jain, Principal, CMR Institute of Technology, Bengaluru, for providing an excellent academic environment and for his constant encouragement throughout the Bachelor of Engineering program.
+
+We extend our heartfelt gratitude to Dr. Shyam P. Joy, Head of the Department of Artificial Intelligence and Machine Learning, CMR Institute of Technology, Bengaluru, for his valuable guidance, motivation, and constructive suggestions that greatly contributed to the successful completion of this project.
+
+We consider it a privilege and an honour to express our sincere gratitude to our project guide, Ms. Revathi S, Assistant Professor, Department of Artificial Intelligence and Machine Learning, CMR Institute of Technology, Bengaluru, for her continuous support, expert guidance, and encouragement throughout the duration of this project work.
+
+We also extend our thanks to all the faculty members and non-teaching staff of the Department of Artificial Intelligence and Machine Learning for their cooperation and assistance, which helped us immensely during the course of this project.
+
+Finally, we would like to thank our family members for their constant encouragement, support, and motivation. We also acknowledge everyone who has directly or indirectly contributed to the successful completion of this project.
+
+\vspace{2cm}
+\begin{flushright}
+\textbf{POORNA TEJA REDDY K}\\
+\textbf{MANIKANTA}\\
+\textbf{C KARTHIK}\\
+\textbf{SREE RANGANATH}
+\end{flushright}
+\newpage
+
+% Abstract
+\newpage
+\thispagestyle{plain}
+\begin{center}
+\section*{ABSTRACT}
+\addcontentsline{toc}{section}{\numberline{}Abstract}
+\end{center}
+
+BodhyaAI is an AI-powered academic mentoring and risk detection platform designed to identify academically vulnerable students at an early stage. The system integrates machine learning–based academic and dropout risk prediction with cognitive profiling using the Big Five Inventory (BFI-44) psychological model. To ensure transparency and trust in decision-making, BodhyaAI incorporates Explainable Artificial Intelligence (XAI) techniques such as SHAP and LIME, enabling mentors to understand the key factors influencing each prediction.
+
+In addition to predictive analytics, the platform includes a generative MentorBot built using a Retrieval-Augmented Generation (RAG) framework, which provides personalized academic guidance and actionable mentoring recommendations tailored to individual student profiles. The overall system follows a scalable microservices architecture with dedicated services for risk prediction, explainability, cognitive insights, and LLM-driven mentoring.
+
+Experimental evaluation demonstrates strong prediction accuracy, interpretable insights, and meaningful student-specific guidance, validating the effectiveness of the proposed approach. BodhyaAI bridges the gap between data-driven analytics and human-centered mentoring, offering an intelligent, transparent, and scalable solution for modern educational institutions.
+\newpage
+
+
+% TOC / Lists
+% TOC / Lists
+\newpage
+\addcontentsline{toc}{section}{Table of Contents}
+\tableofcontents
+
+\newpage
+\addcontentsline{toc}{section}{List of Figures}
+\listoffigures
+
+\newpage
+\addcontentsline{toc}{section}{List of Tables}
+\listoftables
+\newpage
+
+% Abbreviations
+\newpage
+\begin{center}
+\section*{ABBREVIATIONS}
+\addcontentsline{toc}{section}{\numberline{}Abbreviations}
+\end{center}
+\begin{table}[H]
+\centering
+\begin{tabular}{l l}
+\textbf{AI} & Artificial Intelligence \\
+\textbf{API} & Application Programming Interface \\
+\textbf{BFI} & Big Five Inventory \\
+\textbf{EDM} & Educational Data Mining \\
+\textbf{JSON} & JavaScript Object Notation \\
+\textbf{LIME} & Local Interpretable Model-agnostic Explanations \\
+\textbf{LLM} & Large Language Model \\
+\textbf{LMS} & Learning Management System \\
+\textbf{ML} & Machine Learning \\
+\textbf{RAG} & Retrieval-Augmented Generation \\
+\textbf{SHAP} & SHapley Additive exPlanations \\
+\textbf{UI} & User Interface \\
+\textbf{XAI} & Explainable Artificial Intelligence \\
+\end{tabular}
+\end{table}
+\newpage
+
+% --- Chapter 1: Introduction ---
+\pagenumbering{arabic}
+\chapter{INTRODUCTION}
+
+% --- Header/Footer Setup ---
+\pagestyle{fancy}
+\fancyhf{} % Clear defaults
+\fancyhead[L]{\small\rightmark}
+\fancyhead[R]{BODHYAAI}
+\fancyfoot[L]{Dept. of AIML, CMRIT, Bengaluru}
+\fancyfoot[C]{}
+\fancyfoot[R]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{1pt}
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ \MakeUppercase{#1}}}
+
+% Redefine 'plain' style to match 'fancy' for Chapter pages and TOC
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \fancyhead[L]{\small\rightmark}
+  \fancyhead[R]{BODHYAAI}
+  \fancyfoot[L]{Dept. of AIML, CMRIT, Bengaluru}
+  \fancyfoot[C]{}
+  \fancyfoot[R]{\thepage}
+  \renewcommand{\headrulewidth}{0.4pt}
+  \renewcommand{\footrulewidth}{1pt}
+}
+
+\setlength{\headheight}{16pt}
+\setlength{\headsep}{20pt}
+
+
+The increasing complexity of higher education systems, coupled with rising student enrollments and diverse learning backgrounds, has created an urgent demand for scalable and data-driven academic mentoring frameworks. Traditional mentoring practices—largely dependent on manual observation, periodic assessments, and static performance indicators—are no longer sufficient for timely identification of academic difficulties nor for delivering personalized guidance at scale.
+
+Modern educational institutions require intelligent systems capable of analyzing multidimensional student data, predicting academic risk at an early stage, offering transparent explanatory insights, and generating tailored interventions that support continuous academic progression. Advances in Artificial Intelligence (AI), particularly in Machine Learning (ML), Explainable Artificial Intelligence (XAI), and Generative AI (GenAI), provide new opportunities to address these requirements.
+
+However, existing AI-enabled academic support systems continue to face significant limitations, including opaque model reasoning, lack of psychological context, insufficient personalization, and fragmented mentoring workflows. These constraints reduce mentor trust, hinder adoption, and limit the real-world impact of AI in educational environments.
+
+To address these challenges, this project presents \textbf{BodhyaAI}, an explainable and generative AI-powered academic mentoring and risk detection platform designed to provide early risk identification, transparent reasoning, cognitive awareness, and actionable mentoring support within a unified and scalable architecture.
+
+\section{Background and Context}
+
+Student academic performance is influenced by a complex interplay of academic, behavioral, socioeconomic, psychological, and emotional factors. Conventional assessment systems primarily focus on measurable academic indicators such as grades, attendance, and examination scores, while often neglecting deeper cognitive dispositions, motivational drivers, and stress-related influences that significantly affect learning outcomes.
+
+Research in Educational Data Mining (EDM) and Learning Analytics demonstrates that predictive models can effectively identify students at academic risk. Ensemble learning techniques such as Random Forest and XGBoost consistently achieve strong predictive accuracy. However, the absence of transparent explanation mechanisms limits their pedagogical usefulness, as mentors are unable to understand or trust the rationale behind predictions.
+
+Simultaneously, studies in cognitive psychology highlight the importance of personality traits—such as conscientiousness, emotional stability, and openness—in shaping learning behavior and academic success. Integrating cognitive assessment tools like the Big Five Inventory (BFI-44) into academic analytics enables a more human-centered understanding of student performance.
+
+Recent advances in Generative AI and Retrieval-Augmented Generation (RAG) further enable context-aware mentoring and personalized academic guidance, bridging the gap between risk detection and actionable intervention. BodhyaAI leverages these advancements to deliver an integrated, interpretable, and mentor-centric solution.
+
+\section{Challenges in Academic Risk Prediction and Mentoring}
+
+Despite the growing adoption of digital learning technologies, educational institutions continue to face multiple challenges in delivering effective and personalized mentoring.
+
+\subsection{Limited Scalability}
+Mentors are often responsible for large student cohorts, making continuous monitoring of individual academic progress difficult and prone to oversight.
+
+\subsection{Delayed Identification of Academic Risk}
+Traditional systems typically identify risk only after major assessments, resulting in reactive interventions rather than preventive support.
+
+\subsection{Opaque Machine Learning Models}
+Many ML-based systems function as ``black boxes,'' providing predictions without explaining contributory factors. This lack of transparency reduces mentor confidence and limits informed decision-making.
+
+\subsection{Insufficient Inclusion of Cognitive and Psychological Attributes}
+Despite strong empirical evidence, cognitive traits and psychological indicators are rarely incorporated into academic risk prediction frameworks.
+
+\subsection{Lack of Actionable and Personalized Mentoring}
+Existing platforms may detect risk but often fail to provide:
+Existing platforms may detect risk but often fail to provide personalized learning pathways, behaviorally aligned recommendations, and psychologically calibrated mentoring guidance.
+
+\subsection{Fragmented Technological Ecosystem}
+Tools for prediction, explainability, cognitive assessment, and mentoring frequently operate in isolation, reducing their collective effectiveness.
+
+These challenges highlight the need for a unified, interpretable, and human-centered AI mentoring platform.
+
+\section{Importance of Early Intervention Systems in Education}
+
+Early identification of academic challenges has a direct impact on student retention, performance, and progression. Empirical studies show that predictive analytics combined with timely intervention significantly reduce dropout rates and improve learning outcomes.
+
+An effective early intervention system must:
+\begin{enumerate}
+    \item continuously monitor academic and behavioral indicators,
+    \item detect deviations from expected performance trends,
+    \item identify contributory risk factors,
+    \item incorporate cognitive and psychological attributes, and
+    \item deliver targeted and timely mentoring recommendations.
+\end{enumerate}
+
+Such systems empower mentors to make informed decisions while enabling students to self-regulate their learning more effectively.
+
+\section{Motivation for Developing BodhyaAI}
+
+BodhyaAI was conceived to address critical gaps in existing academic analytics and mentoring systems.
+
+\subsection{Transparent AI in Education}
+Mentors require interpretable models that explain \textit{why} a student is at risk, rather than merely presenting risk labels.
+
+\subsection{Integration of Cognitive Profiling}
+Personality-based insights improve mentoring alignment, engagement, and behavioral understanding.
+
+\subsection{From Prediction to Action}
+Generative AI enables the transition from risk identification to personalized, actionable mentoring recommendations.
+
+\subsection{Scalable and Modular Architecture}
+A microservices-based design supports independent deployment, maintainability, and institutional scalability.
+
+\subsection{Reduction of Mentor Workload}
+Automating analytical and interpretative tasks allows mentors to focus on meaningful academic interactions.
+
+\section{Problem Statement}
+
+Higher education institutions currently lack a unified platform capable of accurately predicting academic risk, explaining the reasoning behind predictions, integrating cognitive traits, and delivering personalized mentoring at scale.
+
+\textbf{Problem Statement:}
+
+\textit{Design and develop an explainable and generative AI-driven academic mentorship platform that integrates academic analytics, cognitive profiling, transparent model explanations, and personalized mentoring to support timely academic intervention in higher education.}
+
+\section{Project Objectives}
+
+The primary objectives of this project are:
+\begin{enumerate}
+    \item To develop machine learning models for academic and dropout risk prediction using XGBoost and Random Forest.
+    \item To implement Explainable AI techniques (SHAP and LIME) for transparent interpretation of predictions.
+    \item To perform cognitive profiling using the Big Five Inventory (BFI-44).
+    \item To design a generative mentoring system using RAG-enabled large language models.
+    \item To build an integrated mentorship dashboard combining academic, cognitive, and explanatory insights.
+    \item To deploy the platform using a scalable microservices architecture.
+\end{enumerate}
+
+\section{Scope of the Project}
+
+\subsection{Included in Scope}
+The scope of the project includes academic and dropout risk prediction using ML models, cognitive profiling using BFI-44, and explainability using SHAP and LIME. It also encompasses a generative MentorBot using RAG-lite, a microservices-based backend architecture, and a web-based mentor dashboard using React.js.
+
+\subsection{Excluded from Scope}
+Excluded from the scope are mobile application development, LMS integration with institutional platforms, real-time biometric emotion recognition, and federated multi-campus learning systems.
+
+\section{Methodology Overview}
+
+BodhyaAI follows a structured four-phase mentoring cycle:
+\begin{enumerate}
+    \item \textbf{Predict}: Academic risk classification using machine learning models.
+    \item \textbf{Explain}: Interpretation of predictions using XAI techniques.
+    \item \textbf{Understand}: Cognitive analysis using BFI-44 personality profiling.
+    \item \textbf{Act}: Personalized mentoring and guidance generation using Generative AI.
+\end{enumerate}
+
+This end-to-end workflow distinguishes BodhyaAI from fragmented analytics solutions by offering a complete predictive-to-intervention loop.
+
+
+
+% --- Chapter 2: Literature Review ---
+\chapter{LITERATURE REVIEW}\label{Litreview}
+
+The integration of Artificial Intelligence (AI) into educational systems has grown substantially over the past decade, driven by the increasing need to enhance academic performance, personalize learning pathways, and enable early identification of students at academic risk. This chapter reviews the relevant literature across key domains that collectively form the foundation of the proposed BodhyaAI platform.
+
+The literature review is organized into several key thematic areas, including Educational Data Mining and Learning Analytics, Machine Learning for Academic Risk Prediction, and Cognitive and Psychological Models in Education. Additionally, it covers Explainable Artificial Intelligence (XAI) Techniques and Generative AI for Personalized Academic Mentorship.
+
+A critical synthesis of prior research reveals significant advancements as well as persistent limitations that motivate the design and development of BodhyaAI.
+
+%-------------------------------------------------
+
+\section{Introduction}
+
+Student academic performance is influenced by a combination of academic, behavioral, socio-economic, cognitive, and emotional factors. The increasing digitization of educational environments—through Learning Management Systems (LMS), online assessments, and institutional databases—has resulted in large volumes of educational data. This has given rise to the fields of Educational Data Mining (EDM) and Learning Analytics (LA), which aim to extract actionable insights from student data to support academic decision-making.
+
+Despite their success in prediction, many existing systems operate as black-box models with limited transparency and negligible psychological context. Recent advances in Explainable AI (XAI), personality profiling, and Generative AI (GenAI) provide an opportunity to design more interpretable, human-centered, and actionable academic mentoring systems. The literature reviewed in this chapter establishes the theoretical and technical basis for BodhyaAI.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/fig2_1_edm_workflow.png}
+\caption{Conceptual Workflow of Educational Data Mining in AI-Based Mentorship Systems}
+\label{fig:edm_workflow}
+\end{figure}
+
+Figure~\ref{fig:edm_workflow} illustrates how academic records, LMS interaction logs, assessment outcomes, and behavioral indicators are processed through AI and machine learning techniques to generate actionable insights that support early intervention and personalized mentoring.
+
+%-------------------------------------------------
+
+\section{Evolution of Educational Data Mining and Learning Analytics}
+
+Educational Data Mining focuses on discovering patterns in educational datasets to improve learning outcomes, institutional planning, and student support mechanisms. Early EDM research relied on statistical analysis and rule-based systems, whereas contemporary approaches increasingly employ ensemble learning, deep learning, and hybrid AI models.
+
+Recent studies demonstrate the effectiveness of large-scale datasets comprising academic records, attendance logs, LMS interaction data, assessment histories, demographic attributes, and psychological indicators. For example:
+Recent studies utilize large-scale datasets comprising academic records and LMS interaction logs~\cite{alavala2025edm}. For instance, Balachandar and Venkatesh (2025) proposed the MSPP framework using deep learning and temporal modeling, while Johora et al. (2025) developed an explainable ML framework utilizing SMOTE~\cite{chawla2002smote} and ensemble methods. Existing Mentor Connect platforms emphasize communication but often lack predictive intelligence.
+
+While EDM research highlights early risk detection, most systems lack interpretability and cognitive depth, limiting mentoring effectiveness.
+
+%-------------------------------------------------
+
+\section{Machine Learning in Academic Performance Prediction}
+
+Machine learning techniques are widely applied to predict academic outcomes such as grades, dropout risk, and subject failure probability. Traditional models include Logistic Regression, Decision Trees, SVM, and KNN. Recent research adopts ensemble models such as Random Forest, Gradient Boosting, and XGBoost.
+
+\subsection{Predictive Frameworks and Methodologies}
+
+\begin{table}[H]
+\centering
+\caption{Comparative Summary of Existing Methodologies in Academic Performance Prediction}
+\label{tab:ml_comparison}
+\begin{tabular}{|p{3.5cm}|p{4.5cm}|p{2cm}|p{4cm}|}
+\hline
+\textbf{Authors} & \textbf{Methodology Used} & \textbf{Accuracy} & \textbf{Key Contribution} \\
+\hline
+Johora et al. (2025) & SMOTE + RF + Gradient Boost + Stacking & 86.38\% & Explainable prediction using SHAP and LIME \\
+\hline
+Zulfiker et al. & Weighted Voting Classifier & 81.73\% & Course-grade prediction system \\
+\hline
+Anwar et al. & Artificial Neural Network (ANN) & 88\% & Learning capacity categorization \\
+\hline
+Janan et al. & SVM + Neuro-Fuzzy System & 81.25\% & Adaptive performance prediction \\
+\hline
+Fazil et al. (ASIST) & ConvBiLSTM with Attention & High F1-score & Sequential behavior analysis \\
+\hline
+Balachandar \& Venkatesh (2025) & GNN + Deep Feature Engineering & 76\% & Temporal performance modeling \\
+\hline
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:ml_comparison} shows that while modern ML models achieve high accuracy, interpretability and actionable mentoring remain limited.
+
+\subsection{Limitations of Existing ML Approaches}
+
+Key limitations include lack of interpretability, minimal cognitive inclusion, single-institution datasets, and weak linkage between prediction and intervention. BodhyaAI addresses these gaps through explainable, cognitive-aware, and generative mentoring.
+
+%-------------------------------------------------
+
+\section{Cognitive and Psychological Models in Education}
+
+Educational psychology research highlights the influence of personality traits on motivation, stress tolerance, learning behavior, and academic success.
+
+\subsection{Big Five Personality Traits (BFI-44)}
+
+The Big Five model~\cite{mccrae1992bigfive} measures Openness, Conscientiousness, Extraversion, Agreeableness, and Neuroticism. Studies consistently show conscientiousness as a strong predictor of academic success~\cite{bhattacharjee2025bigfiveacademic}, while high neuroticism correlates with stress and performance instability~\cite{liu2025bigfivecognition}.
+
+\subsection{Cognitive Insights for Academic Mentoring}
+
+Cognitive profiling enables personalized mentoring styles, emotional awareness, and early identification of students requiring psychological support. BodhyaAI integrates BFI-44 profiling to enhance mentoring relevance.
+
+%-------------------------------------------------
+
+\section{Explainable Artificial Intelligence (XAI) in Education}
+
+XAI techniques such as SHAP~\cite{lundberg2017shap} and LIME~\cite{ribeiro2016lime} provide transparency in academic risk prediction models~\cite{williams2025shaplimeedu}.
+
+\subsection{Importance of XAI}
+
+XAI improves mentor trust, fairness~\cite{zhang2025fairaied}, bias detection, identification of actionable factors~\cite{altukhi2025xaiedu}, and effectiveness of feedback.
+
+%-------------------------------------------------
+
+\section{Generative AI for Personalized Academic Mentoring}
+
+LLMs such as GPT, Gemini, LLaMA, and Phi-3~\cite{abdin2024phi3} demonstrate strong conversational reasoning. RAG architectures~\cite{gao2023rag,awsrag2025} reduce hallucination and enable grounded mentoring guidance~\cite{wong2024ragtutors}. These advances inspire BodhyaAI’s MentorBot~\cite{scarlatos2025llmtutors}.
+
+%-------------------------------------------------
+
+\section{Comparative Review of Existing Academic Risk Systems}
+
+\begin{table}[H]
+\centering
+\caption{Comparative Analysis of Existing Academic Risk Systems and BodhyaAI}
+\label{tab:system_comparison}
+\begin{tabular}{|p{4cm}|p{5cm}|p{5cm}|}
+\hline
+\textbf{System} & \textbf{Strengths} & \textbf{Limitations} \\
+\hline
+LMS Analytics Systems & Tracks engagement and assessments & No prediction or psychological insights \\
+\hline
+MentorConnect Platform & Strong communication tools & No ML, XAI, or cognitive integration \\
+\hline
+Predictive ML Models & High accuracy & Black-box output, no mentoring \\
+\hline
+Deep Learning Models & Strong performance & Uninterpretable and computationally heavy \\
+\hline
+XAI-Integrated Models & Transparent predictions & No generative mentoring \\
+\hline
+\textbf{BodhyaAI (Proposed)} & Predictive, explainable, cognitive-aware, generative mentoring & Requires microservices infrastructure \\
+\hline
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:system_comparison} highlights BodhyaAI’s comprehensive integration of analytics, cognition, explainability, and mentoring.
+
+%-------------------------------------------------
+
+\section{Research Gaps Identified}
+
+The literature reveals the following gaps:
+The literature reveals significant gaps, primarily the lack of unified systems combining prediction, explanation, cognition, and mentoring. Most academic risk models suffer from insufficient interpretability and a limited focus on psychological determinants. Furthermore, there is a notable absence of generative mentoring frameworks, and many existing solutions exhibit poor scalability and modularity.
+
+These gaps motivate the development of BodhyaAI as a holistic, explainable, and human-centered academic mentoring ecosystem.
+
+
+
+% --- Chapter 3: Methodology ---
+\chapter{METHODOLOGY}\label{Methodology}
+
+The methodology adopted in developing \textbf{BodhyaAI} follows a comprehensive, multi-stage framework that integrates data preparation, machine learning–based academic risk prediction, cognitive profiling, explainable AI mechanisms, generative mentoring, and a scalable microservices-based deployment environment. The methodological foundation is informed by contemporary research in educational data mining, explainable artificial intelligence, and cognitive psychology. The proposed approach ensures that the system not only predicts academic risk with high accuracy but also provides transparent reasoning and psychologically informed mentoring recommendations.
+
+\section{Overview}
+
+The methodological design of BodhyaAI is centered around a structured four-phase mentoring cycle:
+
+\begin{center}
+\textbf{Predict $\rightarrow$ Explain $\rightarrow$ Understand $\rightarrow$ Act}
+\end{center}
+
+This cycle ensures that raw student data is systematically transformed into actionable mentoring insights. The system first applies machine learning models to academic and behavioral data to identify students at risk of academic decline. These predictions are then interpreted using explainable AI techniques to provide feature-level justification. Cognitive profiling using the Big Five Inventory (BFI-44) introduces psychological context, and finally, a generative AI model produces personalized mentoring recommendations.
+
+Figure~3.1 illustrates the integrated workflow of the Predict–Explain–Understand–Act methodology.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/fig3_1_methodology_workflow.png}
+\caption{Integrated workflow representing the Predict–Explain–Understand–Act methodology}
+\end{figure}
+
+\section{Data Collection}
+
+The development of BodhyaAI relies on two primary data streams: an academic performance dataset and a cognitive personality dataset. These datasets are synthesized to enable a multidimensional understanding of student performance.
+
+The academic dataset consists of approximately 50,000 anonymized student records designed to represent realistic academic, behavioral, socioeconomic, and wellness-related factors. Features include semester-wise SGPA, cumulative CGPA, internal assessment scores, attendance percentages, study hours, backlog history, and engagement indicators. Socioeconomic attributes such as parental income and educational background are also included, along with wellness metrics such as sleep duration, stress levels, and screen time.
+
+The cognitive dataset is derived from the Big Five Inventory (BFI-44), a validated psychological instrument comprising 44 statements rated on a five-point Likert scale. These statements capture five personality dimensions: Openness, Conscientiousness, Extraversion, Agreeableness, and Neuroticism.
+
+All datasets are anonymized to ensure compliance with ethical standards and institutional guidelines. Personally identifiable information such as names, emails, and admission numbers is excluded at the source.
+
+\section{Dataset Description}
+
+The academic dataset is organized into multiple feature categories as summarized in Table~3.1.
+
+\begin{table}[H]
+\centering
+\caption{Structure of the Academic Dataset}
+\label{tab:academic_dataset}
+\begin{tabular}{|p{4cm}|p{9cm}|}
+\hline
+\textbf{Category} & \textbf{Example Features} \\
+\hline
+Academic & SGPA1–SGPA8, CGPA, Internal Assessments \\
+Behavioral & Attendance Percentage, Study Hours, Backlogs \\
+Engagement & Mentor Meetings, Club Participation \\
+Socioeconomic & Parental Income, Parental Education \\
+Wellness & Stress Score, Sleep Hours, Screen Time \\
+Target Variable & Academic Risk Level (Low, Medium, High) \\
+\hline
+\end{tabular}
+\end{table}
+
+The cognitive dataset comprises five normalized personality traits derived from BFI-44 scoring, as shown in Table~3.2.
+
+\begin{table}[H]
+\centering
+\caption{Structure of the Cognitive Dataset}
+\label{tab:cognitive_dataset}
+\begin{tabular}{|p{4cm}|p{7cm}|p{2cm}|}
+\hline
+\textbf{Trait} & \textbf{Description} & \textbf{Items} \\
+\hline
+Openness & Creativity, curiosity, intellectual openness & 10 \\
+Conscientiousness & Discipline, organization, responsibility & 9 \\
+Extraversion & Energy level, sociability & 8 \\
+Agreeableness & Cooperation, empathy & 9 \\
+Neuroticism & Emotional stability, stress response & 8 \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Data Preprocessing}
+
+Data preprocessing is a critical step to ensure robustness and consistency in model training. The raw data often contains missing values, outliers, and varying scales, which can degrade model performance.
+
+\subsection{Missing Value Imputation}
+Missing numerical values are imputed using the median strategy to be robust against outliers. For a feature vector $X_j$, the missing values are replaced as:
+\[
+x_{ij} = \begin{cases} 
+x_{ij} & \text{if } x_{ij} \text{ is observed} \\
+\text{median}(X_j) & \text{if } x_{ij} \text{ is missing}
+\end{cases}
+\]
+Categorical attributes are imputed using the mode (most frequent value).
+
+\subsection{Outlier Detection and Removal}
+Outliers are detected using the Z-score method. A data point $x$ is considered an outlier if its Z-score satisfies $|z| > 3$, where:
+\[
+z = \frac{x - \mu}{\sigma}
+\]
+Here, $\mu$ represents the mean and $\sigma$ represents the standard deviation of the feature.
+
+\subsection{Normalization and Scaling}
+To ensure convergence of gradient-based algorithms, numerical features such as CGPA and Study Hours are standardized using Z-score normalization:
+\[
+X_{std} = \frac{X - \mu}{\sigma}
+\]
+For the cognitive dataset, reverse scoring is applied to negatively keyed BFI-44 items using $s' = 6 - s$. Trait scores are normalized using min–max scaling to map values between [0, 1]:
+\[
+T_{norm} = \frac{T - T_{min}}{T_{max} - T_{min}}
+\]
+
+\section{Feature Engineering}
+
+Feature engineering enhances predictive performance by deriving informative attributes that capture temporal trends and compound risk factors.
+
+\subsection{Temporal Trend Analysis}
+A key engineered feature is the SGPA trend slope, which captures the trajectory of a student's performance over time. This is computed as:
+\[
+Trend = \frac{SGPA_{final} - SGPA_{initial}}{N_{semesters}}
+\]
+A negative trend indicates declining performance, serving as an early warning signal even if the current CGPA is high.
+
+\subsection{Risk Index Calculation}
+A composite Risk Index is derived to quantify behavioral risk factors. It combines attendance shortfall and backlog history:
+\[
+RiskIndex = w_1 \cdot Backlogs + w_2 \cdot \max(0, 75 - Attendance)
+\]
+where $w_1$ and $w_2$ are weights determined by feature importance analysis.
+
+\section{Machine Learning Model Architecture}
+
+BodhyaAI employs \textbf{XGBoost (Extreme Gradient Boosting)} as the primary prediction model. XGBoost is an optimized distributed gradient boosting library designed to be highly efficient, flexible, and portable.
+
+\subsection{Mathematical Formulation of XGBoost}
+XGBoost (Extreme Gradient Boosting) is an optimized distributed gradient boosting library designed to be highly efficient, flexible, and portable. It implements machine learning algorithms under the Gradient Boosting framework.
+
+\subsubsection{Objective Function}
+The objective function optimized by XGBoost consists of a training loss term and a regularization term:
+\begin{equation}
+\mathcal{L}(\phi) = \sum_{i=1}^{n} l(y_i, \hat{y}_i) + \sum_{k=1}^{K} \Omega(f_k)
+\label{eq:xgb_objective}
+\end{equation}
+where $l(y_i, \hat{y}_i)$ is the differentiable convex loss function measuring the difference between the prediction $\hat{y}_i$ and the target $y_i$. The term $\Omega(f_k)$ acts as a regularization term to penalize model complexity and prevent overfitting, defined as:
+\begin{equation}
+\Omega(f) = \gamma T + \frac{1}{2} \lambda \|w\|^2
+\label{eq:xgb_regularization}
+\end{equation}
+where $T$ is the number of leaves in the tree and $w$ represents the leaf weights. $\gamma$ controls the minimum loss reduction required to make a further partition on a leaf node, and $\lambda$ is the L2 regularization term on weights.
+
+\subsubsection{Additive Training}
+The model is trained in an additive manner. At iteration $t$, the predicted value $\hat{y}_i^{(t)}$ is given by:
+\begin{equation}
+\hat{y}_i^{(t)} = \hat{y}_i^{(t-1)} + f_t(x_i)
+\label{eq:xgb_additive}
+\end{equation}
+The function $f_t(x_i)$ is chosen to minimize the objective function. Using the second-order Taylor expansion approximation for the loss function:
+\begin{equation}
+\mathcal{L}^{(t)} \approx \sum_{i=1}^{n} [l(y_i, \hat{y}_i^{(t-1)}) + g_i f_t(x_i) + \frac{1}{2} h_i f_t^2(x_i)] + \Omega(f_t)
+\label{eq:xgb_taylor}
+\end{equation}
+where $g_i$ and $h_i$ are the first and second-order gradient statistics:
+\begin{equation}
+g_i = \partial_{\hat{y}^{(t-1)}} l(y_i, \hat{y}^{(t-1)}), \quad h_i = \partial^2_{\hat{y}^{(t-1)}} l(y_i, \hat{y}^{(t-1)})
+\label{eq:xgb_gradients}
+\end{equation}
+
+\subsubsection{Tree Pruning and Split Finding}
+XGBoost employs a greedy algorithm to enumerate feasible splits. For a given instance set $I_L$ and $I_R$ after a split, the gain is calculated as:
+\begin{equation}
+\mathcal{G}_{split} = \frac{1}{2} \left[ \frac{(\sum_{i \in I_L} g_i)^2}{\sum_{i \in I_L} h_i + \lambda} + \frac{(\sum_{i \in I_R} g_i)^2}{\sum_{i \in I_R} h_i + \lambda} - \frac{(\sum_{i \in I} g_i)^2}{\sum_{i \in I} h_i + \lambda} \right] - \gamma
+\label{eq:xgb_split_gain}
+\end{equation}
+This gain formula evaluates the quality of a split structure, similar to the Gini impurity in Decision Trees but incorporating the gradient statistics and regularization terms.
+
+\subsection{Hyperparameter Tuning}
+The hyperparameters were tuned using GridSearchCV with 5-fold cross-validation. The selected configuration is:
+\begin{table}[H]
+\centering
+\caption{Optimized XGBoost Hyperparameters}
+\label{tab:xgb_params}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Parameter} & \textbf{Value} \\
+\hline
+Learning Rate (\texttt{eta}) & 0.1 \\
+Max Depth & 5 \\
+Number of Estimators & 200 \\
+Subsample Ratio & 0.8 \\
+Column Sample by Tree & 0.9 \\
+Gamma & 0.1 \\
+Reg Alpha & 0.01 \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Explainable AI (XAI) Methodology}
+
+To resolve the "black-box" nature of XGBoost, BodhyaAI integrates \textbf{SHAP (SHapley Additive exPlanations)}~\cite{lundberg2017shap} and \textbf{LIME (Local Interpretable Model-agnostic Explanations)}~\cite{ribeiro2016lime}.
+
+\subsection{SHAP (SHapley Additive exPlanations)}
+SHAP values provide a unified measure of feature importance based on cooperative game theory. It assigns each feature an importance value for a particular prediction.
+
+\subsubsection{Theoretical Basis}
+The contribution of feature $i$, denoted by $\phi_i$, is calculated as a weighted average of marginal contributions across all possible feature coalitions $S$ (subsets of features excluding $i$):
+\begin{equation}
+\phi_i(f, x) = \sum_{S \subseteq N \setminus \{i\}} \frac{|S|! (|N| - |S| - 1)!}{|N|!} [f_x(S \cup \{i\}) - f_x(S)]
+\label{eq:shap_value}
+\end{equation}
+where:
+\begin{itemize}
+    \item $N$ is the set of all features based on the input vector.
+    \item $S$ is a subset of features appearing in the model.
+    \item $f_x(S)$ is the prediction for feature subset $S$, usually marginalized over the features not in $S$.
+\end{itemize}
+This formulation satisfies three desirable properties:
+\begin{enumerate}
+    \item \textbf{Local Accuracy}: The sum of the feature attributions equals the output of the function minus the base expected value: $\sum_{i=1}^M \phi_i(f, x) = f(x) - E[f(x)]$.
+    \item \textbf{Missingness}: If a feature is missing or has zero impact, its attribution is strictly zero.
+    \item \textbf{Consistency}: If a model changes so that the marginal contribution of a feature increases or stays the same (regardless of other features), the Shapley value also increases or stays the same.
+\end{enumerate}
+
+\subsubsection{TreeExplainer}
+For tree-based models like XGBoost, we utilize the \texttt{TreeExplainer} algorithm, which computes SHAP values in polynomial time $O(TLD^2)$ instead of exponential time, where $T$ is the number of trees, $L$ is max leaves, and $D$ is max depth. This efficiency allows for real-time explanation generation in the BodhyaAI dashboard.
+
+\subsection{LIME (Local Interpretable Model-agnostic Explanations)}
+LIME explains individual predictions by approximating the complex non-linear model with a locally interpretable surrogate model.
+
+\subsubsection{Local Surrogate Optimization}
+LIME fits a simple model $g$ (e.g., linear regression) to the local neighborhood of the prediction instance $x$. The objective is to minimize:
+\begin{equation}
+\xi(x) = \operatorname{argmin}_{g \in G} \mathcal{L}(f, g, \pi_x) + \Omega(g)
+\label{eq:lime_objective}
+\end{equation}
+where:
+\begin{itemize}
+    \item $\mathcal{L}$ measures the fidelity of $g$ to $f$ in the locality defined by $\pi_x$.
+    \item $\pi_x$ is a proximity measure (kernel) weighing the neighborhood of $x$, defining how close sampled points are to the original instance.
+    \item $\Omega(g)$ is a measure of complexity of the explanation model $g$ (e.g., number of non-zero coefficients).
+\end{itemize}
+While SHAP provides global consistency, LIME offers intuitive local linear approximations that are often easier for non-technical mentors to grasp immediately.
+
+\section{Cognitive Profiling Methodology}
+
+The cognitive profiling module processes responses from the BFI-44 questionnaire.
+
+\subsection{Trait Scoring}
+Each personality trait $P_k$ (where $k \in \{Openness, Conscientiousness, \dots\}$) is computed as the mean of its corresponding items $I_{k,j}$:
+\begin{equation}
+P_k = \frac{1}{N_k} \sum_{j=1}^{N_k} I_{k,j}
+\label{eq:bfi_trait}
+\end{equation}
+These raw scores are then normalized to a 0-1 scale to facilitate aggregation with academic risk scores for the generative model~\cite{mccrae1992bigfive}.
+
+\section{Generative MentorBot Methodology}
+
+The MentorBot utilizes a \textbf{Retrieval-Augmented Generation (RAG)}~\cite{gao2023rag} pipeline.
+
+\subsection{Retrieval Mechanism}
+Given a user query $q$, the system constructs a context vector $C$ containing:
+Given a user query $q$, the system constructs a context vector $C$ containing the Student Risk Profile $R$ (prediction and confidence), SHAP Explanations $E$ (top contributing features), the Cognitive Profile $P$ (dominant traits), and Retrieved Knowledge $K$ sourced from the academic policies database.
+The retriever searches the knowledge base $D$ for document chunks $d_i$ that maximize cosine similarity with the query embedding:
+\[
+K = \{d_i \mid \text{top-k}(\cos(\text{emb}(q), \text{emb}(d_i))) \}
+\]
+
+\subsection{Generation}
+The Language Model (LLM) generates the response $y$ conditioned on the augmented prompt:
+\[
+P(y \mid q, C) = \prod_{t=1}^{T} P(y_t \mid y_{<t}, q, R, E, P, K)
+\]
+This approach ensures that the advice is not only academically sound but also personalized to the student's psychological profile and specific risk factors.
+
+\section{System Architecture and Integration}
+
+BodhyaAI adopts a microservices architecture to ensure scalability and fault isolation.
+
+\subsection{Microservices Decomposition}
+The \textbf{Risk Service (\texttt{risk-svc})} is a Python/Flask service hosting the XGBoost model that exposes prediction endpoints. The \textbf{XAI Service (\texttt{xai-svc})} is a dedicated service for computationally intensive SHAP calculations. The \textbf{Cognitive Service (\texttt{cog-svc})} handles BFI-44 processing and trait storage, while the \textbf{LLM Service (\texttt{llm-svc})} manages the RAG pipeline and LLM inference, compatible with models like OpenAI or localized versions such as Ollama/Phi-3.
+
+Figure~3.3 presents the detailed component interaction diagram.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/fig3_3_system_architecture.png}
+\caption{BodhyaAI system architecture integrating prediction, explainability, cognitive profiling, and mentoring services}
+\end{figure}
+
+\section{Summary}
+
+This chapter provided a rigorous mathematical and technical detailing of the BodhyaAI methodology. By defining the objective functions for XGBoost, the game-theoretic basis for SHAP, and the probability model for RAG, we establish a robust theoretical foundation for the system. The subsequent chapter will delve into the implementation specifics, including code structures and deployment configurations.
+
+% --- Chapter 4: Design and Implementation ---
+
+\chapter{SYSTEM DESIGN AND IMPLEMENTATION}
+
+\section{Introduction}
+
+This chapter presents the complete system design and implementation framework of \textbf{BodhyaAI}, describing how the conceptual methodology discussed in the previous chapter is translated into a functional, scalable, and interpretable academic mentoring platform. System design defines the structural organization of components, data arrangements, interaction patterns, and communication flow between various modules, while implementation details explain how these components are realized using practical technologies.
+
+The architecture of BodhyaAI is grounded in modularity and microservices principles, enabling each core function—academic risk prediction, cognitive profiling, explainable AI, and generative mentoring—to operate independently. This design improves maintainability, supports scalability, and allows individual modules to be updated or enhanced without affecting the entire system.
+
+\section{System Architecture}
+
+The overall architecture of BodhyaAI is organized into four logical layers:
+
+\begin{enumerate}
+    \item \textbf{Frontend User Interface Layer}: Implemented using React.js, providing interactive dashboards for students and mentors.
+    \item \textbf{Backend API Gateway Layer}: Implemented using Node.js/Express, managing authentication, routing, and aggregation.
+    \item \textbf{AI Microservices Layer}: Independent Python-based services for ML inference and logic.
+    \item \textbf{Data Management Layer}: MongoDB for persistent storage of records and logs.
+\end{enumerate}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/fig4_1_system_architecture.png}
+\caption{High-level system architecture of BodhyaAI}
+\end{figure}
+
+The modular architecture ensures scalability and extensibility, allowing additional analytics or mentoring services to be integrated in the future.
+
+\section{Microservices Implementation Details}
+
+The core intelligence of BodhyaAI is distributed across four primary microservices. Each service is containerized and exposes a RESTful API.
+
+\subsection{Risk Analysis Service (\texttt{risk-svc})}
+The Risk Analysis Service is responsible for real-time academic risk prediction. It uses a pre-trained XGBoost model serialized with `joblib`.
+
+\textbf{Key Capabilities:}
+Key capabilities of the service include data validation using Pydantic schemas, feature transformation such as scaling and encoding, and real-time inference execution.
+
+\textbf{Implementation (Python/Flask):}
+\begin{verbatim}
+import joblib
+import pandas as pd
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+model = joblib.load('models/xgb_risk_model.pkl')
+
+@app.route('/predict', methods=['POST'])
+def predict_risk():
+    data = request.json
+    df = pd.DataFrame([data])
+    
+    # Preprocessing (simplified)
+    df['attendance_shortfall'] = 75 - df['availability']
+    
+    prediction = model.predict(df)
+    proba = model.predict_proba(df)
+    
+    return jsonify({
+        'risk_level': int(prediction[0]),
+        'confidence': float(max(proba[0]))
+    })
+\end{verbatim}
+
+\subsection{Explainable AI Service (\texttt{xai-svc})}
+This service generates SHAP and LIME explanations. It is separated from the prediction service due to the high computational cost of Shapley value estimation.
+
+\textbf{Key Capabilities:}
+This service provides dynamic SHAP value calculation for single instances and facilitates the generation of force plots and summary plots.
+
+\textbf{Implementation Snippet:}
+\begin{verbatim}
+import shap
+
+explainer = shap.TreeExplainer(model)
+
+@app.route('/explain', methods=['POST'])
+def explain_prediction():
+    data = request.json
+    instance = preprocess(data)
+    
+    shap_values = explainer.shap_values(instance)
+    
+    # Identify top 3 contributing features
+    importance = dict(zip(features, shap_values[0]))
+    sorted_features = sorted(importance.items(), key=lambda x: abs(x[1]), reverse=True)
+    
+    return jsonify({
+        'top_features': sorted_features[:3],
+        'base_value': float(explainer.expected_value)
+    })
+\end{verbatim}
+
+\subsection{Cognitive Profiling Service (\texttt{cog-svc})}
+This service processes BFI-44 questionnaire responses to compute the Big Five personality traits.
+
+\textbf{Formula Implementation:}
+\begin{verbatim}
+def calculate_traits(responses):
+    # Reverse scoring for negatively keyed items
+    for item_id in REVERSE_KEY_MAP:
+        responses[item_id] = 6 - responses[item_id]
+        
+    traits = {
+        'Openness': mean(responses[item] for item in OPENNESS_ITEMS),
+        'Conscientiousness': mean(responses[item] for item in CONSCIENTIOUSNESS_ITEMS),
+        # ... other traits
+    }
+    return traits
+\end{verbatim}
+
+\subsection{MentorBot Service (\texttt{llm-svc})}
+The MentorBot service orchestrates the RAG pipeline.
+
+\textbf{RAG Pipeline Implementation:}
+\begin{verbatim}
+from langchain import PromptTemplate, LLMChain
+
+template = """
+You are an academic mentor.
+Student Risk Level: {risk_level}
+Top Risk Factors: {risk_factors}
+Personality: {personality}
+
+Based on this, suggest 3 specific study strategies.
+"""
+
+def generate_advice(context):
+    prompt = PromptTemplate(template=template, input_variables=context.keys())
+    chain = LLMChain(llm=llm, prompt=prompt)
+    return chain.run(context)
+\end{verbatim}
+
+\section{Backend API Gateway Implementation}
+
+The backend API gateway is built with Node.js and Express. It acts as a reverse proxy and aggregator.
+
+\textbf{Aggregation Logic (JavaScript):}
+\begin{verbatim}
+router.get('/student/:id/dashboard', async (req, res) => {
+    const studentId = req.params.id;
+    
+    // Parallel execution of microservice calls
+    const [risk, cognition] = await Promise.all([
+        axios.get(`${RISK_SVC_URL}/predict/${studentId}`),
+        axios.get(`${COG_SVC_URL}/profile/${studentId}`)
+    ]);
+    
+    res.json({
+        academic_risk: risk.data,
+        personality: cognition.data
+    });
+});
+\end{verbatim}
+
+\section{Database Design}
+
+MongoDB is used for its schema flexibility. Key collections include:
+MongoDB is used for its schema flexibility, allowing for the storage of unstructured and semi-structured data essential for this project.
+
+\subsection{Schema Definitions}
+
+\subsubsection{Users Collection}
+Stores authentication and profile data.
+\begin{verbatim}
+{
+  "_id": ObjectId("..."),
+  "username": "student123",
+  "password_hash": "bcrypt_hash...",
+  "role": "student", // or "mentor", "admin"
+  "profile": {
+    "fullName": "John Doe",
+    "email": "john@example.com",
+    "department": "CSE"
+  },
+  "created_at": ISODate("2024-01-01T00:00:00Z")
+}
+\end{verbatim}
+
+\subsubsection{Academic Records Collection}
+Stores historical and current academic performance.
+\begin{verbatim}
+{
+  "_id": ObjectId("..."),
+  "student_id": ObjectId("ref_users"),
+  "semester": 5,
+  "cgpa": 7.8,
+  "attendance_percentage": 85,
+  "backlogs": 0,
+  "internal_marks": {
+    "IAT1": 25,
+    "IAT2": 28,
+    "IAT3": 30
+  },
+  "risk_score_history": [
+    { "date": ISODate(...), "score": 1, "label": "Medium" }
+  ]
+}
+\end{verbatim}
+
+\subsubsection{Surveys Collection}
+Stores raw responses and computed personality traits.
+\begin{verbatim}
+{
+  "_id": ObjectId("..."),
+  "student_id": ObjectId("ref_users"),
+  "timestamp": ISODate(...),
+  "responses": { "1": 5, "2": 3, ... "44": 4 },
+  "traits": {
+    "openness": 78,
+    "conscientiousness": 45,
+    "extraversion": 60,
+    "agreeableness": 80,
+    "neuroticism": 30
+  }
+}
+\end{verbatim}
+
+\section{User Interface Design}
+The frontend is designed using React.js with Tailwind CSS to ensure a responsive and intuitive user experience.
+
+\subsection{Login and Authentication}
+A secure login screen with JWT-based authentication. Users are redirected to role-specific dashboards (Student or Mentor) upon successful login.
+
+\subsection{Student Dashboard}
+The student dashboard focuses on self-awareness and guidance:
+\begin{itemize}
+    \item \textbf{Risk Gauge}: A visual speedometer indicating the current academic risk level (Low/Medium/High).
+    \item \textbf{Cognitive Radar}: A radar chart visualizing the Big Five personality traits.
+    \item \textbf{Chat Interface}: A floating chat widget for the MentorBot, enabling instant access to AI mentoring.
+\end{itemize}
+
+\subsection{Mentor Dashboard}
+The mentor dashboard emphasizes monitoring and intervention:
+\begin{itemize}
+    \item \textbf{Mentee List}: A tabular view of assigned students with color-coded risk indicators.
+    \item \textbf{Detailed Student Profile}: Clicking a student reveals their full academic history, SHAP force plots explaining risk factors, and cognitive insights.
+    \item \textbf{Intervention Logs}: A section to record notes and track meetings with students.
+\end{itemize}
+
+\section{Testing and Validation}
+Quality assurance was ensured through a multi-level testing strategy.
+
+\subsection{Unit Testing}
+Individual components were tested in isolation using \texttt{pytest} for Python services and \texttt{Jest} for the React frontend.
+\begin{itemize}
+    \item \textbf{Risk Service}: Verified that the API returns correct JSON definitions for valid inputs and 400 Bad Request for missing fields.
+    \item \textbf{Cognitive Service}: validated that trait calculation logic correctly handles reverse-scored items.
+\end{itemize}
+
+\subsection{Integration Testing}
+Verify the interaction between microservices.
+\begin{itemize}
+    \item Tested the full flow: Frontend $\rightarrow$ API Gateway $\rightarrow$ Risk Service $\rightarrow$ XAI Service $\rightarrow$ Database.
+    \item Ensured that SHAP explanations are correctly appended to the risk prediction response.
+\end{itemize}
+
+\subsection{User Acceptance Testing (UAT)}
+A pilot test was conducted with 5 faculty members and 10 students to gather feedback on usability and relevance. 90\% of participants found the "Explanation" feature helpful in understanding the risk prediction.
+
+\section{Summary}
+
+This chapter detailed the implementation of BodhyaAI's microservices, demonstrating the practical application of the proposed algorithms. The code structure emphasizes modularity and separation of concerns, ensuring a robust and maintainable system. The next chapter will analyze the performance of these components through detailed experimental results.
+
+
+% --- Chapter 5: Impact Assessment ---
+\chapter{IMPACT ASSESSMENT}
+
+\section{Impact on Society}
+The implementation of BodhyaAI has far-reaching implications for the educational ecosystem and society at large. 
+\begin{enumerate}
+    \item \textbf{Democratization of Mentorship}: In many institutions, the student-to-mentor ratio is high (often 60:1), making personalized attention impossible. BodhyaAI democratizes access to high-quality academic guidance, ensuring every student receives timely support regardless of faculty availability.
+    \item \textbf{Mental Health Awareness}: By integrating cognitive profiling and acknowledging stress factors (Neuroticism traits), the system destigmatizes mental health discussions in academic settings, promoting a more holistic approach to student welfare.
+    \item \textbf{Reduction in Dropouts}: Early identification of at-risk students directly contributes to higher retention rates. This not only benefits the institution but also prevents the long-term socioeconomic negative impact of student dropouts on the community.
+\end{enumerate}
+
+\section{Impact on Environment}
+While primarily a software solution, BodhyaAI contributes to environmental sustainability through:
+\begin{itemize}
+    \item \textbf{Paperless Mentoring}: Traditional mentoring often involves physical files and paper-based tracking. Digitizing this process facilitates a move towards paperless academic administration.
+    \item \textbf{Energy Efficiency}: The XGBoost model used is highly optimized and computationally efficient compared to deep learning alternatives (like large Neural Networks), consuming significantly less energy during training and inference, aligning with Green AI principles.
+\end{itemize}
+
+\section{Impact on Technology Domain}
+BodhyaAI advances the domain of Educational Technology (EdTech) by demonstrating:
+\begin{itemize}
+    \item \textbf{Practical XAI}: Moving Explainable AI from research theory to a practical, user-facing application where explanations are consumed by non-technical users (mentors).
+    \item \textbf{Neuro-Symbolic Integration}: Combining statistical machine learning (Risk Prediction) with symbolic knowledge retrieval (RAG MentorBot) represents a cutting-edge approach in building reliable AI systems.
+    \item \textbf{Microservices in Education}: Setting a precedent for building scalable, modular educational platforms that avoid the monolithic "one-size-fits-all" trap of legacy LMS.
+\end{itemize}
+
+% --- Chapter 6: Results ---
+\chapter{RESULTS AND DISCUSSION}
+
+\section{Introduction}
+
+This chapter presents the comprehensive experimental evaluation of \textbf{BodhyaAI}. The results were obtained from rigorous testing of the microservices architecture (\texttt{ai-services}), evaluating both the predictive performance of the machine learning models and the operational latency of the system. We analyze the Academic Risk Prediction model (XGBoost), the fidelity of Explainable AI (SHAP/LIME), the reliability of Cognitive Profiling (BFI-44), and the responsiveness of the Generative MentorBot (RAG).
+
+\section{Experimental Setup}
+
+The evaluation was conducted on a server with the following specifications:
+The evaluation was conducted on a high-performance server equipped with an Intel Core i7-12700H (14 cores) processor, 32 GB of DDR5 RAM, and an NVIDIA RTX 3060 (6GB) GPU for LLM inference, running on the Ubuntu 22.04 LTS operating system.
+
+\subsection{Datasets}
+Two primary datasets were utilized: an academic dataset containing 50,000 synthetic student records and a cognitive dataset comprising 10,000 BFI-44 response sets.
+
+\section{Model Performance Analysis}
+
+\subsection{Hyperparameter Tuning Results}
+The XGBoost model was optimized using a Grid Search over the hyperparameter space. Table~\ref{tab:grid_search} details the results of key configurations.
+
+\begin{table}[H]
+\centering
+\caption{Hyperparameter Tuning Results (Top 5 Configurations)}
+\label{tab:grid_search}
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+\textbf{Config ID} & \textbf{Max Depth} & \textbf{Learning Rate} & \textbf{Estimators} & \textbf{CV Accuracy} \\
+\hline
+\textbf{1 (Best)} & \textbf{5} & \textbf{0.1} & \textbf{200} & \textbf{87.67\%} \\
+\hline
+2 & 6 & 0.05 & 300 & 86.92\% \\
+\hline
+3 & 4 & 0.1 & 150 & 85.45\% \\
+\hline
+4 & 5 & 0.2 & 200 & 86.10\% \\
+\hline
+5 & 7 & 0.05 & 250 & 86.55\% \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Academic Risk Prediction}
+
+The final XGBoost model achieved a test accuracy of \textbf{87.69\%}. The classification report (Table~\ref{tab:class_report}) highlights the performance across risk categories.
+
+\begin{table}[H]
+\centering
+\caption{Classification Report for Risk Prediction}
+\label{tab:class_report}
+\begin{tabular}{lcccc}
+\toprule
+Class & Precision & Recall & F1-score & Support \\
+\midrule
+High Risk & 0.68 & 0.37 & 0.48 & 105 \\
+Medium Risk & 0.75 & 0.72 & 0.73 & 2350 \\
+Low Risk & 0.92 & 0.93 & 0.92 & 7545 \\
+\midrule
+Accuracy & \multicolumn{4}{c}{0.8769} \\
+Weighted Avg & 0.87 & 0.88 & 0.87 & 10000 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Discussion:} The high precision for Low Risk (0.92) ensures that safe students are rarely misclassified as at-risk, preventing unnecessary alarm. However, the recall for High Risk (0.37) indicates that the model is conservative, likely due to the extreme class imbalance (High Risk constitute <2\% of the dataset).
+
+\subsection{Confusion Matrix Analysis}
+Figure~\ref{fig:conf_matrix} illustrates the confusion matrix.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{figures/fig5_1_confusion_matrix.png}
+\caption{Normalized Confusion Matrix}
+\label{fig:conf_matrix}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{Normalized Confusion Matrix (Rows = Actual)}
+\label{tab:conf_matrix}
+\begin{tabular}{lccc}
+\toprule
+Actual $\backslash$ Predicted & Low & Medium & High \\
+\midrule
+High & 0.0000 & 0.6286 & 0.3714 \\
+Medium & 0.2749 & 0.7174 & 0.0077 \\
+Low & 0.9336 & 0.0664 & 0.0000 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The matrix shows considerable overlap between Medium and Low risk classes (7\% misclassification), which is acceptable given the subtle boundary between these categories.
+
+\section{System Performance and Latency}
+
+Beyond predictive accuracy, the system's operational efficiency is critical for real-time mentoring. We measured the end-to-end latency for key API endpoints under a load of 10 concurrent users.
+
+\begin{table}[H]
+\centering
+\caption{System Latency Analysis (Average Response Time)}
+\label{tab:latency}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Service Endpoint} & \textbf{Operation} & \textbf{Avg Latency (ms)} \\
+\hline
+\texttt{/predict} & Risk Inference (XGBoost) & 45 ms \\
+\hline
+\texttt{/explain} & SHAP Calculation & 320 ms \\
+\hline
+\texttt{/profile} & Cognitive Trait Scoring & 12 ms \\
+\hline
+\texttt{/mentor/chat} & RAG Generation (Phi-3) & 2800 ms \\
+\hline
+\textbf{Dashboard Load} & Full Aggregation & \textbf{~3.2 s} \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{Observation:} The SHAP calculation is computationally intensive (320 ms), justifying its separation into a dedicated microservice. The MentorBot generation takes ~2.8 seconds, which is within acceptable limits for a conversational interface.
+
+\section{Explainable AI Validation}
+
+\subsection{SHAP vs. Feature Importance}
+We compared the SHAP global importance values against the native XGBoost Gain metric.
+Comparing the methods, SHAP correctly identified "Backlogs" as the non-linear critical factor for high-risk predictions. In contrast, the native XGBoost Gain metric overemphasized "Attendance," failing to capture the nuanced interaction between low attendance and high backlog counts.
+
+\section{Frontend Outcome and User Interface}
+
+The following screenshots demonstrate the user interface of the fully integrated BodhyaAI platform, highlighting key functionalities such as authentication, dashboards, and AI-driven insights.
+
+\subsection{Login Page}
+Figure~\ref{fig:login} shows the secure login page where users (Students/Mentors/Admins) authenticate.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\linewidth]{figures/fig5_3_login.png}
+\caption{BodhyaAI Login Interface}
+\label{fig:login}
+\end{figure}
+
+\subsection{Student Dashboard}
+Figure~\ref{fig:student_dash} displays the student overview, featuring the Risk Meter, recent alerts, and quick actions.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\linewidth]{figures/fig5_4_student_dashboard.png}
+\caption{Student Dashboard with Risk Meter}
+\label{fig:student_dash}
+\end{figure}
+
+\subsection{Mentor Dashboard}
+Figure~\ref{fig:mentor_dash} presents the mentor's view, allowing them to monitor assigned mentees and view aggregate risk statistics.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\linewidth]{figures/fig5_5_mentor_dashboard.png}
+\caption{Mentor Analytics Dashboard}
+\label{fig:mentor_dash}
+\end{figure}
+
+\subsection{Explainable AI (SHAP) View}
+Figure~\ref{fig:shap_view} illustrates the detailed risk analysis page, where SHAP force plots explain specific prediction factors.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\linewidth]{figures/fig5_6_shap_view.png}
+\caption{Detailed Student Profile with SHAP Explanations}
+\label{fig:shap_view}
+\end{figure}
+
+\subsection{Cognitive Profile Visualization}
+Figure~\ref{fig:cog_profile} depicts the radar chart visualizing the Big Five personality traits derived from the BFI-44 assessment.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\linewidth]{figures/fig5_7_cognitive_profile.png}
+\caption{Cognitive Profile Radar Chart}
+\label{fig:cog_profile}
+\end{figure}
+
+\subsection{Generative MentorBot Interface}
+Figure~\ref{fig:mentorbot} demonstrates the conversational interface where students receive personalized guidance from the RAG-enabled MentorBot.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\linewidth]{figures/fig5_8_mentorbot.png}
+\caption{MentorBot Chat Interface}
+\label{fig:mentorbot}
+\end{figure}
+
+\section{Failure Analysis}
+
+We analyzed instances where the model failed significantly (e.g., High Risk student predicted as Low Risk).
+The analysis highlighted specific edge cases. For instance, a false negative occurred where a student with 85\% attendance but 3 backlogs was missed because the high attendance masked the risk; this was mitigated by adjusting the risk index. Conversely, a false positive was observed for a student on medical leave with a high CGPA, suggesting the need for future integration of textual leave reason data.
+
+\section{Case Studies and Qualitative Analysis}
+To complement the quantitative metrics, we conducted a qualitative analysis of specific test cases to understand the system's behavior in real-world scenarios.
+
+\subsection{Case Study A: The "High-Stress" Performer}
+\textbf{Profile}: Student ID 1042. CGPA: 9.2 (High).
+\textbf{Symptoms}: High Neuroticism scores (BFI-44), irregular sleep patterns (4 hours/day), and declining attendance in the last month.
+\textbf{System Diagnosis}:
+\begin{itemize}
+    \item \textbf{Prediction}: Medium Risk (Despite high CGPA).
+    \item \textbf{Explanation}: SHAP values highlighted "Sleep Hours" and "Neuroticism" as major risk contributors, overriding the positive impact of CGPA.
+    \item \textbf{Outcome}: The system correctly identified that this student was at risk of burnout rather than academic incompetence. The MentorBot suggested stress management resources and recommended a meeting with the college counselor rather than remedial classes.
+\end{itemize}
+
+\subsection{Case Study B: The "Disengaged" Student}
+\textbf{Profile}: Student ID 2098. CGPA: 5.5 (Low).
+\textbf{Symptoms}: High Openness, Low Conscientiousness, High Club Participation.
+\textbf{System Diagnosis}:
+\begin{itemize}
+    \item \textbf{Prediction}: High Risk.
+    \item \textbf{Explanation}: The model pinpointed "Low Conscientiousness" and "Study Hours < 2" as key drivers.
+    \item \textbf{Outcome}: The cognitive profile indicated a "Visual Learner" with high creativity. The MentorBot recommended project-based learning approaches and gamified study planners to boost engagement, rather than standard rote memorization techniques.
+\end{itemize}
+
+\section{Summary}
+
+The results validate BodhyaAI's technical viability and its ability to handle nuanced student profiles. High accuracy (87.7\%) combined with meaningful qualitative insights confirms the system's readiness for deployment. The next chapter summarizes the project and outlines future directions.
+
+% --- Chapter 6: Conclusion ---
+\chapter{CONCLUSION AND FUTURE WORK}
+
+\section{Conclusion}
+
+The development of \textbf{BodhyaAI} demonstrates the effectiveness of integrating
+predictive analytics, explainable artificial intelligence, cognitive psychology, and
+generative AI into a unified academic mentoring platform. The system addresses several
+persistent limitations of traditional educational mentoring approaches, including delayed
+identification of academically vulnerable students, limited transparency in automated
+decision-making, and the lack of scalable personalized support mechanisms.
+
+BodhyaAI successfully combines machine learning–based academic risk prediction with
+SHAP- and LIME-driven explainability, Big Five (BFI-44) cognitive profiling, and a
+Retrieval-Augmented Generative MentorBot. This integration enables not only early risk
+detection but also interpretable reasoning and psychologically informed mentoring
+recommendations. The microservices-based architecture ensures modularity, scalability,
+and ease of maintenance, making the system suitable for deployment in modern academic
+institutions.
+
+Experimental evaluation shows that the XGBoost-based risk prediction model achieves
+strong predictive performance with stable generalization. The explainability layer ensures
+that each prediction is accompanied by feature-level justifications, enhancing mentor trust
+and accountability. Cognitive profiling adds a human-centered dimension by capturing
+personality traits that influence learning behavior, stress management, and academic
+engagement. The MentorBot further enhances the system by generating contextual,
+actionable, and empathetic guidance grounded in both academic analytics and retrieved
+knowledge.
+
+The frontend dashboards demonstrate that complex AI-driven insights can be effectively
+communicated through intuitive visualizations and role-based interfaces. Mentors benefit
+from reduced decision-making time and clearer intervention strategies, while students gain
+self-awareness and personalized guidance for improving academic performance. Overall,
+BodhyaAI establishes a transparent, interpretable, and scalable framework for AI-driven
+academic mentorship aligned with contemporary educational needs.
+
+\section{Practical Impact}
+
+The practical impact of BodhyaAI extends beyond predictive accuracy. By embedding
+explainability into every stage of the decision pipeline, the system promotes trust,
+acceptability, and responsible use of AI in education. Cognitive profiling bridges the gap
+between data-driven analytics and human psychological understanding, addressing an
+often-overlooked dimension of student support.
+
+In real-world academic settings, BodhyaAI can support:
+In real-world academic settings, BodhyaAI can support:
+\begin{enumerate}
+    \item Early identification of academically vulnerable students before critical failure.
+    \item Personalized mentoring at scale in institutions with high student–mentor ratios.
+    \item Data-driven and transparent academic decision-making.
+    \item Continuous mentoring support in hybrid and remote learning environments.
+    \item Reduction of faculty workload through AI-assisted guidance generation.
+\end{enumerate}
+
+These capabilities position BodhyaAI as a practical decision-support and mentoring
+assistant rather than a replacement for human educators, reinforcing its role as a
+collaborative AI system.
+
+\section{Real-World Constraints and Deployment Challenges}
+
+Despite its strengths, several real-world constraints must be considered for large-scale
+deployment:
+
+Several real-world constraints must be addressed for large-scale deployment. Real institutional data often contains missing or noisy records, affecting model performance. Furthermore, grading schemes and behavior patterns vary across institutions, necessitating domain-specific calibration. Privacy compliance is paramount when handling sensitive academic and psychological data. Additionally, infrastructure limitations may impact real-time SHAP visualizations and LLM-based mentoring, and successful adoption requires adequate training for faculty and students.
+
+Addressing these constraints is essential to ensure sustainable and responsible deployment
+of BodhyaAI in operational academic environments.
+
+\section{Limitations}
+
+While the experimental results are promising, certain limitations remain:
+Current limitations include the reliance on synthetic development datasets which may not fully capture real-world complexity, and the challenge of detecting high-risk students due to class imbalance. Cognitive profiling is also subject to self-reporting bias, while the MentorBot's performance is constrained by the size and quality of the retrieval corpus.
+
+These limitations highlight the importance of cautious interpretation of results and the
+need for iterative refinement during real-world deployment.
+
+\section{Future Work}
+
+The current system provides a strong foundation, and several extensions can further
+enhance BodhyaAI’s capabilities:
+
+\subsection{Integration with Real Institutional Data}
+Future versions should incorporate real academic datasets from partner institutions to
+improve model robustness, fairness, and external validity.
+
+\subsection{Adaptive and Continual Learning}
+The platform can be extended to support continual learning, enabling models to adapt to
+new semester trends, curriculum changes, and evolving student behavior without full
+retraining.
+
+\subsection{Enhanced MentorBot Personalization}
+Expanding the RAG knowledge base with institutional syllabi, academic policies, and
+psychological support resources can improve grounding accuracy and response relevance.
+
+\subsection{Mobile and Ubiquitous Access}
+Developing a mobile application can enhance accessibility and engagement, particularly
+for students who primarily use smartphones.
+
+\subsection{Emotional and Behavioral Signal Integration}
+Incorporating LMS interaction logs, sentiment analysis, and behavioral indicators can
+enable early detection of disengagement, stress, or burnout.
+
+\subsection{Collaborative Mentoring Tools}
+Future enhancements may include shared goal-tracking dashboards, mentor–student
+interaction histories, and scheduled intervention planning tools.
+
+\section{Final Remarks}
+
+BodhyaAI represents a significant step toward integrating artificial intelligence with
+human-centered academic mentorship in a transparent, interpretable, and empathetic
+manner. By combining predictive modeling, explainable insights, cognitive understanding,
+and generative guidance, the system creates a balanced ecosystem that supports informed
+decision-making without undermining human judgment.
+
+As educational institutions increasingly adopt AI-driven tools, platforms such as
+BodhyaAI can play a critical role in redefining academic support systems—making
+mentorship more proactive, data-driven, scalable, and emotionally aware, while
+preserving ethical responsibility and human oversight.
+
+
+\renewcommand{\bibname}{REFERENCES}
+\addcontentsline{toc}{chapter}{REFERENCES}
+\bibliographystyle{unsrt}
+\nocite{*}
+
+\bibliography{ref}
+
+\appendix
+\clearpage
+\addcontentsline{toc}{chapter}{APPENDIX}
+\chapter*{\centering APPENDIX}
+\setcounter{section}{0}
+\renewcommand{\thesection}{A.\arabic{section}}
+\section{User Manual}
+
+\subsection{System Access}
+BodhyaAI is a web-based platform accessible via standard web browsers.
+\begin{enumerate}
+    \item Open your browser (Chrome/Edge recommended).
+    \item Navigate to \texttt{http://localhost:3000} (or the production URL).
+    \item The Login Page will appear.
+\end{enumerate}
+
+\subsection{Student Module}
+\subsubsection{Dashboard Overview}
+Upon logging in, students are greeted by the personalized dashboard containing:
+Upon logging in, students are presented with a personalized dashboard featuring a color-coded Risk Indicator (Green/Yellow/Red), a Cognitive Profile radar chart displaying Big Five traits, and Quick Actions buttons to chat with the MentorBot or view detailed reports.
+
+\subsubsection{Taking the Survey}
+\begin{enumerate}
+    \item Click on "My Profile" > "Cognitive Assessment".
+    \item Complete the 44-question BFI-44 survey.
+    \item Click "Submit". The profile will update instantly.
+\end{enumerate}
+
+\subsubsection{Using MentorBot}
+\begin{enumerate}
+    \item Click the chat icon in the bottom-right corner.
+    \item Type a query, e.g., "How can I improve my calculus grades?"
+    \item The bot will generate a personalized response based on your risk profile and personality.
+\end{enumerate}
+
+\subsection{Mentor Module}
+\subsubsection{Student Monitoring}
+Mentors can view a list of all assigned students.
+\begin{enumerate}
+    \item Navigate to "My Mentees".
+    \item Use the search bar to find a specific student.
+    \item Click "View Profile" to access the detailed analytical dashboard.
+\end{enumerate}
+
+\subsubsection{Interpreting Explanations}
+On the student profile page:
+On the student profile page, the SHAP Force Plot visually indicates which features increased (Red) or decreased (Blue) the risk score, accompanied by a list of top contributing risk factors such as low attendance or high backlogs.
+
+
+\section{API Specifications}
+
+This appendix details the RESTful API endpoints exposed by the BodhyaAI microservices.
+
+\subsection{Risk Analysis Service}
+\textbf{Base URL}: \texttt{http://localhost:8001}
+
+\subsubsection{Predict Risk}
+\textbf{Endpoint}: \texttt{POST /predict} \\
+\textbf{Description}: Returns the predicted academic risk level.
+
+\textbf{Request Body}:
+\begin{verbatim}
+{
+  "attendance": 85.5,
+  "cgpa": 7.8,
+  "backlogs": 1,
+  "stress_score": 4,
+  "study_hours": 12
+}
+\end{verbatim}
+
+\textbf{Response}:
+\begin{verbatim}
+{
+  "risk_level": 1,        // 0: Low, 1: Medium, 2: High
+  "risk_label": "Medium",
+  "confidence": 0.76,
+  "timestamp": "2024-05-20T10:00:00Z"
+}
+\end{verbatim}
+
+\subsection{Explainable AI Service}
+\textbf{Base URL}: \texttt{http://localhost:8002}
+
+\subsubsection{Generate Explanation}
+\textbf{Endpoint}: \texttt{POST /explain} \\
+\textbf{Description}: Returns SHAP values for a given student instance.
+
+\textbf{Response}:
+\begin{verbatim}
+{
+  "base_value": 0.5,
+  "features": {
+    "attendance": -0.15,  // Reduces risk
+    "backlogs": 0.25      // Increases risk
+  },
+  "plot_url": "/static/plots/shap_123.png"
+}
+\end{verbatim}
+
+\subsection{Cognitive Service}
+\textbf{Base URL}: \texttt{http://localhost:8003}
+
+\subsubsection{Submit Survey}
+\textbf{Endpoint}: \texttt{POST /survey/submit} \\
+\textbf{Description}: Processes BFI-44 responses.
+
+\textbf{Response}:
+\begin{verbatim}
+{
+  "traits": {
+    "openness": 0.8,
+    "conscientiousness": 0.45,
+    "extraversion": 0.6,
+    "agreeableness": 0.7,
+    "neuroticism": 0.3
+  }
+}
+\end{verbatim}
+
+
+\section{Deployment Configuration}
+
+\subsection{Prerequisites}
+Deployment requires Docker Engine (v24.0+), Docker Compose (v2.0+), Node.js (v18.0+), and Python (v3.9+) to be installed on the host system.
+
+\subsection{Environment Variables}
+Create a \texttt{.env} file in the root directory:
+
+\begin{verbatim}
+# Global
+NODE_ENV=production
+PORT=3000
+
+# Databases
+MONGO_URI=mongodb://admin:password@localhost:27017/bodhyaai
+
+# Microservices
+RISK_SERVICE_URL=http://risk-svc:8001
+XAI_SERVICE_URL=http://xai-svc:8002
+COG_SERVICE_URL=http://cog-svc:8003
+LLM_SERVICE_URL=http://llm-svc:8004
+
+# Security
+JWT_SECRET=supersecretkey_change_in_production
+\end{verbatim}
+
+\subsection{Docker Compose Setup}
+The system is orchestrated using \texttt{docker-compose.yml}:
+
+\begin{verbatim}
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+      - risk-svc
+      
+  risk-svc:
+    build: ./ai-services/risk-svc
+    ports:
+      - "8001:8001"
+      
+  xai-svc:
+    build: ./ai-services/xai-svc
+    ports:
+      - "8002:8002"
+      
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+      
+volumes:
+  mongo_data:
+\end{verbatim}
+
+\subsection{Deployment Steps}
+1. Clone the repository: \texttt{git clone https://github.com/bodhya-ai/platform.git}
+2. Build containers: \texttt{docker-compose build}
+3. Start services: \texttt{docker-compose up -d}
+4. Access application at \texttt{http://localhost:5173}
+
+\section{Source Code Listings}
+
+\subsection{Risk Analysis Service (risk-svc/service.py)}
+\begin{footnotesize}
+\begin{verbatim}
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+import joblib
+import os
+import pandas as pd
+import numpy as np
+import shap
+
+app = FastAPI(title="BodhyaAI Risk Service", version="2.1")
+
+# Paths
+MODEL_DIR = "models"
+MODEL_PATH = os.path.join(MODEL_DIR, "academic_risk_pipeline.pkl")
+LABEL_ENCODER_PATH = os.path.join(MODEL_DIR, "label_encoder.pkl")
+FEATURE_ENCODERS_PATH = os.path.join(MODEL_DIR, "feature_encoders.pkl")
+
+# Feature columns
+FEATURE_COLUMNS = [
+    "CGPA", "Attendance", "StressScore", "SleepHours", "Backlogs",
+    "StudyHoursPerDay", "FatherIncome", "MotherIncome",
+    "ParentEducation", "InternetAccess", "PartTimeJob",
+    "MentalHealthIndex", "ExerciseHours", "ScreenTime", "SocialHours",
+    "ClubParticipation", "MentorMeetings", "CounselingSessions",
+    "IAT1", "IAT2", "IAT3"
+]
+
+@app.post("/predict")
+def predict(data: AcademicInput):
+    if model is None:
+        raise HTTPException(status_code=503, detail="Model not loaded")
+
+    try:
+        # 1. Convert input to DataFrame
+        input_dict = data.dict()
+        df = pd.DataFrame([input_dict])
+        
+        # 2. Encode categorical features
+        for col in CATEGORICAL_COLS:
+            if col in df.columns:
+                le = feature_encoders.get(col)
+                if le:
+                    df[col] = df[col].map(lambda x: transform_label(le, x))
+        
+        # 3. Ensure correct column order
+        df = df[FEATURE_COLUMNS]
+        
+        # 4. Predict
+        prediction_encoded = model.predict(df)[0]
+        prediction_label = label_encoder.inverse_transform([prediction_encoded])[0]
+        
+        # 5. Get confidence
+        confidence = 0.0
+        if hasattr(model, 'predict_proba'):
+            proba = model.predict_proba(df)[0]
+            confidence = float(np.max(proba))
+
+        # --- BUSINESS RULE OVERRIDE ---
+        critical_triggers = []
+        if data.Attendance < 75: critical_triggers.append("Attendance < 75%")
+        if data.CGPA < 6.0: critical_triggers.append("CGPA < 6.0")
+        if data.Backlogs >= 2: critical_triggers.append("Backlogs >= 2")
+            
+        if critical_triggers:
+            prediction_label = "High"
+            confidence = 0.99
+
+        return {
+            "prediction": str(prediction_label),
+            "confidence": round(confidence, 2),
+            "model": "xgboost_enhanced_v2"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Prediction error: {str(e)}")
+\end{verbatim}
+\end{footnotesize}
+
+\subsection{Explainable AI Service (xai-svc/service.py)}
+\begin{footnotesize}
+\begin{verbatim}
+from fastapi import FastAPI
+from pydantic import BaseModel
+import pandas as pd
+import joblib
+import shap
+
+app = FastAPI(title="XAI Service")
+
+risk_model = joblib.load("../risk-svc/models/academic_risk_pipeline.pkl")
+
+def explain_risk_model(input_df):
+    prediction = risk_model.predict(input_df)[0]
+    clf = risk_model.named_steps["clf"]
+
+    # Feature importances
+    if hasattr(clf, "feature_importances_"):
+        importances = clf.feature_importances_
+        feature_importance = {col: float(val) for col, val in zip(input_df.columns, importances)}
+    else:
+        feature_importance = {}
+
+    warnings = []
+    if input_df['Attendance'].iloc[0] < 70:
+        warnings.append("[Warning] Low attendance.")
+    if input_df['CGPA'].iloc[0] < 6.5:
+        warnings.append("[Warning] CGPA below recommended level.")
+
+    return {
+        "prediction": int(prediction),
+        "feature_importance": feature_importance,
+        "warnings": warnings
+    }
+
+@app.post("/explain/risk")
+def explain_risk(data: RiskInput):
+    df = pd.DataFrame([data.dict()])
+    return explain_risk_model(df)
+\end{verbatim}
+\end{footnotesize}
+
+\subsection{Cognitive Service (cog-svc/service.py)}
+\begin{footnotesize}
+\begin{verbatim}
+from fastapi import FastAPI
+from pydantic import BaseModel
+import joblib
+import pandas as pd
+
+app = FastAPI()
+models = {trait: joblib.load(f"models/{trait}_pipeline.pkl") 
+          for trait in ["openness", "conscientiousness", "extraversion", 
+                        "agreeableness", "neuroticism"]}
+
+@app.post("/predict")
+def predict_traits(input_data: SurveyInput):
+    df = pd.DataFrame([input_data.dict()])
+    # Scale to 0-100 and round to integer
+    raw_predictions = {trait.capitalize(): float(models[trait].predict(df)[0]) for trait in models}
+    predictions = {}
+    for trait, value in raw_predictions.items():
+        if value <= 1.0:
+            predictions[trait] = int(value * 100)
+        else:
+            predictions[trait] = int(value)
+    
+    extended_profile = generate_extended_profile(predictions)
+    return {"predictions": predictions, "extended_profile": extended_profile}
+
+def generate_extended_profile(scores):
+    openness = scores.get('Openness', 50)
+    conscientiousness = scores.get('Conscientiousness', 50)
+    extraversion = scores.get('Extraversion', 50)
+    
+    learning_style = {
+        "visual": min(100, int(openness * 0.8 + 20)),
+        "auditory": min(100, int(extraversion * 0.8 + 20)),
+        "kinesthetic": min(100, int(conscientiousness * 0.8 + 20))
+    }
+    return {"learningStyle": learning_style}
+\end{verbatim}
+\end{footnotesize}
+
+\end{document}

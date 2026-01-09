@@ -1,0 +1,53 @@
+{
+  "risk_service": {
+    "status": "success",
+    "latency_seconds": 0.02414250373840332,
+    "sample_output": {
+      "prediction": 0,
+      "feature_importance": {
+        "CGPA": 0.17139863967895508,
+        "Attendance": 0.2617133855819702,
+        "StressScore": 0.018536264076828957,
+        "SleepHours": 0.03398769348859787,
+        "Backlogs": 0.21890738606452942,
+        "StudyHoursPerDay": 0.015001116320490837,
+        "FatherIncome": 0.015761546790599823,
+        "MotherIncome": 0.016337115317583084,
+        "ParentEducation": 0.014267184771597385,
+        "InternetAccess": 0.0163143090903759,
+        "PartTimeJob": 0.016921894624829292,
+        "MentalHealthIndex": 0.034556351602077484,
+        "ExerciseHours": 0.015099992044270039,
+        "ScreenTime": 0.015396586619317532,
+        "SocialHours": 0.015076817013323307,
+        "ClubParticipation": 0.015508235432207584,
+        "MentorMeetings": 0.014620611444115639,
+        "CounselingSessions": 0.01666509173810482,
+        "IAT1": 0.02358633652329445,
+        "IAT2": 0.028261864557862282,
+        "IAT3": 0.02208160236477852
+      },
+      "warnings": [
+        "\u26a0\ufe0f Low attendance.",
+        "\u26a0\ufe0f CGPA below recommended level.",
+        "\u26a0\ufe0f Student has pending backlogs, risk of failing."
+      ]
+    }
+  },
+  "cognitive_service": {
+    "status": "success",
+    "latency_seconds": 0.1923208236694336,
+    "sample_output": {
+      "predictions": {
+        "Openness": 0.5904,
+        "Conscientiousness": 0.6588000000000005,
+        "Extraversion": 0.6009000000000001,
+        "Agreeableness": 0.5779000000000002,
+        "Neuroticism": 0.5378999999999997
+      },
+      "insights": [
+        "Neuroticism is moderate \u2192 student may experience stress."
+      ]
+    }
+  }
+}

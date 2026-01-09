@@ -1,0 +1,77 @@
+{
+  "q1": {
+    "query": "How can I manage academic stress?",
+    "latency": 0.158128023147583,
+    "retrieved_count": 3,
+    "relevant_count": 1,
+    "retrieved_items": [
+      {
+        "source": "mental_health/Managing Academic Stress Effectively",
+        "score": 0.6686557531356812,
+        "snippet": "Academic stress is normal, but managing it is crucial for success and wellbeing. Recognize warning s..."
+      },
+      {
+        "source": "academic_skills/Time Management for Students",
+        "score": 0.39264926314353943,
+        "snippet": "Effective time management is the foundation of academic success. Start with a semester calendar - ma..."
+      },
+      {
+        "source": "mental_health/Overcoming Procrastination",
+        "score": 0.3256394863128662,
+        "snippet": "Procrastination is often rooted in anxiety, perfectionism, or lack of motivation - not laziness. To ..."
+      }
+    ],
+    "generated_answer": "Local model error: generate_response() got an unexpected keyword argument 'max_tokens'...",
+    "model_used": "local_llm"
+  },
+  "q2": {
+    "query": "Explain the Pomodoro technique",
+    "latency": 0.03819155693054199,
+    "retrieved_count": 3,
+    "relevant_count": 1,
+    "retrieved_items": [
+      {
+        "source": "study_strategies/Pomodoro Technique for Better Focus",
+        "score": 0.4369940459728241,
+        "snippet": "The Pomodoro Technique is a time management method that can dramatically improve your study effectiv..."
+      },
+      {
+        "source": "study_strategies/Feynman Technique for Deep Understanding",
+        "score": 0.1905287802219391,
+        "snippet": "The Feynman Technique helps you truly understand concepts rather than just memorize them. Named afte..."
+      },
+      {
+        "source": "mathematics/Mastering Calculus: Derivatives Fundamentals",
+        "score": 0.18440915644168854,
+        "snippet": "Understanding derivatives is crucial for calculus success. A derivative represents the rate of chang..."
+      }
+    ],
+    "generated_answer": "Local model error: generate_response() got an unexpected keyword argument 'max_tokens'...",
+    "model_used": "local_llm"
+  },
+  "q3": {
+    "query": "What are the rules for derivatives in calculus?",
+    "latency": 0.03561687469482422,
+    "retrieved_count": 3,
+    "relevant_count": 1,
+    "retrieved_items": [
+      {
+        "source": "mathematics/Mastering Calculus: Derivatives Fundamentals",
+        "score": 0.5269707441329956,
+        "snippet": "Understanding derivatives is crucial for calculus success. A derivative represents the rate of chang..."
+      },
+      {
+        "source": "engineering/Problem-Solving Strategies for Engineering",
+        "score": 0.2098974883556366,
+        "snippet": "Engineering problems require systematic approaches. Follow this framework: (1) Understand the proble..."
+      },
+      {
+        "source": "study_strategies/Feynman Technique for Deep Understanding",
+        "score": 0.19907447695732117,
+        "snippet": "The Feynman Technique helps you truly understand concepts rather than just memorize them. Named afte..."
+      }
+    ],
+    "generated_answer": "Local model error: generate_response() got an unexpected keyword argument 'max_tokens'...",
+    "model_used": "local_llm"
+  }
+}

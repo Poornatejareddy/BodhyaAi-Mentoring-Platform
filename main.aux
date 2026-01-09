@@ -1,0 +1,129 @@
+\relax 
+\@writefile{toc}{\contentsline {section}{\numberline {I}Introduction}{1}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {I-A}}Problem Motivation}{2}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {I-B}}Research Objectives}{2}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {II}Related Work and Literature Review}{2}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-A}}Explainable AI in Education}{2}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-B}}Cognitive Profiling and Personality-Based Learning}{2}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-C}}Generative AI and LLM-Based Tutoring}{2}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-D}}Retrieval-Augmented Generation in Education}{3}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-E}}Educational Data Mining and Risk Prediction}{3}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-F}}Fairness, Bias, and Ethics in Educational AI}{3}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-G}}Microservices Architecture in Education}{3}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-H}}Class Imbalance and SMOTE in Student Data}{3}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {III}System Architecture}{3}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-A}}Overview}{3}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-B}}Components}{3}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {III-B}1}Risk Analysis Service}{3}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {III-B}2}Cognitive Profiling Service}{3}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {III-B}3}Explainable AI Service}{3}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {III-B}4}Generative MentorBot Service}{3}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-C}}Backend and Frontend Integration}{4}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-D}}Data Flow}{4}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces System architecture and data flow of the BodhyaAI mentorship platform. The React frontend communicates with a Node.js backend, which orchestrates four AI microservices: Risk Analysis (XGBoost/Random Forest), Explainable AI (SHAP/LIME), Cognitive Profiling (BFI-44), and Generative MentorBot (Google Gemini API with local model fallback support). This modular data flow enables a continuous loop of \textit  {Predict} → \textit  {Explain} → \textit  {Understand} → \textit  {Act}.}}{4}{}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{fig:architecture}{{1}{4}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-E}}Workflow Summary}{4}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {IV}Methodology and Model Development}{4}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-A}}Data Collection and Preprocessing}{4}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {IV-A}1}Dataset 1: Academic Risk Dataset (risk-svc)}{4}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {IV-A}2}Dataset 2: Cognitive Profiling Dataset (cog-svc)}{4}{}\protected@file@percent }
+\citation{ref40}
+\citation{ref41}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {IV-A}3}Data Preprocessing}{5}{}\protected@file@percent }
+\@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces Data Preprocessing with SMOTE}}{5}{}\protected@file@percent }
+\newlabel{alg:preprocessing}{{1}{5}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-B}}Risk Analysis Model}{5}{}\protected@file@percent }
+\@writefile{loa}{\contentsline {algorithm}{\numberline {2}{\ignorespaces XGBoost Risk Prediction with 5-Fold CV}}{5}{}\protected@file@percent }
+\newlabel{alg:risk}{{2}{5}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-C}}Cognitive Profiling Model}{5}{}\protected@file@percent }
+\citation{ref37}
+\citation{ref43}
+\citation{ref38,ref39}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {3}{\ignorespaces BFI-44 Cognitive Profiling}}{6}{}\protected@file@percent }
+\newlabel{alg:cognitive}{{3}{6}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-D}}Explainability Framework}{6}{}\protected@file@percent }
+\@writefile{loa}{\contentsline {algorithm}{\numberline {4}{\ignorespaces SHAP Value Computation}}{6}{}\protected@file@percent }
+\newlabel{alg:shap}{{4}{6}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-E}}Generative Mentoring Model}{6}{}\protected@file@percent }
+\@writefile{loa}{\contentsline {algorithm}{\numberline {5}{\ignorespaces RAG-lite Generative Mentoring}}{7}{}\protected@file@percent }
+\newlabel{alg:rag}{{5}{7}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-F}}Model Evaluation Metrics}{7}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-G}}Integration Pipeline}{7}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {V}Ethical Considerations and Fairness}{7}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-A}}Bias Mitigation Strategies}{7}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-B}}Explainability as Ethical Necessity}{7}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-C}}Data Privacy and Security}{7}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-D}}Fairness-Utility Trade-offs}{7}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {VI}Results and Discussion}{7}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-A}}Model Performance Summary}{7}{}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {I}{\ignorespaces Performance Metrics Across BodhyaAI Modules}}{7}{}\protected@file@percent }
+\newlabel{tab:modules}{{I}{7}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-B}}Cross-Validation and Classification Report}{8}{}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {II}{\ignorespaces Multi-Class XGBoost Classification Report (Test Set = 10 000)}}{8}{}\protected@file@percent }
+\newlabel{tab:classreport}{{II}{8}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-C}}Explainable AI Visualization}{8}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces SHAP Feature Importance Summary for Risk Prediction. Top features include Attendance (26.2\%), Backlogs (21.9\%), and CGPA (17.1\%), demonstrating that behavioral and academic factors drive prediction quality.}}{8}{}\protected@file@percent }
+\newlabel{fig:shap}{{2}{8}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-D}}Performance and Scalability}{8}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Confusion Matrix for Academic Risk Prediction. The XGBoost classifier achieves strong performance across all risk levels with weighted F1-score of 0.95 on 10,000 test samples.}}{8}{}\protected@file@percent }
+\newlabel{fig:confusion}{{3}{8}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-E}}GenAI MentorBot Evaluation}{8}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-F}}Limitations and Future Directions}{8}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {VII}Limitations and Challenges}{8}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-A}}Data-Related Limitations}{8}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-B}}Model and Technical Limitations}{9}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-C}}Deployment and Operational Challenges}{9}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-D}}Ethical and Fairness Considerations}{9}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {VIII}Future Work and Recommendations}{9}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VIII-A}}Model Enhancements}{9}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VIII-B}}Cross-Institutional Validation and Deployment}{9}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VIII-C}}Real-Time Analytics and Integration}{9}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VIII-D}}Explainability and Transparency Expansion}{9}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VIII-E}}Longitudinal Impact Studies}{9}{}\protected@file@percent }
+\bibcite{ref1}{1}
+\bibcite{ref2}{2}
+\bibcite{ref3}{3}
+\bibcite{ref4}{4}
+\bibcite{ref5}{5}
+\bibcite{ref6}{6}
+\bibcite{ref7}{7}
+\bibcite{ref8}{8}
+\bibcite{ref9}{9}
+\bibcite{ref10}{10}
+\bibcite{ref11}{11}
+\bibcite{ref12}{12}
+\bibcite{ref13}{13}
+\bibcite{ref14}{14}
+\bibcite{ref15}{15}
+\bibcite{ref16}{16}
+\bibcite{ref17}{17}
+\bibcite{ref18}{18}
+\bibcite{ref19}{19}
+\bibcite{ref20}{20}
+\bibcite{ref21}{21}
+\bibcite{ref22}{22}
+\bibcite{ref23}{23}
+\bibcite{ref24}{24}
+\bibcite{ref25}{25}
+\bibcite{ref26}{26}
+\bibcite{ref27}{27}
+\bibcite{ref28}{28}
+\bibcite{ref29}{29}
+\bibcite{ref30}{30}
+\bibcite{ref31}{31}
+\bibcite{ref32}{32}
+\bibcite{ref33}{33}
+\bibcite{ref34}{34}
+\bibcite{ref35}{35}
+\bibcite{ref36}{36}
+\bibcite{ref37}{37}
+\bibcite{ref38}{38}
+\@writefile{toc}{\contentsline {section}{\numberline {IX}Conclusion}{10}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{References}{10}{}\protected@file@percent }
+\bibcite{ref39}{39}
+\bibcite{ref40}{40}
+\bibcite{ref41}{41}
+\bibcite{ref42}{42}
+\bibcite{ref43}{43}
+\gdef \@abspage@last{11}

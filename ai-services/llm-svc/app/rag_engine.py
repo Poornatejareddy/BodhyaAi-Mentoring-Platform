@@ -4,7 +4,7 @@ RAG Engine – Uses Gemini exclusively with centralized fallback logic.
 
 import os
 import logging
-from typing import List, Dict, Optional
+from typing import Dict
 
 from app.retriever import get_vector_store
 from app.document_manager import get_document_manager
@@ -36,7 +36,9 @@ class RAGEngine:
         ):
             logger.info("Loading existing FAISS index...")
             self.vector_store.load_index(index_path, metadata_path)
-            logger.info(f"Loaded {self.vector_store.index.ntotal} documents")
+            index = self.vector_store.index
+            count = index.ntotal if index is not None else 0
+            logger.info(f"Loaded {count} documents")
             return
 
         logger.info("Initializing knowledge base...")
@@ -170,6 +172,13 @@ Give a helpful, clear, and actionable answer.
             f"(confidence={result['confidence']:.2f})"
         )
         return result
+
+    # -------------------------------------------------------------------
+    # Stats
+    # -------------------------------------------------------------------
+    def get_stats(self) -> Dict:
+        """Return statistics from the underlying vector store."""
+        return self.vector_store.get_stats()
 
 
 # -------------------------------------------------------------------

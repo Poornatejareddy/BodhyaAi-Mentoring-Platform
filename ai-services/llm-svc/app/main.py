@@ -1,7 +1,7 @@
 # app/main.py
-import common.config
+from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -52,10 +52,26 @@ class ReportRequest(BaseModel):
     class_data: List[Dict]  # List of student data
     focus_area: Optional[str] = "general"
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """FastAPI lifespan handler: replaces the deprecated @app.on_event approach."""
+    logger.info("Initializing RAG engine...")
+    try:
+        rag_engine = get_rag_engine()
+        index = rag_engine.vector_store.index
+        count = index.ntotal if index is not None else 0
+        logger.info(f"RAG engine ready with {count} documents")
+    except Exception as e:
+        logger.error(f"Failed to initialize RAG engine: {e}")
+    yield  # Application runs here
+    # Shutdown logic can be added below if needed
+
+
 app = FastAPI(
     title="BodhyaAI LLM Service",
     version="2.0",
-    description="BodhyaAI LLM service with RAG, streaming, and intelligent study recommendations."
+    description="BodhyaAI LLM service with RAG, streaming, and intelligent study recommendations.",
+    lifespan=lifespan,
 )
 
 # CORS middleware
@@ -66,16 +82,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Initialize RAG engine on startup
-@app.on_event("startup")
-async def startup_event():
-    logger.info("Initializing RAG engine...")
-    try:
-        rag_engine = get_rag_engine()
-        logger.info(f"RAG engine ready with {rag_engine.vector_store.index.ntotal} documents")
-    except Exception as e:
-        logger.error(f"Failed to initialize RAG engine: {e}")
 
 # ------------------------
 # Non-streaming chat
@@ -137,10 +143,11 @@ def chat_stream(req: ChatRequest):
             media_type="text/plain"
         )
     except Exception as e:
-        logger.error(f"Chat stream error: {e}")
+        error_msg = str(e)
+        logger.error(f"Chat stream error: {error_msg}")
         # Return error generator
         def err_generator():
-            yield str(e)
+            yield error_msg
         return StreamingResponse(err_generator(), media_type="text/plain")
 
 # ------------------------

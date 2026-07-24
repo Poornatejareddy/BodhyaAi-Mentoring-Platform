@@ -69,7 +69,7 @@ nvidia-cusparselt-cu13==0.8.1
 nvidia-nccl-cu13==2.29.7
 nvidia-nvjitlink==13.3.33
 nvidia-nvshmem-cu13==3.4.5
-nvidia-nvtx==13.0.85
+nvidia-nvtx==13.3.29
 openai==2.48.0
 packaging==26.2
 pandas==2.2.0

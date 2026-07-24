@@ -1,0 +1,15 @@
+# Global owners (Fallback review)
+*       @Poornatejareddy
+
+# Backend specific logic
+/backend/       @Poornatejareddy
+
+# Frontend React views
+/frontend/      @Poornatejareddy
+
+# Python AI services
+/ai-services/   @Poornatejareddy
+
+# DevOps & Docker configurations
+/docker-compose*.yml @Poornatejareddy
+/.github/workflows/  @Poornatejareddy

@@ -1,0 +1,25 @@
+{
+  "name": "bodhyaai-platform",
+  "version": "1.0.0",
+  "description": "AI-Powered Mentorship & Academic Success Platform",
+  "scripts": {
+    "dev": "./scripts/run_project.sh",
+    "dev:all": "./scripts/run_project.sh",
+    "start:all": "./scripts/run_project.sh",
+    "stop": "./scripts/stop_project.sh",
+    "restart": "./scripts/restart_project.sh",
+    "status": "./scripts/status_project.sh",
+    "health": "./scripts/health_check.sh",
+    "test:all": "./scripts/test_project.sh"
+  },
+  "keywords": [
+    "mentoring",
+    "academic-risk",
+    "explainable-ai",
+    "xgboost",
+    "fastapi",
+    "express"
+  ],
+  "author": "Poornatejareddy",
+  "license": "MIT"
+}

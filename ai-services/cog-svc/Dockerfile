@@ -1,16 +1,26 @@
-# Use a slim Python image as a base
-FROM python:3.9-slim
+FROM python:3.10-slim
 
-# Set the working directory in the container
 WORKDIR /app
 
-# Copy the requirements file and install dependencies
-COPY ./requirements.txt /app/requirements.txt
-RUN pip install --no-cache-dir --upgrade pip -r /app/requirements.txt
+# Copy requirements and package setup
+COPY requirements.txt pyproject.toml /app/
 
-# Copy the application code into the container
-COPY . /app
+# Install base python dependencies
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
-# The command to run when the container starts
-# The host must be 0.0.0.0 to be accessible from other containers
-CMD ["uvicorn", "service:app", "--host", "0.0.0.0", "--port", "8001"]
+# Copy and install the shared common package
+COPY common/ /app/common/
+RUN pip install --no-cache-dir .
+
+# Copy the service specific files
+COPY cog-svc/ /app/cog-svc/
+
+# Set the working directory to the service
+WORKDIR /app/cog-svc
+
+# Expose port
+EXPOSE 8000
+
+# Start service
+CMD ["uvicorn", "service:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -63,7 +63,11 @@ def evaluate_retrieval():
         
         # 3. Test End-to-End Generation (attempting)
         # Note: This might fallback if keys are missing, which is fine
-        qa_result = rag.query(q['text'], k=3)
+        try:
+            qa_result = rag.query(q['text'], k=3)
+        except Exception as e:
+            logger.warning(f"Generation failed for query {q['id']}: {e}")
+            qa_result = {"answer": f"Error: {e}", "model": "error"}
         
         latency = time.time() - start_time
         

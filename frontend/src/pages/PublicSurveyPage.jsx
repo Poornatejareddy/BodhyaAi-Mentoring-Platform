@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Brain, CheckCircle, Loader2, AlertCircle } from 'lucide-react';
+import { API_BASE_URL } from '../utils/api';
 
 const PublicSurveyPage = () => {
     const { token } = useParams();
@@ -89,7 +90,7 @@ const PublicSurveyPage = () => {
 
     const validateSurveyLink = async () => {
         try {
-            const response = await fetch(`http://localhost:5000/api/personality/link/${token}`);
+            const response = await fetch(`${API_BASE_URL}/personality/link/${token}`);
             const data = await response.json();
 
             if (data.success) {
@@ -149,7 +150,7 @@ const PublicSurveyPage = () => {
 
         setSubmitting(true);
         try {
-            const response = await fetch(`http://localhost:5000/api/personality/link/${token}/submit`, {
+            const response = await fetch(`${API_BASE_URL}/personality/link/${token}/submit`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -175,10 +176,10 @@ const PublicSurveyPage = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 flex items-center justify-center">
+            <div className="min-h-screen bg-[var(--surface)]    flex items-center justify-center">
                 <div className="text-center">
-                    <Loader2 className="w-16 h-16 text-purple-400 mx-auto mb-4 animate-spin" />
-                    <p className="text-white text-lg">Validating survey link...</p>
+                    <Loader2 className="w-16 h-16 text-[var(--brand)] mx-auto mb-4 animate-spin" />
+                    <p className="text-[var(--ink)] text-lg">Validating survey link...</p>
                 </div>
             </div>
         );
@@ -186,11 +187,11 @@ const PublicSurveyPage = () => {
 
     if (error) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 flex items-center justify-center p-4">
-                <div className="max-w-md w-full bg-gray-800 rounded-xl p-8 border border-red-600 text-center">
-                    <AlertCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
-                    <h2 className="text-2xl font-bold text-white mb-3">Invalid Survey Link</h2>
-                    <p className="text-gray-300">{error}</p>
+            <div className="min-h-screen bg-[var(--surface)]    flex items-center justify-center p-4">
+                <div className="max-w-md w-full bg-[var(--surface)] rounded-xl p-8 border border-[var(--danger)] text-center">
+                    <AlertCircle className="w-16 h-16 text-[var(--danger)] mx-auto mb-4" />
+                    <h2 className="text-2xl font-bold text-[var(--ink)] mb-3">Invalid Survey Link</h2>
+                    <p className="text-[var(--ink)]">{error}</p>
                 </div>
             </div>
         );
@@ -198,31 +199,31 @@ const PublicSurveyPage = () => {
 
     if (submitted && results) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 py-12 px-4">
+            <div className="min-h-screen bg-[var(--surface)]    py-12 px-4">
                 <div className="max-w-4xl mx-auto">
                     {/* Success Header */}
-                    <div className="bg-gradient-to-r from-green-600 to-emerald-600 rounded-xl p-8 text-white mb-8 text-center">
+                    <div className="bg-[var(--surface)]   rounded-xl p-8 text-[var(--ink)] mb-8 text-center">
                         <CheckCircle className="w-20 h-20 mx-auto mb-4" />
                         <h1 className="text-4xl font-bold mb-3">Survey Completed!</h1>
                         <p className="text-lg">Thank you for completing the personality assessment.</p>
-                        <p className="text-emerald-100 mt-2">Your mentor can now view your results.</p>
+                        <p className="text-[var(--success)] mt-2">Your mentor can now view your results.</p>
                     </div>
 
                     {/* Personality Scores */}
-                    <div className="bg-gray-800 rounded-xl p-8 border border-gray-700 mb-8">
-                        <h2 className="text-2xl font-semibold text-white mb-6 flex items-center gap-2">
-                            <Brain className="w-6 h-6 text-purple-400" />
+                    <div className="bg-[var(--surface)] rounded-xl p-8 border border-[var(--line)] mb-8">
+                        <h2 className="text-2xl font-semibold text-[var(--ink)] mb-6 flex items-center gap-2">
+                            <Brain className="w-6 h-6 text-[var(--brand)]" />
                             Your Personality Profile (OCEAN)
                         </h2>
 
                         <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
                             {Object.entries(results.oceanScores).map(([trait, score]) => (
-                                <div key={trait} className="bg-gray-700/50 rounded-lg p-4 text-center">
-                                    <h3 className="text-sm font-medium text-gray-400 mb-2">{trait}</h3>
-                                    <div className="text-3xl font-bold text-purple-400">
+                                <div key={trait} className="bg-[var(--surface)] rounded-lg p-4 text-center">
+                                    <h3 className="text-sm font-medium text-[var(--ink)] mb-2">{trait}</h3>
+                                    <div className="text-3xl font-bold text-[var(--brand)]">
                                         {Math.round(score * 100)}
                                     </div>
-                                    <div className="text-xs text-gray-500 mt-1">out of 100</div>
+                                    <div className="text-xs text-[var(--ink)] mt-1">out of 100</div>
                                 </div>
                             ))}
                         </div>
@@ -230,9 +231,9 @@ const PublicSurveyPage = () => {
                         {/* Insights */}
                         {results.insights && results.insights.length > 0 && (
                             <div className="space-y-2">
-                                <h3 className="text-lg font-semibold text-white mb-3">Key Insights:</h3>
+                                <h3 className="text-lg font-semibold text-[var(--ink)] mb-3">Key Insights:</h3>
                                 {results.insights.map((insight, idx) => (
-                                    <div key={idx} className="bg-purple-900/30 border border-purple-700/50 rounded-lg p-3 text-gray-300">
+                                    <div key={idx} className="bg-[var(--brand)] border border-[var(--brand)] rounded-lg p-3 text-[var(--ink)]">
                                         {insight}
                                     </div>
                                 ))}
@@ -241,10 +242,10 @@ const PublicSurveyPage = () => {
                     </div>
 
                     {/* Next Steps */}
-                    <div className="bg-blue-900/30 border border-blue-700/50 rounded-lg p-6 text-center">
-                        <h3 className="text-xl font-semibold text-white mb-2">What's Next?</h3>
-                        <p className="text-gray-300">
-                            Your mentor (<span className="font-semibold text-blue-400">{linkInfo.mentorName}</span>)
+                    <div className="bg-[var(--brand)] border border-[var(--brand)] rounded-lg p-6 text-center">
+                        <h3 className="text-xl font-semibold text-[var(--ink)] mb-2">What's Next?</h3>
+                        <p className="text-[var(--ink)]">
+                            Your mentor (<span className="font-semibold text-[var(--brand)]">{linkInfo.mentorName}</span>)
                             will review your personality profile and use these insights to provide personalized guidance
                             and support tailored to your learning style and strengths.
                         </p>
@@ -255,21 +256,21 @@ const PublicSurveyPage = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 py-12 px-4">
+        <div className="min-h-screen bg-[var(--surface)]    py-12 px-4">
             <div className="max-w-4xl mx-auto">
                 {/* Header */}
-                <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl p-8 text-white mb-8">
+                <div className="bg-[var(--surface)]   rounded-xl p-8 text-[var(--ink)] mb-8">
                     <div className="flex items-center gap-4 mb-4">
-                        <div className="bg-white/20 p-3 rounded-lg backdrop-blur-sm">
+                        <div className="bg-[var(--surface)] p-3 rounded-lg backdrop-blur-sm">
                             <Brain className="w-8 h-8" />
                         </div>
                         <div>
                             <h1 className="text-3xl font-bold">Personality Assessment (BFI-44)</h1>
-                            <p className="text-purple-100 mt-1">Discover your unique personality traits</p>
+                            <p className="text-[var(--brand)] mt-1">Discover your unique personality traits</p>
                         </div>
                     </div>
 
-                    <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 mt-4 space-y-2">
+                    <div className="bg-[var(--surface)] backdrop-blur-sm rounded-lg p-4 mt-4 space-y-2">
                         <p className="text-sm"><span className="font-semibold">Student:</span> {linkInfo.studentName} ({linkInfo.usn})</p>
                         <p className="text-sm"><span className="font-semibold">Department:</span> {linkInfo.department}</p>
                         <p className="text-sm"><span className="font-semibold">Mentor:</span> {linkInfo.mentorName}</p>
@@ -277,40 +278,40 @@ const PublicSurveyPage = () => {
                 </div>
 
                 {/* Progress Bar */}
-                <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 mb-6">
+                <div className="bg-[var(--surface)] rounded-xl p-6 border border-[var(--line)] mb-6">
                     <div className="flex justify-between items-center mb-2">
-                        <span className="text-white font-medium">Progress</span>
-                        <span className="text-purple-400 font-semibold">{Math.round(getProgressPercentage())}%</span>
+                        <span className="text-[var(--ink)] font-medium">Progress</span>
+                        <span className="text-[var(--brand)] font-semibold">{Math.round(getProgressPercentage())}%</span>
                     </div>
-                    <div className="w-full bg-gray-700 rounded-full h-3">
+                    <div className="w-full bg-[var(--surface)] rounded-full h-3">
                         <div
-                            className="bg-gradient-to-r from-purple-500 to-pink-500 h-3 rounded-full transition-all duration-300"
+                            className="bg-[var(--surface)]   h-3 rounded-full transition-all duration-300"
                             style={{ width: `${getProgressPercentage()}%` }}
                         />
                     </div>
-                    <div className="flex justify-between mt-2 text-sm text-gray-400">
+                    <div className="flex justify-between mt-2 text-sm text-[var(--ink)]">
                         <span>Page {currentPage + 1} of {totalPages}</span>
                         <span>{Object.keys(responses).length} / {questions.length} answered</span>
                     </div>
                 </div>
 
                 {/* Questions */}
-                <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 mb-6">
+                <div className="bg-[var(--surface)] rounded-xl p-6 border border-[var(--line)] mb-6">
                     <div className="mb-6">
-                        <h2 className="text-xl font-semibold text-white mb-2">
+                        <h2 className="text-xl font-semibold text-[var(--ink)] mb-2">
                             Rate how much you agree with each statement
                         </h2>
-                        <p className="text-gray-400 text-sm">1 = Strongly Disagree, 5 = Strongly Agree</p>
+                        <p className="text-[var(--ink)] text-sm">1 = Strongly Disagree, 5 = Strongly Agree</p>
                     </div>
 
                     <div className="space-y-6">
                         {getCurrentPageQuestions().map((question) => (
-                            <div key={question.id} className="bg-gray-700/30 rounded-lg p-4">
-                                <p className="text-white mb-4 font-medium">
+                            <div key={question.id} className="bg-[var(--surface)] rounded-lg p-4">
+                                <p className="text-[var(--ink)] mb-4 font-medium">
                                     {question.id}. {question.text}
                                 </p>
                                 <div className="flex gap-2 justify-between items-center">
-                                    <span className="text-xs text-gray-400 w-24">Strongly Disagree</span>
+                                    <span className="text-xs text-[var(--ink)] w-24">Strongly Disagree</span>
                                     <div className="flex gap-3 flex-1 justify-center">
                                         {[1, 2, 3, 4, 5].map((value) => (
                                             <label key={value} className="cursor-pointer">
@@ -322,15 +323,15 @@ const PublicSurveyPage = () => {
                                                     onChange={() => handleResponseChange(question.id, value)}
                                                     className="hidden peer"
                                                 />
-                                                <div className="w-12 h-12 rounded-lg border-2 border-gray-600 flex items-center justify-center font-semibold text-lg transition-all
-                                                    peer-checked:border-purple-500 peer-checked:bg-purple-500 peer-checked:text-white
-                                                    hover:border-purple-400 text-gray-400 peer-checked:scale-110">
+                                                <div className="w-12 h-12 rounded-lg border-2 border-[var(--line)] flex items-center justify-center font-semibold text-lg transition-all
+                                                    peer-checked:border-[var(--brand)] peer-checked:bg-[var(--brand)] peer-checked:text-[var(--ink)]
+                                                    hover:border-[var(--brand)] text-[var(--ink)] peer-checked:scale-110">
                                                     {value}
                                                 </div>
                                             </label>
                                         ))}
                                     </div>
-                                    <span className="text-xs text-gray-400 w-24 text-right">Strongly Agree</span>
+                                    <span className="text-xs text-[var(--ink)] w-24 text-right">Strongly Agree</span>
                                 </div>
                             </div>
                         ))}
@@ -342,7 +343,7 @@ const PublicSurveyPage = () => {
                     <button
                         onClick={handlePrevious}
                         disabled={currentPage === 0}
-                        className="px-6 py-3 bg-gray-700 text-white rounded-lg font-medium hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                        className="px-6 py-3 bg-[var(--surface)] text-[var(--ink)] rounded-lg font-medium hover:bg-[var(--surface)] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                     >
                         Previous
                     </button>
@@ -351,7 +352,7 @@ const PublicSurveyPage = () => {
                         <button
                             onClick={handleNext}
                             disabled={!canProceedToNext()}
-                            className="px-6 py-3 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                            className="px-6 py-3 bg-[var(--brand)] text-[var(--ink)] rounded-lg font-medium hover:bg-[var(--brand)] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                         >
                             Next →
                         </button>
@@ -359,7 +360,7 @@ const PublicSurveyPage = () => {
                         <button
                             onClick={handleSubmit}
                             disabled={!canSubmit() || submitting}
-                            className="px-8 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg font-medium hover:from-green-700 hover:to-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
+                            className="px-8 py-3 bg-[var(--surface)]   text-[var(--ink)] rounded-lg font-medium   disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
                         >
                             {submitting ? (
                                 <>

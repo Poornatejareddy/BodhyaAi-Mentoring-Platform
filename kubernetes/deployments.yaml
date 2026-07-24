@@ -1,0 +1,321 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: bodhyai
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-pvc
+  namespace: bodhyai
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+# ------------------------------------------------------------------------------
+# MONGODB DEPLOYMENT & SERVICE
+# ------------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb
+  namespace: bodhyai
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+        - name: mongodb
+          image: mongo:6
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: mongodb-storage
+              mountPath: /data/db
+      volumes:
+        - name: mongodb-storage
+          persistentVolumeClaim:
+            claimName: mongodb-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb
+  namespace: bodhyai
+spec:
+  ports:
+    - port: 27017
+      targetPort: 27017
+  selector:
+    app: mongodb
+---
+# ------------------------------------------------------------------------------
+# COGNITIVE PROFILING SERVICE
+# ------------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cogservice
+  namespace: bodhyai
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cogservice
+  template:
+    metadata:
+      labels:
+        app: cogservice
+    spec:
+      containers:
+        - name: cogservice
+          image: poornatejareddy/bodhyai-cog:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: HOST
+              value: "0.0.0.0"
+            - name: PORT
+              value: "8000"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cogservice
+  namespace: bodhyai
+spec:
+  ports:
+    - port: 8000
+  selector:
+    app: cogservice
+---
+# ------------------------------------------------------------------------------
+# RISK PREDICTION SERVICE
+# ------------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: riskservice
+  namespace: bodhyai
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: riskservice
+  template:
+    metadata:
+      labels:
+        app: riskservice
+    spec:
+      containers:
+        - name: riskservice
+          image: poornatejareddy/bodhyai-risk:latest
+          ports:
+            - containerPort: 8001
+          env:
+            - name: HOST
+              value: "0.0.0.0"
+            - name: PORT
+              value: "8001"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: riskservice
+  namespace: bodhyai
+spec:
+  ports:
+    - port: 8001
+  selector:
+    app: riskservice
+---
+# ------------------------------------------------------------------------------
+# EXPLAINABLE AI (XAI) SERVICE
+# ------------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: xaiservice
+  namespace: bodhyai
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: xaiservice
+  template:
+    metadata:
+      labels:
+        app: xaiservice
+    spec:
+      containers:
+        - name: xaiservice
+          image: poornatejareddy/bodhyai-xai:latest
+          ports:
+            - containerPort: 8002
+          env:
+            - name: HOST
+              value: "0.0.0.0"
+            - name: PORT
+              value: "8002"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: xaiservice
+  namespace: bodhyai
+spec:
+  ports:
+    - port: 8002
+  selector:
+    app: xaiservice
+---
+# ------------------------------------------------------------------------------
+# LLM SERVICE
+# ------------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llmservice
+  namespace: bodhyai
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: llmservice
+  template:
+    metadata:
+      labels:
+        app: llmservice
+    spec:
+      containers:
+        - name: llmservice
+          image: poornatejareddy/bodhyai-llm:latest
+          ports:
+            - containerPort: 8003
+          env:
+            - name: GEMINI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: bodhyai-secrets
+                  key: gemini-api-key
+            - name: HOST
+              value: "0.0.0.0"
+            - name: PORT
+              value: "8003"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: llmservice
+  namespace: bodhyai
+spec:
+  ports:
+    - port: 8003
+  selector:
+    app: llmservice
+---
+# ------------------------------------------------------------------------------
+# EXPRESS BACKEND GATEWAY
+# ------------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: bodhyai
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: poornatejareddy/bodhyai-backend:latest
+          ports:
+            - containerPort: 5000
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: PORT
+              value: "5000"
+            - name: MONGODB_URI
+              value: "mongodb://mongodb.bodhyai.svc.cluster.local:27017/bodhyai"
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: bodhyai-secrets
+                  key: jwt-secret
+            - name: FRONTEND_URL
+              value: "http://frontend.bodhyai.svc.cluster.local"
+            - name: COG_SERVICE_URL
+              value: "http://cogservice.bodhyai.svc.cluster.local:8000"
+            - name: RISK_SERVICE_URL
+              value: "http://riskservice.bodhyai.svc.cluster.local:8001"
+            - name: XAI_SERVICE_URL
+              value: "http://xaiservice.bodhyai.svc.cluster.local:8002"
+            - name: LLM_SERVICE_URL
+              value: "http://llmservice.bodhyai.svc.cluster.local:8003"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: bodhyai
+spec:
+  ports:
+    - port: 5000
+  selector:
+    app: backend
+---
+# ------------------------------------------------------------------------------
+# FRONTEND CLIENT
+# ------------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: bodhyai
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: poornatejareddy/bodhyai-frontend:latest
+          ports:
+            - containerPort: 80
+          env:
+            - name: VITE_API_URL
+              value: "http://backend.bodhyai.svc.cluster.local:5000"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: bodhyai
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: frontend

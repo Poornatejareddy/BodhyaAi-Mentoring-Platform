@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
+import { SOCKET_URL } from '../utils/api';
 
 const SocketContext = createContext();
 
@@ -13,23 +14,27 @@ export const useSocket = () => {
 
 export const SocketProvider = ({ children }) => {
     const [socket, setSocket] = useState(null);
+    const socketRef = useRef(null);
     const [connected, setConnected] = useState(false);
     const [alerts, setAlerts] = useState([]);
     const [unreadAlertsCount, setUnreadAlertsCount] = useState(0);
     const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
 
     // Initialize socket connection
-    const connect = (token) => {
-        if (socket) {
-            return; // Already connected
+    const connect = useCallback((token) => {
+        if (!token || socketRef.current) {
+            return socketRef.current;
         }
 
-        const newSocket = io(import.meta.env.VITE_API_URL || 'http://localhost:5000', {
+        const newSocket = io(SOCKET_URL, {
             auth: {
                 token: token,
             },
             transports: ['websocket', 'polling'],
         });
+        // State updates are asynchronous; the ref prevents a second socket from
+        // being created during React Strict Mode's development effect replay.
+        socketRef.current = newSocket;
 
         newSocket.on('connect', () => {
             console.log('✅ Socket.IO connected:', newSocket.id);
@@ -53,7 +58,7 @@ export const SocketProvider = ({ children }) => {
             setUnreadAlertsCount((prev) => prev + 1);
 
             // Show browser notification if permitted
-            if (Notification.permission === 'granted') {
+            if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
                 new Notification(alert.title, {
                     body: alert.message,
                     icon: '/logo.png',
@@ -68,7 +73,7 @@ export const SocketProvider = ({ children }) => {
             setUnreadMessagesCount((prev) => prev + 1);
 
             // Show browser notification if permitted
-            if (Notification.permission === 'granted') {
+            if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
                 new Notification(`New message from ${message.sender?.name}`, {
                     body: message.content,
                     icon: '/logo.png',
@@ -88,19 +93,34 @@ export const SocketProvider = ({ children }) => {
         });
 
         setSocket(newSocket);
-    };
+        return newSocket;
+    }, []);
 
     // Disconnect socket
-    const disconnect = () => {
-        if (socket) {
-            socket.disconnect();
+    const disconnect = useCallback(() => {
+        const activeSocket = socketRef.current;
+        if (activeSocket) {
+            socketRef.current = null;
+            activeSocket.disconnect();
             setSocket(null);
             setConnected(false);
             setAlerts([]);
             setUnreadAlertsCount(0);
             setUnreadMessagesCount(0);
         }
-    };
+    }, []);
+
+    const requestNotificationPermission = useCallback(async () => {
+        if (typeof Notification === 'undefined') {
+            return 'unsupported';
+        }
+
+        if (Notification.permission !== 'default') {
+            return Notification.permission;
+        }
+
+        return Notification.requestPermission();
+    }, []);
 
     // Emit typing start
     const emitTypingStart = (recipientId, chatId) => {
@@ -128,23 +148,10 @@ export const SocketProvider = ({ children }) => {
         setUnreadAlertsCount(0);
     };
 
-    // Request notification permission on mount
-    useEffect(() => {
-        if (Notification.permission === 'default') {
-            Notification.requestPermission().then((permission) => {
-                console.log('Notification permission:', permission);
-            });
-        }
-    }, []);
-
     // Cleanup on unmount
     useEffect(() => {
-        return () => {
-            if (socket) {
-                socket.disconnect();
-            }
-        };
-    }, [socket]);
+        return disconnect;
+    }, [disconnect]);
 
     const value = {
         socket,
@@ -159,6 +166,7 @@ export const SocketProvider = ({ children }) => {
         emitTypingStop,
         clearAlert,
         clearAllAlerts,
+        requestNotificationPermission,
     };
 
     return <SocketContext.Provider value={value}>{children}</SocketContext.Provider>;

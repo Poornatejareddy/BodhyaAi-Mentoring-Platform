@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, Search, Filter, X, Check, UserCog } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
+import { API_BASE_URL } from '../../../utils/api';
 import ReassignMentorModal from '../components/ReassignMentorModal';
 
 function UserManagementPage() {
@@ -31,7 +32,7 @@ function UserManagementPage() {
 
     const fetchUsers = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/admin/users?limit=100', {
+            const response = await fetch(`${API_BASE_URL}/admin/users?limit=100`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const data = await response.json();
@@ -52,8 +53,8 @@ function UserManagementPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const url = modalMode === 'create'
-            ? 'http://localhost:5000/api/admin/users'
-            : `http://localhost:5000/api/admin/users/${currentUser._id}`;
+            ? `${API_BASE_URL}/admin/users`
+            : `${API_BASE_URL}/admin/users/${currentUser._id}`;
 
         const method = modalMode === 'create' ? 'POST' : 'PUT';
 
@@ -84,7 +85,7 @@ function UserManagementPage() {
         if (!window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) return;
 
         try {
-            const response = await fetch(`http://localhost:5000/api/admin/users/${userId}`, {
+            const response = await fetch(`${API_BASE_URL}/admin/users/${userId}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -119,7 +120,7 @@ function UserManagementPage() {
     const openReassignModal = async (user) => {
         // Fetch full student details including current mentor
         try {
-            const response = await fetch(`http://localhost:5000/api/admin/students`, {
+            const response = await fetch(`${API_BASE_URL}/admin/students`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const data = await response.json();
@@ -164,10 +165,10 @@ function UserManagementPage() {
     return (
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <h1 className="text-2xl font-bold text-white">User Management</h1>
+                <h1 className="text-2xl font-bold text-[var(--ink)]">User Management</h1>
                 <button
                     onClick={openCreateModal}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2 transition-colors"
+                    className="px-4 py-2 bg-[var(--brand)] hover:bg-[var(--brand)] text-[var(--ink)] rounded-lg flex items-center gap-2 transition-colors"
                 >
                     <Plus className="w-4 h-4" />
                     Add User
@@ -175,23 +176,23 @@ function UserManagementPage() {
             </div>
 
             {/* Filters */}
-            <div className="flex flex-col md:flex-row gap-4 bg-gray-800 p-4 rounded-xl border border-gray-700">
+            <div className="flex flex-col md:flex-row gap-4 bg-[var(--surface)] p-4 rounded-xl border border-[var(--line)]">
                 <div className="relative flex-1">
-                    <Search className="w-5 h-5 text-gray-400 absolute left-3 top-2.5" />
+                    <Search className="w-5 h-5 text-[var(--ink)] absolute left-3 top-2.5" />
                     <input
                         type="text"
                         placeholder="Search users..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full bg-gray-700 text-white pl-10 pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full bg-[var(--surface)] text-[var(--ink)] pl-10 pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--brand)]"
                     />
                 </div>
                 <div className="relative">
-                    <Filter className="w-5 h-5 text-gray-400 absolute left-3 top-2.5" />
+                    <Filter className="w-5 h-5 text-[var(--ink)] absolute left-3 top-2.5" />
                     <select
                         value={roleFilter}
                         onChange={(e) => setRoleFilter(e.target.value)}
-                        className="bg-gray-700 text-white pl-10 pr-8 py-2 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="bg-[var(--surface)] text-[var(--ink)] pl-10 pr-8 py-2 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-[var(--brand)]"
                     >
                         <option value="all">All Roles</option>
                         <option value="student">Students</option>
@@ -202,10 +203,10 @@ function UserManagementPage() {
             </div>
 
             {/* Users Table */}
-            <div className="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
+            <div className="bg-[var(--surface)] rounded-xl border border-[var(--line)] overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
-                        <thead className="bg-gray-700/50 text-gray-400 text-sm uppercase">
+                        <thead className="bg-[var(--surface)] text-[var(--ink)] text-sm uppercase">
                             <tr>
                                 <th className="px-6 py-3">Name</th>
                                 <th className="px-6 py-3">Email</th>
@@ -217,26 +218,26 @@ function UserManagementPage() {
                         <tbody className="divide-y divide-gray-700">
                             {loading ? (
                                 <tr>
-                                    <td colSpan="5" className="px-6 py-8 text-center text-gray-400">Loading...</td>
+                                    <td colSpan="5" className="px-6 py-8 text-center text-[var(--ink)]">Loading...</td>
                                 </tr>
                             ) : filteredUsers.length === 0 ? (
                                 <tr>
-                                    <td colSpan="5" className="px-6 py-8 text-center text-gray-400">No users found</td>
+                                    <td colSpan="5" className="px-6 py-8 text-center text-[var(--ink)]">No users found</td>
                                 </tr>
                             ) : (
                                 filteredUsers.map((user) => (
-                                    <tr key={user._id} className="hover:bg-gray-700/30 transition-colors">
-                                        <td className="px-6 py-4 font-medium text-white">{user.name}</td>
-                                        <td className="px-6 py-4 text-gray-300">{user.email}</td>
+                                    <tr key={user._id} className="hover:bg-[var(--surface)] transition-colors">
+                                        <td className="px-6 py-4 font-medium text-[var(--ink)]">{user.name}</td>
+                                        <td className="px-6 py-4 text-[var(--ink)]">{user.email}</td>
                                         <td className="px-6 py-4">
-                                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${user.role === 'admin' ? 'bg-purple-900/50 text-purple-400' :
-                                                user.role === 'mentor' ? 'bg-blue-900/50 text-blue-400' :
-                                                    'bg-green-900/50 text-green-400'
+                                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${user.role === 'admin' ? 'bg-[var(--brand)] text-[var(--brand)]' :
+                                                user.role === 'mentor' ? 'bg-[var(--brand)] text-[var(--brand)]' :
+                                                    'bg-[var(--success-muted)] text-[var(--success)]'
                                                 }`}>
                                                 {user.role.toUpperCase()}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 text-gray-400 text-sm">
+                                        <td className="px-6 py-4 text-[var(--ink)] text-sm">
                                             {new Date(user.createdAt).toLocaleDateString()}
                                         </td>
                                         <td className="px-6 py-4 text-right">
@@ -244,7 +245,7 @@ function UserManagementPage() {
                                                 {user.role === 'student' && (
                                                     <button
                                                         onClick={() => openReassignModal(user)}
-                                                        className="p-1.5 hover:bg-gray-600 rounded-lg text-purple-400 transition-colors"
+                                                        className="p-1.5 hover:bg-[var(--surface)] rounded-lg text-[var(--brand)] transition-colors"
                                                         title="Change Mentor"
                                                     >
                                                         <UserCog className="w-4 h-4" />
@@ -252,13 +253,13 @@ function UserManagementPage() {
                                                 )}
                                                 <button
                                                     onClick={() => openEditModal(user)}
-                                                    className="p-1.5 hover:bg-gray-600 rounded-lg text-blue-400 transition-colors"
+                                                    className="p-1.5 hover:bg-[var(--surface)] rounded-lg text-[var(--brand)] transition-colors"
                                                 >
                                                     <Edit2 className="w-4 h-4" />
                                                 </button>
                                                 <button
                                                     onClick={() => handleDelete(user._id)}
-                                                    className="p-1.5 hover:bg-gray-600 rounded-lg text-red-400 transition-colors"
+                                                    className="p-1.5 hover:bg-[var(--surface)] rounded-lg text-[var(--danger)] transition-colors"
                                                 >
                                                     <Trash2 className="w-4 h-4" />
                                                 </button>
@@ -274,44 +275,44 @@ function UserManagementPage() {
 
             {/* Modal */}
             {showModal && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                    <div className="bg-gray-800 rounded-xl border border-gray-700 w-full max-w-md shadow-xl">
-                        <div className="flex justify-between items-center p-6 border-b border-gray-700">
-                            <h2 className="text-xl font-bold text-white">
+                <div className="fixed inset-0 bg-[color:var(--overlay)] backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-[var(--surface)] rounded-xl border border-[var(--line)] w-full max-w-md shadow-xl">
+                        <div className="flex justify-between items-center p-6 border-b border-[var(--line)]">
+                            <h2 className="text-xl font-bold text-[var(--ink)]">
                                 {modalMode === 'create' ? 'Add New User' : 'Edit User'}
                             </h2>
-                            <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-white">
+                            <button onClick={() => setShowModal(false)} className="text-[var(--ink)] hover:text-[var(--ink)]">
                                 <X className="w-5 h-5" />
                             </button>
                         </div>
 
                         <form onSubmit={handleSubmit} className="p-6 space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-400 mb-1">Full Name</label>
+                                <label className="block text-sm font-medium text-[var(--ink)] mb-1">Full Name</label>
                                 <input
                                     type="text"
                                     name="name"
                                     value={formData.name}
                                     onChange={handleInputChange}
                                     required
-                                    className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full bg-[var(--surface)] text-[var(--ink)] px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--brand)]"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-400 mb-1">Email Address</label>
+                                <label className="block text-sm font-medium text-[var(--ink)] mb-1">Email Address</label>
                                 <input
                                     type="email"
                                     name="email"
                                     value={formData.email}
                                     onChange={handleInputChange}
                                     required
-                                    className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full bg-[var(--surface)] text-[var(--ink)] px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--brand)]"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-400 mb-1">
+                                <label className="block text-sm font-medium text-[var(--ink)] mb-1">
                                     {modalMode === 'create' ? 'Password' : 'New Password (Optional)'}
                                 </label>
                                 <input
@@ -320,17 +321,17 @@ function UserManagementPage() {
                                     value={formData.password}
                                     onChange={handleInputChange}
                                     required={modalMode === 'create'}
-                                    className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full bg-[var(--surface)] text-[var(--ink)] px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--brand)]"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-400 mb-1">Role</label>
+                                <label className="block text-sm font-medium text-[var(--ink)] mb-1">Role</label>
                                 <select
                                     name="role"
                                     value={formData.role}
                                     onChange={handleInputChange}
-                                    className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full bg-[var(--surface)] text-[var(--ink)] px-4 py-2 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-[var(--brand)]"
                                 >
                                     <option value="student">Student</option>
                                     <option value="mentor">Mentor</option>
@@ -343,23 +344,23 @@ function UserManagementPage() {
                                 <>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-400 mb-1">USN (Optional)</label>
+                                            <label className="block text-sm font-medium text-[var(--ink)] mb-1">USN (Optional)</label>
                                             <input
                                                 type="text"
                                                 name="usn"
                                                 value={formData.usn}
                                                 onChange={handleInputChange}
-                                                className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full bg-[var(--surface)] text-[var(--ink)] px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--brand)]"
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-400 mb-1">Department</label>
+                                            <label className="block text-sm font-medium text-[var(--ink)] mb-1">Department</label>
                                             <input
                                                 type="text"
                                                 name="department"
                                                 value={formData.department}
                                                 onChange={handleInputChange}
-                                                className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full bg-[var(--surface)] text-[var(--ink)] px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--brand)]"
                                             />
                                         </div>
                                     </div>
@@ -368,13 +369,13 @@ function UserManagementPage() {
 
                             {formData.role === 'mentor' && (
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-400 mb-1">Department</label>
+                                    <label className="block text-sm font-medium text-[var(--ink)] mb-1">Department</label>
                                     <input
                                         type="text"
                                         name="department"
                                         value={formData.department}
                                         onChange={handleInputChange}
-                                        className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        className="w-full bg-[var(--surface)] text-[var(--ink)] px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--brand)]"
                                     />
                                 </div>
                             )}
@@ -383,13 +384,13 @@ function UserManagementPage() {
                                 <button
                                     type="button"
                                     onClick={() => setShowModal(false)}
-                                    className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
+                                    className="px-4 py-2 text-[var(--ink)] hover:text-[var(--ink)] transition-colors"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                                    className="px-4 py-2 bg-[var(--brand)] hover:bg-[var(--brand)] text-[var(--ink)] rounded-lg font-medium transition-colors"
                                 >
                                     {modalMode === 'create' ? 'Create User' : 'Save Changes'}
                                 </button>

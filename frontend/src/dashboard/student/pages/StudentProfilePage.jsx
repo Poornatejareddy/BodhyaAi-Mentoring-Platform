@@ -142,8 +142,8 @@ function StudentProfilePage() {
   // -------------------------
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen bg-transparent text-white">
-        <div className="animate-spin h-10 w-10 rounded-full border-t-2 border-b-2 border-blue-500"></div>
+      <div className="flex justify-center items-center h-screen bg-transparent text-[var(--ink)]">
+        <div className="animate-spin h-10 w-10 rounded-full border-t-2 border-b-2 border-[var(--brand)]"></div>
         <p className="ml-3">Loading profile...</p>
       </div>
     );
@@ -154,13 +154,13 @@ function StudentProfilePage() {
   // -------------------------
   const renderInputField = (name, label, type = "number", props = {}) => (
     <div className="mb-4" key={name}>
-      <label className="block text-sm mb-1 text-gray-400 font-medium">{label}</label>
+      <label className="block text-sm mb-1 text-[var(--ink)] font-medium">{label}</label>
       <input
         type={type}
         name={name}
         value={formData[name] ?? ''}
         onChange={handleChange}
-        className="w-full p-3 bg-gray-900/50 text-white rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+        className="w-full p-3 bg-[var(--surface)] text-[var(--ink)] rounded-lg border border-[var(--line)] focus:ring-2 focus:ring-[var(--brand)] focus:border-transparent transition-all"
         {...props}
       />
     </div>
@@ -168,13 +168,13 @@ function StudentProfilePage() {
 
   const renderNestedField = (group, key, label) => (
     <div className="mb-4" key={key}>
-      <label className="block text-sm mb-1 text-gray-400 font-medium">{label}</label>
+      <label className="block text-sm mb-1 text-[var(--ink)] font-medium">{label}</label>
       <input
         type="number"
         name={key}
         value={formData[group]?.[key] ?? ''}
         onChange={handleChange}
-        className="w-full p-3 bg-gray-900/50 text-white rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+        className="w-full p-3 bg-[var(--surface)] text-[var(--ink)] rounded-lg border border-[var(--line)] focus:ring-2 focus:ring-[var(--brand)] focus:border-transparent transition-all"
         step="0.1"
       />
     </div>
@@ -182,12 +182,12 @@ function StudentProfilePage() {
 
   const renderSelectField = (name, label, options) => (
     <div className="mb-4" key={name}>
-      <label className="block text-sm mb-1 text-gray-400 font-medium">{label}</label>
+      <label className="block text-sm mb-1 text-[var(--ink)] font-medium">{label}</label>
       <select
         name={name}
         value={formData[name]}
         onChange={handleChange}
-        className="w-full p-3 bg-gray-900/50 text-white rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+        className="w-full p-3 bg-[var(--surface)] text-[var(--ink)] rounded-lg border border-[var(--line)] focus:ring-2 focus:ring-[var(--brand)] focus:border-transparent transition-all"
       >
         {options.map(([val, text]) => (
           <option key={val} value={val}>{text}</option>
@@ -203,34 +203,34 @@ function StudentProfilePage() {
     <div className="w-full max-w-6xl mx-auto space-y-8">
 
       {/* Header Section */}
-      <div className="bg-gray-800/50 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-xl relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-r from-blue-600 to-purple-600 opacity-20"></div>
+      <div className="bg-[var(--surface)] backdrop-blur-xl border border-[var(--line)] rounded-2xl p-8 shadow-xl relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-32 bg-[var(--surface)]   opacity-20"></div>
 
         <div className="relative flex flex-col md:flex-row items-center gap-8 mt-4">
           {/* Profile Picture */}
           <div className="relative group">
-            <div className="w-32 h-32 rounded-full p-1 bg-gradient-to-br from-blue-500 to-purple-600 shadow-2xl">
-              <div className="w-full h-full rounded-full bg-gray-900 overflow-hidden flex items-center justify-center">
+            <div className="w-32 h-32 rounded-full p-1 bg-[var(--surface)]   shadow-2xl">
+              <div className="w-full h-full rounded-full bg-[var(--surface)] overflow-hidden flex items-center justify-center">
                 {formData.profilePicture ? (
                   <img src={formData.profilePicture} alt="Profile" className="w-full h-full object-cover" />
                 ) : (
-                  <UserCircle className="w-20 h-20 text-gray-500" />
+                  <UserCircle className="w-20 h-20 text-[var(--ink)]" />
                 )}
               </div>
             </div>
-            <div className="absolute bottom-0 right-0 bg-blue-600 p-2 rounded-full shadow-lg border-2 border-gray-900 cursor-pointer hover:bg-blue-500 transition-colors">
-              <Camera className="w-5 h-5 text-white" />
+            <div className="absolute bottom-0 right-0 bg-[var(--brand)] p-2 rounded-full shadow-lg border-2 border-[var(--line)] cursor-pointer hover:bg-[var(--brand)] transition-colors">
+              <Camera className="w-5 h-5 text-[var(--ink)]" />
             </div>
           </div>
 
           <div className="text-center md:text-left flex-1">
-            <h1 className="text-3xl font-bold text-white">{formData.name || 'Student Name'}</h1>
-            <p className="text-blue-400 font-medium text-lg">{formData.usn || 'USN'}</p>
+            <h1 className="text-3xl font-bold text-[var(--ink)]">{formData.name || 'Student Name'}</h1>
+            <p className="text-[var(--brand)] font-medium text-lg">{formData.usn || 'USN'}</p>
             <div className="flex flex-wrap justify-center md:justify-start gap-3 mt-3">
-              <span className="px-3 py-1 rounded-full bg-blue-500/10 text-blue-300 border border-blue-500/20 text-sm">
+              <span className="px-3 py-1 rounded-full bg-[var(--brand)] text-[var(--brand)] border border-[var(--brand)] text-sm">
                 {formData.department || 'Department'}
               </span>
-              <span className="px-3 py-1 rounded-full bg-purple-500/10 text-purple-300 border border-purple-500/20 text-sm">
+              <span className="px-3 py-1 rounded-full bg-[var(--brand)] text-[var(--brand)] border border-[var(--brand)] text-sm">
                 Section: {formData.section || 'N/A'}
               </span>
             </div>
@@ -238,19 +238,19 @@ function StudentProfilePage() {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-gray-800/50 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-xl">
+      <form onSubmit={handleSubmit} className="bg-[var(--surface)] backdrop-blur-xl border border-[var(--line)] rounded-2xl p-8 shadow-xl">
 
         {message && (
-          <div className={`p-4 mb-6 rounded-xl flex items-center gap-3 ${isError ? 'bg-red-500/10 text-red-300 border border-red-500/20' : 'bg-green-500/10 text-green-300 border border-green-500/20'}`}>
-            {isError ? <div className="w-2 h-2 rounded-full bg-red-500"></div> : <div className="w-2 h-2 rounded-full bg-green-500"></div>}
+          <div className={`p-4 mb-6 rounded-xl flex items-center gap-3 ${isError ? 'bg-[var(--danger-muted)] text-[var(--danger)] border border-[var(--danger)]' : 'bg-[var(--success-muted)] text-[var(--success)] border border-[var(--success)]'}`}>
+            {isError ? <div className="w-2 h-2 rounded-full bg-[var(--danger-muted)]"></div> : <div className="w-2 h-2 rounded-full bg-[var(--success-muted)]"></div>}
             {message}
           </div>
         )}
 
         {/* ------------------ Basic Info ------------------ */}
-        <section className="border-b border-gray-700/50 pb-8 mb-8">
-          <h2 className="text-xl mb-6 font-semibold text-white flex items-center gap-2">
-            <span className="w-1 h-6 bg-blue-500 rounded-full"></span>
+        <section className="border-b border-[var(--line)] pb-8 mb-8">
+          <h2 className="text-xl mb-6 font-semibold text-[var(--ink)] flex items-center gap-2">
+            <span className="w-1 h-6 bg-[var(--brand)] rounded-full"></span>
             Basic Details
           </h2>
 
@@ -264,9 +264,9 @@ function StudentProfilePage() {
         </section>
 
         {/* ------------------ Academic ------------------ */}
-        <section className="border-b border-gray-700/50 pb-8 mb-8">
-          <h2 className="text-xl mb-6 font-semibold text-white flex items-center gap-2">
-            <span className="w-1 h-6 bg-purple-500 rounded-full"></span>
+        <section className="border-b border-[var(--line)] pb-8 mb-8">
+          <h2 className="text-xl mb-6 font-semibold text-[var(--ink)] flex items-center gap-2">
+            <span className="w-1 h-6 bg-[var(--brand)] rounded-full"></span>
             Academic Data
           </h2>
 
@@ -276,21 +276,21 @@ function StudentProfilePage() {
             {renderInputField('Backlogs', 'Number of Backlogs (Active)', "number", { min: 0 })}
           </div>
 
-          <h3 className="text-lg mt-8 mb-4 font-medium text-gray-300">Semester SGPA</h3>
+          <h3 className="text-lg mt-8 mb-4 font-medium text-[var(--ink)]">Semester SGPA</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {SEMESTER_KEYS.map(k => renderNestedField('sgpa', k, k))}
           </div>
 
-          <h3 className="text-lg mt-8 mb-4 font-medium text-gray-300">IAT Scores</h3>
+          <h3 className="text-lg mt-8 mb-4 font-medium text-[var(--ink)]">IAT Scores</h3>
           <div className="grid grid-cols-3 gap-4">
             {IAT_KEYS.map(k => renderNestedField('iat', k, k))}
           </div>
         </section>
 
         {/* ------------------ Lifestyle ------------------ */}
-        <section className="border-b border-gray-700/50 pb-8 mb-8">
-          <h2 className="text-xl mb-6 font-semibold text-white flex items-center gap-2">
-            <span className="w-1 h-6 bg-green-500 rounded-full"></span>
+        <section className="border-b border-[var(--line)] pb-8 mb-8">
+          <h2 className="text-xl mb-6 font-semibold text-[var(--ink)] flex items-center gap-2">
+            <span className="w-1 h-6 bg-[var(--success-muted)] rounded-full"></span>
             Lifestyle & Socio-Economic
           </h2>
 
@@ -311,9 +311,9 @@ function StudentProfilePage() {
         </section>
 
         {/* ------------------ Engagement ------------------ */}
-        <section className="border-b border-gray-700/50 pb-8 mb-8">
-          <h2 className="text-xl mb-6 font-semibold text-white flex items-center gap-2">
-            <span className="w-1 h-6 bg-orange-500 rounded-full"></span>
+        <section className="border-b border-[var(--line)] pb-8 mb-8">
+          <h2 className="text-xl mb-6 font-semibold text-[var(--ink)] flex items-center gap-2">
+            <span className="w-1 h-6 bg-[var(--warning-muted)] rounded-full"></span>
             Engagement
           </h2>
 
@@ -332,8 +332,8 @@ function StudentProfilePage() {
 
         {/* ------------------ Family ------------------ */}
         <section className="pb-6 mb-6">
-          <h2 className="text-xl mb-6 font-semibold text-white flex items-center gap-2">
-            <span className="w-1 h-6 bg-pink-500 rounded-full"></span>
+          <h2 className="text-xl mb-6 font-semibold text-[var(--ink)] flex items-center gap-2">
+            <span className="w-1 h-6 bg-[var(--brand)] rounded-full"></span>
             Family
           </h2>
 
@@ -347,7 +347,7 @@ function StudentProfilePage() {
 
         <button
           type="submit"
-          className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 py-4 rounded-xl mt-8 font-bold text-lg text-white transition-all hover:shadow-2xl hover:scale-[1.01] flex items-center justify-center gap-2"
+          className="w-full bg-[var(--surface)]     py-4 rounded-xl mt-8 font-bold text-lg text-[var(--ink)] transition-all hover:shadow-2xl hover:scale-[1.01] flex items-center justify-center gap-2"
         >
           <Save className="w-5 h-5" />
           Save Profile Changes

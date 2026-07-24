@@ -26,9 +26,9 @@ export const handleKeyPress = (callback, keys = ['Enter', ' ']) => (event) => {
 };
 
 // Focus Management
-export const focusRing = "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900";
+export const focusRing = "focus:outline-none focus:ring-2 focus:ring-[var(--brand)] focus:ring-offset-2 focus:ring-offset-[var(--canvas)]";
 
-export const skipToContent = "sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded-lg";
+export const skipToContent = "sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[var(--brand)] focus:text-[var(--ink)] focus:rounded-lg";
 
 // Reduce Motion Support
 export const prefersReducedMotion = () => {
@@ -41,9 +41,9 @@ export const motionSafe = (animationClass) => {
 
 // Color Contrast Utilities
 export const highContrast = {
-    text: "text-white",
-    bg: "bg-gray-900",
-    border: "border-white"
+    text: "text-[var(--ink)]",
+    bg: "bg-[var(--surface)]",
+    border: "border-[var(--line)]"
 };
 
 // ARIA Live Regions

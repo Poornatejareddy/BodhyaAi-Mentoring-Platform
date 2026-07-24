@@ -1,33 +1,32 @@
 # ai-services/cog-svc/service.py
 from fastapi import FastAPI
-from pydantic import BaseModel
-import joblib
-import os
 import pandas as pd
+from common.config import COG_SVC_PORT, HOST, COG_MODEL_PATHS
+from common.models.schemas import SurveyInput
+from common.utils.helper import load_joblib_model
+from common.utils.logging import get_logger
 
-app = FastAPI()
-MODEL_DIR = "models"
+logger = get_logger("cog-svc")
 
-# Load models
-models = {trait: joblib.load(os.path.join(MODEL_DIR, f"{trait}_pipeline.pkl"))
-          for trait in ["openness", "conscientiousness", "extraversion", "agreeableness", "neuroticism"]}
+app = FastAPI(title="BodhyaAI Cognitive Service", version="2.0")
 
-# Pydantic model for input
-class SurveyInput(BaseModel):
-    Q1: float; Q2: float; Q3: float; Q4: float; Q5: float
-    Q6: float; Q7: float; Q8: float; Q9: float; Q10: float
-    Q11: float; Q12: float; Q13: float; Q14: float; Q15: float
-    Q16: float; Q17: float; Q18: float; Q19: float; Q20: float
-    Q21: float; Q22: float; Q23: float; Q24: float; Q25: float
-    Q26: float; Q27: float; Q28: float; Q29: float; Q30: float
-    Q31: float; Q32: float; Q33: float; Q34: float; Q35: float
-    Q36: float; Q37: float; Q38: float; Q39: float; Q40: float
-    Q41: float; Q42: float; Q43: float; Q44: float; Q45: float
-    Q46: float; Q47: float; Q48: float; Q49: float; Q50: float
+# Load models using centralized config and helpers
+models = {}
+for trait, path in COG_MODEL_PATHS.items():
+    model = load_joblib_model(path)
+    if model is not None:
+        models[trait] = model
+    else:
+        logger.error(f"Failed to load cognitive model for trait: {trait}")
 
 @app.get("/")
 def read_root():
-    return {"status": "ok"}
+    status = "ok" if len(models) == 5 else "partial_error"
+    return {
+        "status": status,
+        "service": "cog-svc",
+        "loaded_models": list(models.keys())
+    }
 
 @app.post("/predict")
 def predict_traits(input_data: SurveyInput):
@@ -52,9 +51,6 @@ def predict_traits(input_data: SurveyInput):
     }
 
 def generate_extended_profile(scores):
-    # Normalize scores to 0-100 if they aren't already (assuming model returns 0-100)
-    # Logic to derive Learning Style, Strengths, etc.
-    
     openness = scores.get('Openness', 50)
     conscientiousness = scores.get('Conscientiousness', 50)
     extraversion = scores.get('Extraversion', 50)
@@ -62,9 +58,6 @@ def generate_extended_profile(scores):
     neuroticism = scores.get('Neuroticism', 50)
 
     # 1. Learning Style
-    # High Openness -> Visual
-    # High Extraversion -> Auditory
-    # High Conscientiousness -> Kinesthetic (Structured/Doing)
     learning_style = {
         "visual": min(100, int(openness * 0.8 + 20)),
         "auditory": min(100, int(extraversion * 0.8 + 20)),
@@ -116,5 +109,4 @@ def generate_extended_profile(scores):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
-
+    uvicorn.run(app, host=HOST, port=COG_SVC_PORT)

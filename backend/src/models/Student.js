@@ -135,4 +135,7 @@ const studentSchema = new Schema(
   { timestamps: true }
 );
 
+// Indexes for query performance
+studentSchema.index({ mentor: 1 });
+
 module.exports = mongoose.model('Student', studentSchema);

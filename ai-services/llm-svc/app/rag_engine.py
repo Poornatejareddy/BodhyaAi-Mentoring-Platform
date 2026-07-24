@@ -1,73 +1,26 @@
 """
-RAG Engine – Gemini (primary) → OpenAI → Local fallback
+RAG Engine – Uses Gemini exclusively with centralized fallback logic.
 """
 
 import os
-from typing import List, Dict, Optional
 import logging
+from typing import List, Dict, Optional
 
 from app.retriever import get_vector_store
 from app.document_manager import get_document_manager
 from app.knowledge_base import get_all_seed_documents
-from app.inference import generate_response
-
-# Gemini SDK (new google-genai)
-try:
-    from google import genai
-    GEMINI_AVAILABLE = True
-except ImportError:
-    GEMINI_AVAILABLE = False
-    logging.warning("google-genai not installed. Run: pip install google-genai")
-
-# OpenAI fallback
-try:
-    import openai
-    OPENAI_AVAILABLE = True
-except:
-    OPENAI_AVAILABLE = False
+from app.inference import generate_response, model_manager
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("RAGEngine")
 
 
 class RAGEngine:
 
-    def __init__(self, use_openai=True, use_gemini=True):
+    def __init__(self):
         self.vector_store = get_vector_store()
         self.document_manager = get_document_manager()
-
-        self.use_gemini = use_gemini and GEMINI_AVAILABLE
-        self.use_openai = use_openai and OPENAI_AVAILABLE
-
-        # ---------------------------
-        # Gemini Initialization
-        # ---------------------------
-        self.gemini_client = None
-        self.gemini_model_name = "gemini-2.0-flash"
-
-        if self.use_gemini:
-            api_key = os.getenv("GEMINI_API_KEY")
-            if api_key:
-                self.gemini_client = genai.Client(api_key=api_key)
-                logger.info("✅ Gemini 1.5 Flash initialized (PRIMARY)")
-            else:
-                self.use_gemini = False
-                logger.warning("GEMINI_API_KEY missing, Gemini disabled")
-
-        # ---------------------------
-        # OpenAI Initialization
-        # ---------------------------
-        if self.use_openai:
-            api_key = os.getenv("OPENAI_API_KEY")
-            if api_key:
-                openai.api_key = api_key
-                logger.info("✅ OpenAI Initialized (fallback)")
-            else:
-                self.use_openai = False
-
-        logger.info(
-            f"RAG Engine initialized → Gemini={self.use_gemini}, OpenAI={self.use_openai}"
-        )
+        logger.info("RAG Engine initialized to use Gemini.")
 
     # -------------------------------------------------------------------
     # Knowledge Base Initialization
@@ -149,12 +102,16 @@ class RAGEngine:
         return "\n".join(parts)
 
     # -------------------------------------------------------------------
-    # Gemini 1.5 Flash Response  (Primary)
+    # RAG Full Query
     # -------------------------------------------------------------------
-    def generate_response_gemini(self, query, context, model_name="gemini-2.5-flash"):
+    def query(self, question, k=5, filters=None, include_sources=True, external_context=None, model_name="gemini-2.5-flash"):
+        logger.info(f"Processing RAG query: {question[:80]}... Model: {model_name}")
 
-        if not self.use_gemini:
-            return {"error": "Gemini disabled"}
+        docs = self.retrieve_context(question, k=k, filters=filters)
+        context = self.build_context(docs)
+        
+        if external_context:
+            context = f"{external_context}\n\nKnowledge Base:\n{context}"
 
         prompt = f"""
 You are BodhyaAI — an intelligent academic mentoring assistant.
@@ -162,7 +119,7 @@ You are BodhyaAI — an intelligent academic mentoring assistant.
 {context}
 
 User Question:
-{query}
+{question}
 
 INSTRUCTIONS:
 1. **Identify the user's role** from the context above (student, mentor, or admin).
@@ -178,125 +135,25 @@ Give a helpful, clear, and actionable answer.
 """
 
         try:
-            # Use requested model or fallback to default
-            model_to_use = model_name if model_name else self.gemini_model_name
+            answer = generate_response(prompt, model_name=model_name)
+            model_used = model_manager.current_model or model_name or "gemini"
             
-            response = self.gemini_client.models.generate_content(
-                model=model_to_use,
-                contents=[
-                    {
-                        "role": "user",
-                        "parts": [{"text": prompt}]
-                    }
-                ]
-            )
-
-            answer = response.text.strip()
-
-            return {
+            res = {
                 "answer": answer,
-                "model": model_to_use,
-                "tokens_used": None
+                "model": model_used
             }
-
+            return self._finalize(res, docs, include_sources)
+            
         except Exception as e:
-            logger.error(f"❌ Gemini API error: {e}")
-            return {"error": str(e)}
-
-    # -------------------------------------------------------------------
-    # OpenAI Fallback
-    # -------------------------------------------------------------------
-    def generate_response_openai(self, query, context):
-        if not self.use_openai:
-            return {"error": "OpenAI disabled"}
-
-        system_prompt = "You are BodhyaAI, an academic mentor."
-
-        try:
-            resp = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {
-                        "role": "user",
-                        "content": f"Context:\n{context}\n\nQuestion:\n{query}",
-                    },
-                ],
-                max_tokens=400,
-                temperature=0.7,
-            )
-
-            return {
-                "answer": resp.choices[0].message.content,
-                "model": "gpt-3.5-turbo",
-                "tokens_used": resp.usage.total_tokens
-            }
-
-        except Exception as e:
-            return {"error": str(e)}
-
-    # -------------------------------------------------------------------
-    # Local Model Fallback
-    # -------------------------------------------------------------------
-    def generate_response_local(self, query, context):
-
-        prompt = f"""
-System: You are BodhyaAI.
-
-Context:
-{context}
-
-User Question:
-{query}
-
-Assistant:
-"""
-
-        try:
-            ans = generate_response(prompt, max_tokens=400)
-        except Exception as e:
-            ans = f"Local model error: {e}"
-
-        return {"answer": ans, "model": "local_llm"}
-
-    # -------------------------------------------------------------------
-    # RAG Full Query
-    # -------------------------------------------------------------------
-    def query(self, question, k=5, filters=None, include_sources=True, external_context=None, model_name="gemini-2.5-flash"):
-
-        logger.info(f"Processing RAG query: {question[:80]}... Model: {model_name}")
-
-        docs = self.retrieve_context(question, k=k, filters=filters)
-        if not docs and not external_context:
-            return {"answer": "I don't have enough information.", "sources": []}
-
-        context = self.build_context(docs)
-        
-        if external_context:
-            context = f"{external_context}\n\nKnowledge Base:\n{context}"
-
-        # 1️⃣ Gemini (Primary)
-        if self.use_gemini:
-            res = self.generate_response_gemini(question, context, model_name=model_name)
-            if "error" not in res:
-                return self._finalize(res, docs, include_sources)
-
-        # 2️⃣ OpenAI fallback
-        if self.use_openai:
-            res = self.generate_response_openai(question, context)
-            if "error" not in res:
-                return self._finalize(res, docs, include_sources)
-
-        # 3️⃣ Local model fallback
-        res = self.generate_response_local(question, context)
-        return self._finalize(res, docs, include_sources)
+            logger.error(f"RAG query generation failed: {e}")
+            # Reraise so endpoints can catch and display unified user-friendly error messages
+            raise e
 
     # -------------------------------------------------------------------
     # Final Formatting
     # -------------------------------------------------------------------
     def _finalize(self, result, docs, include_sources):
-
-        result["confidence"] = docs[0].get("score", 0.0)
+        result["confidence"] = docs[0].get("score", 0.0) if docs else 0.0
 
         if include_sources:
             result["sources"] = [

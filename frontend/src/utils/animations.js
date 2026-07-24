@@ -40,7 +40,7 @@ export const scaleIn = {
 // Hover Animations
 export const hoverLift = "hover:transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300";
 export const hoverScale = "hover:scale-105 transition-transform duration-300";
-export const hoverGlow = "hover:shadow-lg hover:shadow-blue-500/50 transition-shadow duration-300";
+export const hoverGlow = "hover:shadow-lg hover:shadow-[var(--shadow-md)] transition-shadow duration-300";
 
 // Stagger Animation (for lists)
 export const staggerDelay = (index) => ({

@@ -1,16 +1,6 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
 import PublicNavbar from '../components/navigation/PublicNavbar';
 
-function PublicLayout() {
-  return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 transition-colors duration-300">
-      <PublicNavbar />
-      <main>
-        <Outlet />
-      </main>
-    </div>
-  );
-}
-
+function PublicLayout() { return <div className="app-canvas min-h-screen"><PublicNavbar/><main><Outlet/></main><footer className="border-t border-[var(--line)] bg-[var(--surface)]"><div className="mx-auto grid max-w-7xl gap-10 px-5 py-12 sm:px-8 md:grid-cols-[1.5fr_1fr_1fr]"><div><p className="text-lg font-semibold">BodhyaAI</p><p className="mt-3 max-w-sm text-sm leading-6 app-muted">A more connected way for institutions to understand progress and support every learner.</p></div><div><p className="text-sm font-semibold">Platform</p><div className="mt-3 flex flex-col gap-2 text-sm app-muted"><Link to="/features">Features</Link><Link to="/solutions">Solutions</Link><Link to="/research">Research & AI</Link><Link to="/security">Security</Link></div></div><div><p className="text-sm font-semibold">Company</p><div className="mt-3 flex flex-col gap-2 text-sm app-muted"><Link to="/about">About</Link><Link to="/resources">Resources</Link><Link to="/contact">Contact</Link><Link to="/privacy">Privacy</Link></div></div></div><div className="border-t border-[var(--line)] px-5 py-5 text-center text-xs app-muted">© {new Date().getFullYear()} BodhyaAI. All rights reserved.</div></footer></div>; }
 export default PublicLayout;

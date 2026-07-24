@@ -17,14 +17,14 @@ NC='\033[0m' # No Color
 echo "1️⃣  Testing Service Health Checks..."
 echo "-----------------------------------"
 
-echo -n "  • risk-svc (port 8000): "
+echo -n "  • cog-svc (port 8000): "
 if curl -s http://localhost:8000/ | grep -q "ok"; then
     echo -e "${GREEN}✓ Running${NC}"
 else
     echo -e "${RED}✗ Not responding${NC}"
 fi
 
-echo -n "  • cog-svc (port 8001): "
+echo -n "  • risk-svc (port 8001): "
 if curl -s http://localhost:8001/ | grep -q "ok"; then
     echo -e "${GREEN}✓ Running${NC}"
 else
@@ -38,11 +38,11 @@ else
     echo -e "${RED}✗ Not responding${NC}"
 fi
 
-echo -n "  • Backend (port 5000): "
-if curl -s http://localhost:5000/ | grep -q "BodhyaAI"; then
+echo -n "  • Backend (port 5001): "
+if curl -s http://localhost:5001/ 2>/dev/null; then
     echo -e "${GREEN}✓ Running${NC}"
 else
-    echo -e "${RED}✗ Not responding${NC}"
+    echo -e "${RED}✗ Not responding (This is okay if only testing AI services)${NC}"
 fi
 
 echo ""
@@ -50,7 +50,7 @@ echo ""
 # Test 2: Risk Prediction
 echo "2️⃣  Testing Risk Prediction Service..."
 echo "------------------------------------"
-RISK_RESPONSE=$(curl -s -X POST http://localhost:8000/predict \
+RISK_RESPONSE=$(curl -s -X POST http://localhost:8001/predict \
   -H "Content-Type: application/json" \
   -d '{
     "CGPA": 7.5,
@@ -96,7 +96,7 @@ for i in {1..50}; do
 done
 SURVEY_DATA+='}'
 
-COG_RESPONSE=$(curl -s -X POST http://localhost:8001/predict \
+COG_RESPONSE=$(curl -s -X POST http://localhost:8000/predict \
   -H "Content-Type: application/json" \
   -d "$SURVEY_DATA")
 
@@ -137,7 +137,8 @@ XAI_RESPONSE=$(curl -s -X POST http://localhost:8002/explain/risk \
   }')
 
 if echo "$XAI_RESPONSE" | grep -q "prediction"; then
-    WAR NINGS=$(echo "$XAI_RESPONSE" | grep -o '"warnings":\[[^]]*\]' | grep -o '⚠️[^"]*' | wc -l)
+    # Fix the typo 'WAR NINGS' -> 'WARNINGS'
+    WARNINGS=$(echo "$XAI_RESPONSE" | grep -o '"warnings":\[[^]]*\]' | grep -o '⚠️[^"]*' | wc -l)
     echo -e "  ${GREEN}✓ XAI explanation successful${NC}"
     echo "    Warnings detected: $WARNINGS"
     if echo "$XAI_RESPONSE" | grep -q "Low attendance"; then

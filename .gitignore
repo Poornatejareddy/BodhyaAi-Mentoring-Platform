@@ -1,4 +1,6 @@
-# Python
+# Version Control Ignores
+
+# Python Caches & Environments
 __pycache__/
 *.pyc
 *.pyo
@@ -7,18 +9,27 @@ __pycache__/
 venv/
 *.egg-info/
 .pytest_cache/
+.mypy_cache/
+.ruff_cache/
 
-# Node
+# Node Packages & Builds
 node_modules/
 npm-debug.log
 yarn-error.log
 dist/
 build/
+coverage/
 
-# Env
+# Transient Process & Runtime Directories
+logs/
+.pids/
+
+# Environments
 .env
+.env.*
+!.env.example
 
-# Others
+# Operating System Files
 .DS_Store
-*.log
+Thumbs.db
 *.gguf

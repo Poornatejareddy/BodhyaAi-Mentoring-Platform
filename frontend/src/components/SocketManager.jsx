@@ -8,25 +8,24 @@ import { useSocket } from '../context/SocketContext';
  */
 const SocketManager = () => {
     const { user, token } = useAuth();
-    const { connect, disconnect, connected } = useSocket();
+    const { connect, disconnect } = useSocket();
 
     useEffect(() => {
-        if (user && token) {
-            // User is logged in, connect socket
-            console.log('🔌 Connecting Socket.IO for user:', user.name);
-            connect(token);
-        } else {
-            // User logged out, disconnect socket
-            console.log('🔌 Disconnecting Socket.IO');
+        if (!user || !token) {
             disconnect();
+            return undefined;
         }
-    }, [user, token]);
 
-    useEffect(() => {
-        if (connected) {
-            console.log('✅ Socket.IO connected successfully');
-        }
-    }, [connected]);
+        // Delay the initial connection by one task. Strict Mode cleans up its
+        // development-only first effect before this runs, preventing a duplicate
+        // connection from appearing on the server or in the browser console.
+        const connectTimer = window.setTimeout(() => connect(token), 0);
+
+        return () => {
+            window.clearTimeout(connectTimer);
+            disconnect();
+        };
+    }, [user, token, connect, disconnect]);
 
     // This component doesn't render anything
     return null;

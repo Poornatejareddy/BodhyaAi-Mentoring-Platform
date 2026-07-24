@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, Tooltip } from 'recharts';
 import { Brain, TrendingUp, Lightbulb, Target, BookOpen, Users } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
+import { API_BASE_URL } from '../../../utils/api';
 
 const CognitiveProfilePage = () => {
     const { token } = useAuth();
@@ -14,7 +15,7 @@ const CognitiveProfilePage = () => {
 
     const fetchCognitiveProfile = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/students/my-profile', {
+            const response = await fetch(`${API_BASE_URL}/students/my-profile`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const data = await response.json();
@@ -81,8 +82,8 @@ const CognitiveProfilePage = () => {
         return (
             <div className="flex items-center justify-center h-screen">
                 <div className="text-center">
-                    <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto mb-4"></div>
-                    <p className="text-gray-400">Loading your personality profile...</p>
+                    <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[var(--brand)] mx-auto mb-4"></div>
+                    <p className="text-[var(--ink)]">Loading your personality profile...</p>
                 </div>
             </div>
         );
@@ -91,10 +92,10 @@ const CognitiveProfilePage = () => {
     if (!cognitiveData) {
         return (
             <div className="max-w-4xl mx-auto p-6">
-                <div className="bg-gray-800 border border-yellow-600 rounded-xl p-8 text-center">
-                    <Brain className="w-16 h-16 text-yellow-400 mx-auto mb-4" />
-                    <h3 className="text-2xl font-semibold text-white mb-3">Profile Not Available</h3>
-                    <p className="text-gray-300">Complete the personality assessment to view your cognitive profile.</p>
+                <div className="bg-[var(--surface)] border border-[var(--warning)] rounded-xl p-8 text-center">
+                    <Brain className="w-16 h-16 text-[var(--warning)] mx-auto mb-4" />
+                    <h3 className="text-2xl font-semibold text-[var(--ink)] mb-3">Profile Not Available</h3>
+                    <p className="text-[var(--ink)]">Complete the personality assessment to view your cognitive profile.</p>
                 </div>
             </div>
         );
@@ -110,47 +111,47 @@ const CognitiveProfilePage = () => {
     ];
 
     const getTraitColor = (value) => {
-        if (value >= 70) return 'text-green-400';
-        if (value >= 50) return 'text-yellow-400';
-        return 'text-orange-400';
+        if (value >= 70) return 'text-[var(--success)]';
+        if (value >= 50) return 'text-[var(--warning)]';
+        return 'text-[var(--warning)]';
     };
 
     return (
         <div className="max-w-7xl mx-auto space-y-8">
             {/* Hero */}
-            <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-xl p-8 text-white">
+            <div className="bg-[var(--surface)]    rounded-xl p-8 text-[var(--ink)]">
                 <div className="flex items-center gap-4">
-                    <div className="bg-white/20 p-4 rounded-lg backdrop-blur-sm">
+                    <div className="bg-[var(--surface)] p-4 rounded-lg backdrop-blur-sm">
                         <Brain className="w-10 h-10" />
                     </div>
                     <div>
                         <h1 className="text-4xl font-bold">Your Cognitive Profile</h1>
-                        <p className="text-purple-100 mt-2 text-lg">Discover your personality traits and learning style</p>
+                        <p className="text-[var(--brand)] mt-2 text-lg">Discover your personality traits and learning style</p>
                     </div>
                 </div>
             </div>
 
             {/* Radar Chart */}
-            <div className="bg-gray-800 rounded-xl p-8 border border-gray-700">
-                <h2 className="text-2xl font-semibold text-white mb-6 flex items-center gap-2">
-                    <Target className="w-6 h-6 text-purple-400" />
+            <div className="bg-[var(--surface)] rounded-xl p-8 border border-[var(--line)]">
+                <h2 className="text-2xl font-semibold text-[var(--ink)] mb-6 flex items-center gap-2">
+                    <Target className="w-6 h-6 text-[var(--brand)]" />
                     Big Five Personality Traits
                 </h2>
                 <ResponsiveContainer width="100%" height={400}>
                     <RadarChart data={radarData}>
-                        <PolarGrid stroke="#374151" />
-                        <PolarAngleAxis dataKey="trait" stroke="#9ca3af" />
-                        <PolarRadiusAxis domain={[0, 100]} stroke="#9ca3af" />
+                        <PolarGrid stroke="var(--chart-grid)" />
+                        <PolarAngleAxis dataKey="trait" stroke="var(--chart-text)" />
+                        <PolarRadiusAxis domain={[0, 100]} stroke="var(--chart-text)" />
                         <Radar
                             name="Your Profile"
                             dataKey="value"
-                            stroke="#8b5cf6"
-                            fill="#8b5cf6"
+                            stroke="var(--brand)"
+                            fill="var(--brand)"
                             fillOpacity={0.6}
                         />
                         <Tooltip
-                            contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151', borderRadius: '8px' }}
-                            labelStyle={{ color: '#f3f4f6' }}
+                            contentStyle={{ backgroundColor: 'var(--chart-grid)', border: '1px solid var(--chart-grid)', borderRadius: '8px' }}
+                            labelStyle={{ color: 'var(--chart-text)' }}
                         />
                     </RadarChart>
                 </ResponsiveContainer>
@@ -159,17 +160,17 @@ const CognitiveProfilePage = () => {
             {/* Trait Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                 {Object.entries(cognitiveData.bigFive).map(([trait, value]) => (
-                    <div key={trait} className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                        <h3 className="text-sm text-gray-400 mb-2 capitalize">{trait}</h3>
+                    <div key={trait} className="bg-[var(--surface)] rounded-xl p-6 border border-[var(--line)]">
+                        <h3 className="text-sm text-[var(--ink)] mb-2 capitalize">{trait}</h3>
                         <div className="relative pt-1">
                             <div className="flex items-center justify-between mb-2">
                                 <span className={`text-3xl font-bold ${getTraitColor(value)}`}>{Math.round(value)}</span>
-                                <span className="text-xs text-gray-500">/ 100</span>
+                                <span className="text-xs text-[var(--ink)]">/ 100</span>
                             </div>
-                            <div className="overflow-hidden h-2 text-xs flex rounded-full bg-gray-700">
+                            <div className="overflow-hidden h-2 text-xs flex rounded-full bg-[var(--surface)]">
                                 <div
                                     style={{ width: `${value}%` }}
-                                    className={`shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center ${value >= 70 ? 'bg-green-500' : value >= 50 ? 'bg-yellow-500' : 'bg-orange-500'
+                                    className={`shadow-none flex flex-col text-center whitespace-nowrap text-[var(--ink)] justify-center ${value >= 70 ? 'bg-[var(--success-muted)]' : value >= 50 ? 'bg-[var(--warning-muted)]' : 'bg-[var(--warning-muted)]'
                                         }`}
                                 ></div>
                             </div>
@@ -179,27 +180,27 @@ const CognitiveProfilePage = () => {
             </div>
 
             {/* Learning Style */}
-            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                <h2 className="text-2xl font-semibold text-white mb-6 flex items-center gap-2">
-                    <BookOpen className="w-6 h-6 text-blue-400" />
+            <div className="bg-[var(--surface)] rounded-xl p-6 border border-[var(--line)]">
+                <h2 className="text-2xl font-semibold text-[var(--ink)] mb-6 flex items-center gap-2">
+                    <BookOpen className="w-6 h-6 text-[var(--brand)]" />
                     Learning Style Preferences
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {Object.entries(cognitiveData.learningStyle).map(([style, value]) => (
-                        <div key={style} className="bg-gray-700/30 rounded-lg p-4">
-                            <h3 className="text-lg font-semibold text-white mb-3 capitalize">{style} Learner</h3>
+                        <div key={style} className="bg-[var(--surface)] rounded-lg p-4">
+                            <h3 className="text-lg font-semibold text-[var(--ink)] mb-3 capitalize">{style} Learner</h3>
                             <div className="relative pt-1">
                                 <div className="flex items-center justify-between mb-2">
-                                    <span className="text-2xl font-bold text-blue-400">{value}%</span>
+                                    <span className="text-2xl font-bold text-[var(--brand)]">{value}%</span>
                                 </div>
-                                <div className="overflow-hidden h-3 text-xs flex rounded-full bg-gray-700">
+                                <div className="overflow-hidden h-3 text-xs flex rounded-full bg-[var(--surface)]">
                                     <div
                                         style={{ width: `${value}%` }}
-                                        className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-gradient-to-r from-blue-500 to-purple-500"
+                                        className="shadow-none flex flex-col text-center whitespace-nowrap text-[var(--ink)] justify-center bg-[var(--surface)]  "
                                     ></div>
                                 </div>
                             </div>
-                            <p className="text-sm text-gray-400 mt-3">
+                            <p className="text-sm text-[var(--ink)] mt-3">
                                 {style === 'visual' && 'Learn best through diagrams and visuals'}
                                 {style === 'auditory' && 'Learn best through listening and discussion'}
                                 {style === 'kinesthetic' && 'Learn best through hands-on practice'}
@@ -212,32 +213,32 @@ const CognitiveProfilePage = () => {
             {/* Strengths and Growth */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Strengths */}
-                <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                    <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-                        <TrendingUp className="w-5 h-5 text-green-400" />
+                <div className="bg-[var(--surface)] rounded-xl p-6 border border-[var(--line)]">
+                    <h2 className="text-xl font-semibold text-[var(--ink)] mb-4 flex items-center gap-2">
+                        <TrendingUp className="w-5 h-5 text-[var(--success)]" />
                         Your Strengths
                     </h2>
                     <ul className="space-y-3">
                         {cognitiveData.strengths.map((strength, i) => (
-                            <li key={i} className="flex items-start gap-3 p-3 bg-green-900/20 rounded-lg border border-green-700/50">
-                                <div className="w-2 h-2 rounded-full bg-green-400 mt-1.5"></div>
-                                <span className="text-gray-300">{strength}</span>
+                            <li key={i} className="flex items-start gap-3 p-3 bg-[var(--success-muted)] rounded-lg border border-[var(--success)]">
+                                <div className="w-2 h-2 rounded-full bg-[var(--success-muted)] mt-1.5"></div>
+                                <span className="text-[var(--ink)]">{strength}</span>
                             </li>
                         ))}
                     </ul>
                 </div>
 
                 {/* Growth Areas */}
-                <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                    <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-                        <Lightbulb className="w-5 h-5 text-yellow-400" />
+                <div className="bg-[var(--surface)] rounded-xl p-6 border border-[var(--line)]">
+                    <h2 className="text-xl font-semibold text-[var(--ink)] mb-4 flex items-center gap-2">
+                        <Lightbulb className="w-5 h-5 text-[var(--warning)]" />
                         Growth Opportunities
                     </h2>
                     <ul className="space-y-3">
                         {cognitiveData.growthAreas.map((area, i) => (
-                            <li key={i} className="flex items-start gap-3 p-3 bg-yellow-900/20 rounded-lg border border-yellow-700/50">
-                                <div className="w-2 h-2 rounded-full bg-yellow-400 mt-1.5"></div>
-                                <span className="text-gray-300">{area}</span>
+                            <li key={i} className="flex items-start gap-3 p-3 bg-[var(--warning-muted)] rounded-lg border border-[var(--warning)]">
+                                <div className="w-2 h-2 rounded-full bg-[var(--warning-muted)] mt-1.5"></div>
+                                <span className="text-[var(--ink)]">{area}</span>
                             </li>
                         ))}
                     </ul>
@@ -245,25 +246,25 @@ const CognitiveProfilePage = () => {
             </div>
 
             {/* Career Suggestions */}
-            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                <h2 className="text-2xl font-semibold text-white mb-6 flex items-center gap-2">
-                    <Users className="w-6 h-6 text-purple-400" />
+            <div className="bg-[var(--surface)] rounded-xl p-6 border border-[var(--line)]">
+                <h2 className="text-2xl font-semibold text-[var(--ink)] mb-6 flex items-center gap-2">
+                    <Users className="w-6 h-6 text-[var(--brand)]" />
                     Career Path Recommendations
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {cognitiveData.careerSuggestions.map((career, i) => (
-                        <div key={i} className="bg-gradient-to-br from-purple-900/30 to-pink-900/30 rounded-lg p-5 border border-purple-700/50">
-                            <h3 className="text-lg font-semibold text-white mb-2">{career.title}</h3>
+                        <div key={i} className="bg-[var(--surface)]   rounded-lg p-5 border border-[var(--brand)]">
+                            <h3 className="text-lg font-semibold text-[var(--ink)] mb-2">{career.title}</h3>
                             <div className="flex items-center gap-2 mb-3">
-                                <div className="flex-1 bg-gray-700 rounded-full h-2">
+                                <div className="flex-1 bg-[var(--surface)] rounded-full h-2">
                                     <div
-                                        className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full"
+                                        className="bg-[var(--surface)]   h-2 rounded-full"
                                         style={{ width: `${career.compatibility}%` }}
                                     ></div>
                                 </div>
-                                <span className="text-sm font-medium text-purple-400">{career.compatibility}%</span>
+                                <span className="text-sm font-medium text-[var(--brand)]">{career.compatibility}%</span>
                             </div>
-                            <p className="text-xs text-gray-400">Compatibility Match</p>
+                            <p className="text-xs text-[var(--ink)]">Compatibility Match</p>
                         </div>
                     ))}
                 </div>

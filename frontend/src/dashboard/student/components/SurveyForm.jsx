@@ -93,12 +93,12 @@ function SurveyForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-gray-800 p-6 rounded-lg space-y-8">
+    <form onSubmit={handleSubmit} className="bg-[var(--surface)] p-6 rounded-lg space-y-8">
       {questions.map((q, index) => (
-        <div key={q.id} className="border-b border-gray-700 pb-6">
+        <div key={q.id} className="border-b border-[var(--line)] pb-6">
           <p className="font-semibold text-lg">{index + 1}. {q.text}</p>
           <div className="mt-4 max-w-xl">
-            <div className="flex justify-between items-center mb-2 text-xs text-gray-400 px-1">
+            <div className="flex justify-between items-center mb-2 text-xs text-[var(--ink)] px-1">
               <span>Strongly Disagree (1)</span>
               <span>Neutral</span>
               <span>Strongly Agree (5)</span>
@@ -110,8 +110,8 @@ function SurveyForm() {
                   type="button"
                   onClick={() => handleAnswerChange(q.id, val)}
                   className={`flex-1 py-3 rounded-md font-bold text-lg transition-all duration-200 border-2 ${answers[q.id] === val
-                      ? 'bg-blue-600 border-blue-500 text-white shadow-[0_0_15px_rgba(37,99,235,0.5)] transform scale-105'
-                      : 'bg-gray-700/50 border-gray-600 text-gray-300 hover:bg-gray-600 hover:border-gray-500 hover:text-white'
+                      ? 'bg-[var(--brand)] border-[var(--brand)] text-[var(--ink)] shadow-[var(--shadow-md)] transform scale-105'
+                      : 'bg-[var(--surface)] border-[var(--line)] text-[var(--ink)] hover:bg-[var(--surface)] hover:border-[var(--line)] hover:text-[var(--ink)]'
                     }`}
                 >
                   {val}
@@ -121,10 +121,10 @@ function SurveyForm() {
           </div>
         </div>
       ))}
-      <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded text-lg">
+      <button type="submit" className="w-full bg-[var(--brand)] hover:bg-[var(--brand)] text-[var(--ink)] font-bold py-3 px-4 rounded text-lg">
         Submit My Answers
       </button>
-      {message && <p className={`mt-4 text-center font-semibold ${isError ? 'text-red-400' : 'text-green-400'}`}>{message}</p>}
+      {message && <p className={`mt-4 text-center font-semibold ${isError ? 'text-[var(--danger)]' : 'text-[var(--success)]'}`}>{message}</p>}
     </form>
   );
 }

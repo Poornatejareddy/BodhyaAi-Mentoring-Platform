@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useSocket } from '../../context/SocketContext';
 import { useLocation } from 'react-router-dom';
 import ChatWindow from '../../components/ChatWindow';
+import { API_BASE_URL } from '../../utils/api';
 import { MessageCircle, Search, User } from 'lucide-react';
 
 const ChatListPage = () => {
@@ -48,7 +49,7 @@ const ChatListPage = () => {
 
             if (user.role === 'mentor') {
                 // Fetch mentor's mentees
-                const res = await fetch('http://localhost:5000/api/mentors/me', {
+                const res = await fetch(`${API_BASE_URL}/mentors/me`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 if (res.ok) {
@@ -65,7 +66,7 @@ const ChatListPage = () => {
                 }
             } else if (user.role === 'student') {
                 // Fetch student's mentor
-                const res = await fetch('http://localhost:5000/api/students/my-profile', {
+                const res = await fetch(`${API_BASE_URL}/students/my-profile`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 if (res.ok) {
@@ -83,7 +84,7 @@ const ChatListPage = () => {
                 }
             } else if (user.role === 'admin') {
                 // Admins can chat with everyone - fetch all users
-                const res = await fetch('http://localhost:5000/api/admin/users', {
+                const res = await fetch(`${API_BASE_URL}/admin/users`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 if (res.ok) {
@@ -109,28 +110,28 @@ const ChatListPage = () => {
     const getRiskColor = (risk) => {
         switch (risk?.toUpperCase()) {
             case 'HIGH':
-                return 'text-red-600 bg-red-100';
+                return 'text-[var(--danger)] bg-[var(--danger-muted)]';
             case 'MEDIUM':
-                return 'text-yellow-600 bg-yellow-100';
+                return 'text-[var(--warning)] bg-[var(--warning-muted)]';
             case 'LOW':
-                return 'text-green-600 bg-green-100';
+                return 'text-[var(--success)] bg-[var(--success-muted)]';
             default:
-                return 'text-gray-600 bg-gray-100';
+                return 'text-[var(--ink)] bg-[var(--surface)]';
         }
     };
 
     return (
         <div className="h-full flex flex-col">
             {/* Header */}
-            <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <div className="bg-[var(--surface)] rounded-lg shadow-sm p-6 mb-6">
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
-                        <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-3 rounded-lg">
-                            <MessageCircle className="w-6 h-6 text-white" />
+                        <div className="bg-[var(--surface)]   p-3 rounded-lg">
+                            <MessageCircle className="w-6 h-6 text-[var(--ink)]" />
                         </div>
                         <div>
-                            <h1 className="text-2xl font-bold text-gray-800">Messages</h1>
-                            <p className="text-sm text-gray-500">
+                            <h1 className="text-2xl font-bold text-[var(--ink)]">Messages</h1>
+                            <p className="text-sm text-[var(--ink)]">
                                 {user.role === 'mentor' && `Chat with your ${contacts.length} mentees`}
                                 {user.role === 'student' && 'Chat with your mentor'}
                                 {user.role === 'admin' && `Chat with ${contacts.length} users`}
@@ -138,7 +139,7 @@ const ChatListPage = () => {
                         </div>
                     </div>
                     {unreadMessagesCount > 0 && (
-                        <div className="bg-red-600 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                        <div className="bg-[var(--danger-muted)] text-[var(--ink)] px-4 py-2 rounded-full text-sm font-semibold">
                             {unreadMessagesCount} unread
                         </div>
                     )}
@@ -146,27 +147,27 @@ const ChatListPage = () => {
 
                 {/* Search Bar */}
                 <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--ink)] w-5 h-5" />
                     <input
                         type="text"
                         placeholder="Search contacts..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
+                        className="w-full pl-10 pr-4 py-2 border border-[var(--line)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--brand)] text-[var(--ink)]"
                     />
                 </div>
             </div>
 
             {/* Contacts List */}
-            <div className="bg-white rounded-lg shadow-sm flex-1 overflow-hidden">
+            <div className="bg-[var(--surface)] rounded-lg shadow-sm flex-1 overflow-hidden">
                 {loading ? (
                     <div className="flex items-center justify-center h-full">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--brand)]"></div>
                     </div>
                 ) : filteredContacts.length === 0 ? (
-                    <div className="flex items-center justify-center h-full text-gray-500">
+                    <div className="flex items-center justify-center h-full text-[var(--ink)]">
                         <div className="text-center p-8">
-                            <MessageCircle className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+                            <MessageCircle className="w-16 h-16 mx-auto mb-4 text-[var(--ink)]" />
                             <p className="font-medium text-lg">No contacts found</p>
                             <p className="text-sm">
                                 {searchTerm
@@ -183,18 +184,18 @@ const ChatListPage = () => {
                             <div
                                 key={contact.id}
                                 onClick={() => setSelectedContact(contact)}
-                                className="p-4 hover:bg-gray-50 cursor-pointer transition-colors"
+                                className="p-4 hover:bg-[var(--surface)] cursor-pointer transition-colors"
                             >
                                 <div className="flex items-center gap-4">
                                     {/* Avatar */}
-                                    <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+                                    <div className="w-12 h-12 bg-[var(--surface)]   rounded-full flex items-center justify-center text-[var(--ink)] font-bold text-lg flex-shrink-0">
                                         {contact.name.charAt(0).toUpperCase()}
                                     </div>
 
                                     {/* Contact Info */}
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center justify-between">
-                                            <h3 className="font-semibold text-gray-800 truncate">
+                                            <h3 className="font-semibold text-[var(--ink)] truncate">
                                                 {contact.name || 'Unknown User'}
                                             </h3>
                                             {contact.risk && (
@@ -207,7 +208,7 @@ const ChatListPage = () => {
                                                 </span>
                                             )}
                                         </div>
-                                        <p className="text-sm text-gray-500 capitalize">
+                                        <p className="text-sm text-[var(--ink)] capitalize">
                                             {contact.role}
                                             {contact.usn && ` • ${contact.usn}`}
                                             {contact.department && ` • ${contact.department}`}
@@ -216,7 +217,7 @@ const ChatListPage = () => {
 
                                     {/* Arrow Icon */}
                                     <svg
-                                        className="w-5 h-5 text-gray-400"
+                                        className="w-5 h-5 text-[var(--ink)]"
                                         fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24"

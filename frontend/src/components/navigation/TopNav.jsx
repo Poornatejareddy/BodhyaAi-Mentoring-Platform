@@ -1,62 +1,27 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
+import { Bell, ChevronDown, ChevronRight, Command, Moon, Plus, Search, Sun, Monitor, UserCircle } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { UserCircle, Bell, ChevronDown, Search, Sparkles } from 'lucide-react';
+import { useTheme } from '../../context/ThemeContext';
 import AlertsPanel from '../AlertsPanel';
 
+const pageNames = { dashboard: 'Workspace', student: 'Student', mentor: 'Mentor', admin: 'Administration', overview: 'Overview', mentees: 'My mentees', users: 'People & access', alerts: 'Alerts', activity: 'Activity log', chat: 'Messages', settings: 'Settings', survey: 'Check-in survey', personality: 'Cognitive profile', 'risk-explanation': 'Risk insights', 'study-plan': 'Study plan', chatbot: 'AI advisor', 'assign-student': 'Assign student', 'survey-links': 'Survey links' };
+const searchByRole = { student: [{ label: 'Overview', path: '/dashboard/student/overview' }, { label: 'Study plan', path: '/dashboard/student/study-plan' }, { label: 'Messages', path: '/dashboard/student/chat' }, { label: 'AI advisor', path: '/dashboard/student/chatbot' }], mentor: [{ label: 'Overview', path: '/dashboard/mentor/overview' }, { label: 'My mentees', path: '/dashboard/mentor/mentees' }, { label: 'Assign student', path: '/dashboard/mentor/assign-student' }, { label: 'Priority alerts', path: '/dashboard/mentor/alerts' }], admin: [{ label: 'Overview', path: '/dashboard/admin/overview' }, { label: 'People & access', path: '/dashboard/admin/users' }, { label: 'Activity log', path: '/dashboard/admin/activity' }, { label: 'Alerts', path: '/dashboard/admin/alerts' }] };
+
 function TopNav() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth(); const { theme, setTheme } = useTheme(); const location = useLocation(); const navigate = useNavigate();
+  const [query, setQuery] = useState(''); const [profileOpen, setProfileOpen] = useState(false);
+  const ThemeIcon = theme === 'dark' ? Moon : theme === 'light' ? Sun : Monitor;
+  const crumbs = location.pathname.split('/').filter(Boolean).map(part => pageNames[part] || part.replaceAll('-', ' '));
+  const results = useMemo(() => (searchByRole[user?.role] || []).filter(item => item.label.toLowerCase().includes(query.toLowerCase())), [query, user?.role]);
+  const settingsPath = `/dashboard/${user?.role}/settings`;
+  const nextTheme = () => setTheme(theme === 'light' ? 'dark' : theme === 'dark' ? 'system' : 'light');
+  const quickAction = () => navigate(user?.role === 'mentor' ? '/dashboard/mentor/assign-student' : user?.role === 'student' ? '/dashboard/student/study-plan' : '/dashboard/admin/users');
 
-  return (
-    <header className="sticky top-0 z-40 w-full bg-gray-900/80 backdrop-blur-xl border-b border-white/10 px-6 py-4 shadow-sm flex-shrink-0 text-white transition-all duration-300">
-      <div className="flex items-center justify-between">
-        {/* Left Side - Greeting */}
-        <div className="flex flex-col">
-          <h1 className="text-xl font-bold flex items-center gap-2">
-            Welcome back, <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">{user?.name?.split(' ')[0] || 'User'}</span>
-            <Sparkles className="w-5 h-5 text-yellow-400 animate-pulse" />
-          </h1>
-          <p className="text-xs text-gray-400">Here's what's happening today</p>
-        </div>
-
-        {/* Center - Search Bar */}
-        <div className="flex-1 mx-8 max-w-xl hidden md:block">
-          <div className="relative group">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 group-focus-within:text-blue-400 transition-colors" />
-            <input
-              type="text"
-              placeholder="Search for students, resources, or tools..."
-              className="w-full pl-10 pr-4 py-2.5 bg-gray-800/50 border border-gray-700 rounded-xl text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder-gray-500"
-            />
-          </div>
-        </div>
-
-        {/* Right Section - Icons and Avatar */}
-        <div className="flex items-center space-x-4">
-          {/* Alerts Panel */}
-          <div className="relative">
-            <AlertsPanel />
-          </div>
-
-          {/* User Avatar */}
-          <button className="flex items-center gap-3 pl-2 pr-1 py-1 rounded-full hover:bg-white/5 transition-all border border-transparent hover:border-white/10">
-            <div className="text-right hidden sm:block">
-              <p className="text-sm font-semibold text-white leading-none">{user?.name}</p>
-              <p className="text-xs text-gray-400 mt-1 capitalize">{user?.role}</p>
-            </div>
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 p-[2px]">
-              <div className="w-full h-full rounded-full bg-gray-900 flex items-center justify-center overflow-hidden">
-                {user?.profilePicture ? (
-                  <img src={user.profilePicture} alt={user.name} className="w-full h-full object-cover" />
-                ) : (
-                  <span className="text-sm font-bold text-white">{user?.name?.charAt(0).toUpperCase()}</span>
-                )}
-              </div>
-            </div>
-          </button>
-        </div>
-      </div>
-    </header>
-  );
+  return <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center justify-between border-b border-[var(--line)] bg-[var(--header-bg)] px-4 shadow-[var(--shadow-sm)] sm:px-6">
+    <div className="min-w-0"><nav aria-label="Breadcrumb" className="flex items-center gap-1 overflow-hidden text-xs text-[var(--ink-muted)]">{crumbs.map((crumb, index) => <React.Fragment key={`${crumb}-${index}`}>{index > 0 && <ChevronRight size={13} className="shrink-0"/>}<span className={`truncate ${index === crumbs.length - 1 ? 'font-medium text-[var(--ink)]' : ''}`}>{crumb}</span></React.Fragment>)}</nav><p className="mt-1 hidden text-xs text-[var(--ink-muted)] sm:block">A focused view of what needs attention today.</p></div>
+    <div className="relative mx-5 hidden max-w-md flex-1 md:block"><Search size={15} className="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 text-[var(--ink-muted)]"/><input value={query} onChange={event => setQuery(event.target.value)} onKeyDown={event => { if (event.key === 'Enter' && results[0]) { navigate(results[0].path); setQuery(''); } }} aria-label="Global workspace search" placeholder="Search workspace" className="w-full rounded-lg border border-[var(--line)] bg-[var(--canvas)] py-2 pl-9 pr-16 text-sm text-[var(--ink)] placeholder:text-[var(--ink-muted)] focus:border-[var(--brand)] focus:outline-none focus:ring-1 focus:ring-[var(--brand)]"/><span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 rounded border border-[var(--line)] px-1.5 py-0.5 text-[10px] text-[var(--ink-muted)]"><Command size={10} className="inline"/> K</span>{query && <div className="absolute top-full z-50 mt-2 w-full overflow-hidden rounded-lg border border-[var(--line)] bg-[var(--surface)] p-1 shadow-[var(--shadow-lg)]">{results.length ? results.map(result => <button key={result.path} onClick={() => { navigate(result.path); setQuery(''); }} className="flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm text-[var(--ink-secondary)] hover:bg-[var(--surface-hover)]"><span>{result.label}</span><ChevronRight size={15}/></button>) : <p className="px-3 py-3 text-sm text-[var(--ink-muted)]">No matching workspace page.</p>}</div>}</div>
+    <div className="flex shrink-0 items-center gap-1.5"><button onClick={quickAction} className="hidden items-center gap-1.5 rounded-lg bg-[var(--brand)] px-3 py-2 text-xs font-semibold text-[var(--accent-ink)] hover:bg-[var(--brand-hover)] sm:flex"><Plus size={15}/>Quick action</button><button onClick={nextTheme} aria-label="Change color theme" className="grid h-9 w-9 place-items-center rounded-lg border border-[var(--line)] bg-[var(--surface)] text-[var(--ink-secondary)] hover:bg-[var(--surface-hover)]"><ThemeIcon size={16}/></button><AlertsPanel/><div className="relative"><button onClick={() => setProfileOpen(!profileOpen)} aria-expanded={profileOpen} className="ml-1 flex items-center gap-2 rounded-lg p-1 hover:bg-[var(--surface-hover)]"><span className="grid h-8 w-8 place-items-center rounded-full bg-[var(--brand)] text-xs font-semibold text-[var(--accent-ink)]">{user?.name?.charAt(0).toUpperCase()}</span><ChevronDown size={14} className="hidden text-[var(--ink-muted)] lg:block"/></button>{profileOpen && <div className="absolute right-0 top-full z-50 mt-2 w-48 rounded-lg border border-[var(--line)] bg-[var(--surface)] p-1 shadow-[var(--shadow-lg)]"><p className="px-3 py-2 text-xs text-[var(--ink-muted)]">Signed in as {user?.name}</p><button onClick={() => navigate(settingsPath)} className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-[var(--ink-secondary)] hover:bg-[var(--surface-hover)]"><UserCircle size={16}/>Account settings</button><button onClick={() => { logout(); navigate('/login'); }} className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-[var(--danger)] hover:bg-[var(--danger-muted)]">Sign out</button></div>}</div></div>
+  </header>;
 }
-
 export default TopNav;

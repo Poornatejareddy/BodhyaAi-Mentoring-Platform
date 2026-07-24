@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
+import { API_BASE_URL } from '../utils/api';
 import { Send, X, Loader2, MoreVertical, Edit2, Trash2, Check, XCircle } from 'lucide-react';
 
 const ChatWindow = ({ recipientId, recipientName, recipientRole, onClose }) => {
@@ -161,7 +162,7 @@ const ChatWindow = ({ recipientId, recipientName, recipientRole, onClose }) => {
                 return;
             }
 
-            const url = `http://localhost:5000/api/chat/history/${recipientId}`;
+            const url = `${API_BASE_URL}/chat/history/${recipientId}`;
             console.log('Fetching from:', url);
 
             const res = await fetch(url, {
@@ -196,7 +197,7 @@ const ChatWindow = ({ recipientId, recipientName, recipientRole, onClose }) => {
         if (recipientRole === "ai") return; // AI does not have read receipts
 
         try {
-            await fetch(`http://localhost:5000/api/chat/mark-read/${recipientId}`, {
+            await fetch(`${API_BASE_URL}/chat/mark-read/${recipientId}`, {
                 method: 'PUT',
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -208,7 +209,7 @@ const ChatWindow = ({ recipientId, recipientName, recipientRole, onClose }) => {
     // Handler for editing a message
     const handleEditMessage = async (messageId) => {
         try {
-            const res = await fetch(`http://localhost:5000/api/chat/edit/${messageId}`, {
+            const res = await fetch(`${API_BASE_URL}/chat/edit/${messageId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -235,7 +236,7 @@ const ChatWindow = ({ recipientId, recipientName, recipientRole, onClose }) => {
         if (!window.confirm('Are you sure you want to delete this message?')) return;
 
         try {
-            const res = await fetch(`http://localhost:5000/api/chat/delete/${messageId}`, {
+            const res = await fetch(`${API_BASE_URL}/chat/delete/${messageId}`, {
                 method: 'DELETE',
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -270,14 +271,14 @@ const ChatWindow = ({ recipientId, recipientName, recipientRole, onClose }) => {
 
             if (recipientRole === "ai") {
                 // AI chatbot endpoint
-                url = "http://localhost:5000/api/chat/ai-chat";
+                url = `${API_BASE_URL}/chat/ai-chat`;
                 body = {
                     message: text,
                     userId: user._id,
                 };
             } else {
                 // Normal user-to-user chat
-                url = "http://localhost:5000/api/chat/send";
+                url = `${API_BASE_URL}/chat/send`;
                 body = {
                     receiverId: recipientId,
                     content: text,
@@ -392,17 +393,17 @@ const ChatWindow = ({ recipientId, recipientName, recipientRole, onClose }) => {
     };
 
     return (
-        <div className="fixed bottom-4 right-4 w-96 h-[600px] bg-white rounded-lg shadow-2xl border border-gray-200 flex flex-col z-50">
+        <div className="fixed bottom-4 right-4 w-96 h-[600px] bg-[var(--surface)] rounded-lg shadow-2xl border border-[var(--line)] flex flex-col z-50">
 
             {/* Header */}
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 rounded-t-lg flex justify-between items-center">
+            <div className="bg-[var(--surface)]   text-[var(--ink)] p-4 rounded-t-lg flex justify-between items-center">
                 <div>
                     <h3 className="font-semibold text-lg">{recipientName}</h3>
-                    <p className="text-xs text-blue-100 capitalize">{recipientRole}</p>
+                    <p className="text-xs text-[var(--brand)] capitalize">{recipientRole}</p>
                 </div>
                 <button
                     onClick={onClose}
-                    className="p-1 hover:bg-white/20 rounded transition"
+                    className="p-1 hover:bg-[var(--surface)] rounded transition"
                     aria-label="Close chat"
                 >
                     <X className="w-5 h-5" />
@@ -410,16 +411,16 @@ const ChatWindow = ({ recipientId, recipientName, recipientRole, onClose }) => {
             </div>
 
             {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
+            <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-[var(--surface)]">
                 {loading ? (
                     <div className="flex items-center justify-center h-full">
-                        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+                        <Loader2 className="w-8 h-8 animate-spin text-[var(--brand)]" />
                     </div>
                 ) : messages.length === 0 ? (
-                    <div className="flex items-center justify-center h-full text-gray-500">
+                    <div className="flex items-center justify-center h-full text-[var(--ink)]">
                         <div className="text-center">
                             <svg
-                                className="w-16 h-16 mx-auto mb-4 text-gray-300"
+                                className="w-16 h-16 mx-auto mb-4 text-[var(--ink)]"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -449,15 +450,15 @@ const ChatWindow = ({ recipientId, recipientName, recipientRole, onClose }) => {
                                     <div className={`max-w-[75%] relative group`}>
                                         {/* Sender name for received messages */}
                                         {!isMine && (
-                                            <p className="text-xs text-gray-600 mb-1 ml-2 font-medium">
+                                            <p className="text-xs text-[var(--ink)] mb-1 ml-2 font-medium">
                                                 {senderName}
                                             </p>
                                         )}
 
                                         <div
                                             className={`rounded-lg px-4 py-2 ${isMine
-                                                    ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md'
-                                                    : 'bg-white text-gray-800 border border-gray-200 shadow-sm'
+                                                    ? 'bg-[var(--surface)]   text-[var(--ink)] shadow-md'
+                                                    : 'bg-[var(--surface)] text-[var(--ink)] border border-[var(--line)] shadow-sm'
                                                 } ${msg.deleted ? 'italic opacity-60' : ''}`}
                                         >
                                             {/* Edit/Delete Menu - only for own messages */}
@@ -465,20 +466,20 @@ const ChatWindow = ({ recipientId, recipientName, recipientRole, onClose }) => {
                                                 <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                                     <button
                                                         onClick={() => setShowDropdown(showDropdown === msg._id ? null : msg._id)}
-                                                        className="p-1 hover:bg-white/20 rounded"
+                                                        className="p-1 hover:bg-[var(--surface)] rounded"
                                                     >
                                                         <MoreVertical className="w-4 h-4" />
                                                     </button>
 
                                                     {showDropdown === msg._id && (
-                                                        <div className="absolute right-0 mt-1 bg-white text-gray-800 rounded shadow-lg border z-10 min-w-[120px]">
+                                                        <div className="absolute right-0 mt-1 bg-[var(--surface)] text-[var(--ink)] rounded shadow-lg border z-10 min-w-[120px]">
                                                             <button
                                                                 onClick={() => {
                                                                     setEditingMessageId(msg._id);
                                                                     setEditedContent(msg.content);
                                                                     setShowDropdown(null);
                                                                 }}
-                                                                className="flex items-center gap-2 w-full px-4 py-2 hover:bg-gray-100 text-sm"
+                                                                className="flex items-center gap-2 w-full px-4 py-2 hover:bg-[var(--surface)] text-sm"
                                                             >
                                                                 <Edit2 className="w-3 h-3" />
                                                                 Edit
@@ -488,7 +489,7 @@ const ChatWindow = ({ recipientId, recipientName, recipientRole, onClose }) => {
                                                                     handleDeleteMessage(msg._id);
                                                                     setShowDropdown(null);
                                                                 }}
-                                                                className="flex items-center gap-2 w-full px-4 py-2 hover:bg-gray-100 text-sm text-red-600"
+                                                                className="flex items-center gap-2 w-full px-4 py-2 hover:bg-[var(--surface)] text-sm text-[var(--danger)]"
                                                             >
                                                                 <Trash2 className="w-3 h-3" />
                                                                 Delete
@@ -505,12 +506,12 @@ const ChatWindow = ({ recipientId, recipientName, recipientRole, onClose }) => {
                                                         type="text"
                                                         value={editedContent}
                                                         onChange={(e) => setEditedContent(e.target.value)}
-                                                        className="flex-1 bg-white/20 border border-white/40 rounded px-2 py-1 text-sm text-white"
+                                                        className="flex-1 bg-[var(--surface)] border border-[var(--line)] rounded px-2 py-1 text-sm text-[var(--ink)]"
                                                         autoFocus
                                                     />
                                                     <button
                                                         onClick={() => handleEditMessage(msg._id)}
-                                                        className="p-1 hover:bg-white/20 rounded"
+                                                        className="p-1 hover:bg-[var(--surface)] rounded"
                                                     >
                                                         <Check className="w-4 h-4" />
                                                     </button>
@@ -519,7 +520,7 @@ const ChatWindow = ({ recipientId, recipientName, recipientRole, onClose }) => {
                                                             setEditingMessageId(null);
                                                             setEditedContent('');
                                                         }}
-                                                        className="p-1 hover:bg-white/20 rounded"
+                                                        className="p-1 hover:bg-[var(--surface)] rounded"
                                                     >
                                                         <XCircle className="w-4 h-4" />
                                                     </button>
@@ -529,7 +530,7 @@ const ChatWindow = ({ recipientId, recipientName, recipientRole, onClose }) => {
                                             )}
 
                                             <div
-                                                className={`flex items-center gap-1 mt-1 text-xs ${isMine ? 'text-blue-100' : 'text-gray-500'
+                                                className={`flex items-center gap-1 mt-1 text-xs ${isMine ? 'text-[var(--brand)]' : 'text-[var(--ink)]'
                                                     }`}
                                             >
                                                 <span>{formatTime(msg.createdAt)}</span>
@@ -544,11 +545,11 @@ const ChatWindow = ({ recipientId, recipientName, recipientRole, onClose }) => {
 
                         {isTyping && (
                             <div className="flex justify-start">
-                                <div className="bg-gray-200 rounded-lg px-4 py-3 max-w-[75%]">
+                                <div className="bg-[var(--surface)] rounded-lg px-4 py-3 max-w-[75%]">
                                     <div className="flex space-x-1">
-                                        <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
-                                        <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                                        <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                                        <div className="w-2 h-2 bg-[var(--surface)] rounded-full animate-bounce"></div>
+                                        <div className="w-2 h-2 bg-[var(--surface)] rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                                        <div className="w-2 h-2 bg-[var(--surface)] rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                                     </div>
                                 </div>
                             </div>
@@ -560,20 +561,20 @@ const ChatWindow = ({ recipientId, recipientName, recipientRole, onClose }) => {
             </div>
 
             {/* Input Area */}
-            <form onSubmit={handleSendMessage} className="border-t border-gray-200 p-3 bg-white rounded-b-lg">
+            <form onSubmit={handleSendMessage} className="border-t border-[var(--line)] p-3 bg-[var(--surface)] rounded-b-lg">
                 <div className="flex gap-2">
                     <input
                         type="text"
                         value={newMessage}
                         onChange={handleInputChange}
                         placeholder="Type a message..."
-                        className="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-800"
+                        className="flex-1 px-4 py-2 border border-[var(--line)] rounded-full focus:outline-none focus:ring-2 focus:ring-[var(--brand)] focus:border-transparent text-[var(--ink)]"
                         disabled={sending}
                     />
                     <button
                         type="submit"
                         disabled={!newMessage.trim() || sending}
-                        className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="bg-[var(--brand)] text-[var(--ink)] p-2 rounded-full hover:bg-[var(--brand)] transition disabled:opacity-50 disabled:cursor-not-allowed"
                         aria-label="Send message"
                     >
                         {sending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}

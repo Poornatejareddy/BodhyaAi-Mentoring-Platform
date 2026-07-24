@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
+import { API_BASE_URL } from '../../../utils/api';
 import { BarChart, Bar, PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import {
     Users,
     UserCheck,
     AlertTriangle,
     MessageSquare,
-    Bell,
-    TrendingUp,
     Activity,
     Server,
 } from 'lucide-react';
@@ -27,7 +26,7 @@ const AdminOverviewPage = () => {
     const fetchDashboardStats = async () => {
         setLoading(true);
         try {
-            const res = await fetch('http://localhost:5000/api/admin/dashboard-stats', {
+            const res = await fetch(`${API_BASE_URL}/admin/dashboard-stats`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             if (res.ok) {
@@ -43,10 +42,10 @@ const AdminOverviewPage = () => {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center h-screen">
+            <div className="flex items-center justify-center min-h-[50vh]">
                 <div className="text-center">
-                    <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto mb-4"></div>
-                    <p className="text-gray-400">Loading dashboard...</p>
+                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[var(--brand)] mx-auto mb-4"></div>
+                    <p className="text-[var(--ink-muted)] text-sm">Loading admin console...</p>
                 </div>
             </div>
         );
@@ -54,23 +53,23 @@ const AdminOverviewPage = () => {
 
     if (!stats) {
         return (
-            <div className="text-center p-8">
-                <p className="text-gray-400">Failed to load dashboard statistics</p>
+            <div className="text-center p-8 border border-[var(--line)] rounded-xl bg-[var(--surface)]">
+                <p className="text-[var(--ink-muted)] text-sm">Failed to load dashboard statistics.</p>
             </div>
         );
     }
 
     // Chart data
     const userRoleData = [
-        { name: 'Students', value: stats.users.totalStudents, color: '#3b82f6' },
-        { name: 'Mentors', value: stats.users.totalMentors, color: '#8b5cf6' },
-        { name: 'Admins', value: stats.users.totalAdmins, color: '#ec4899' },
+        { name: 'Students', value: stats.users.totalStudents, color: 'var(--brand)' },
+        { name: 'Mentors', value: stats.users.totalMentors, color: 'var(--brand)' },
+        { name: 'Admins', value: stats.users.totalAdmins, color: 'var(--danger)' },
     ];
 
     const riskData = [
-        { name: 'High', value: stats.risk.high, color: '#ef4444' },
-        { name: 'Medium', value: stats.risk.medium, color: '#f59e0b' },
-        { name: 'Low', value: stats.risk.low, color: '#10b981' },
+        { name: 'High', value: stats.risk.high, color: 'var(--danger)' },
+        { name: 'Medium', value: stats.risk.medium, color: 'var(--warning)' },
+        { name: 'Low', value: stats.risk.low, color: 'var(--success)' },
     ];
 
     const activityData = [
@@ -80,11 +79,11 @@ const AdminOverviewPage = () => {
     ];
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 animate-fade-in">
             {/* Header */}
             <div>
-                <h1 className="text-4xl font-bold text-white">Admin Dashboard</h1>
-                <p className="text-gray-400 mt-2 text-lg">System overview and analytics</p>
+                <h1 className="text-2xl font-bold text-[var(--ink)]">Admin Dashboard</h1>
+                <p className="text-xs text-[var(--ink-muted)] mt-1">System overview and compliance logs</p>
             </div>
 
             {/* Stats Grid */}
@@ -94,7 +93,6 @@ const AdminOverviewPage = () => {
                     value={stats.users.total}
                     subtitle={`${stats.users.totalStudents} students`}
                     icon={Users}
-                    gradient="from-blue-600 to-cyan-600"
                 />
 
                 <StatCard
@@ -102,7 +100,6 @@ const AdminOverviewPage = () => {
                     value={stats.students.assigned}
                     subtitle={`${stats.students.unassigned} unassigned`}
                     icon={UserCheck}
-                    gradient="from-green-600 to-emerald-600"
                 />
 
                 <StatCard
@@ -110,7 +107,6 @@ const AdminOverviewPage = () => {
                     value={stats.risk.high}
                     subtitle="Require attention"
                     icon={AlertTriangle}
-                    gradient="from-red-600 to-orange-600"
                 />
 
                 <StatCard
@@ -118,16 +114,15 @@ const AdminOverviewPage = () => {
                     value={stats.messages.total}
                     subtitle={`${stats.messages.unread} unread`}
                     icon={MessageSquare}
-                    gradient="from-purple-600 to-pink-600"
                 />
             </div>
 
             {/* Charts Row */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* User Distribution */}
-                <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                    <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-                        <Users className="w-5 h-5 text-blue-400" />
+                <div className="bg-[var(--surface)] rounded-xl p-6 border border-[var(--line)] shadow-sm">
+                    <h3 className="text-sm font-semibold text-[var(--ink)] mb-4 flex items-center gap-2">
+                        <Users className="w-4 h-4 text-[var(--brand)]" />
                         User Distribution
                     </h3>
                     <ResponsiveContainer width="100%" height={250}>
@@ -145,17 +140,17 @@ const AdminOverviewPage = () => {
                                 ))}
                             </Pie>
                             <Tooltip
-                                contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151', borderRadius: '8px' }}
-                                labelStyle={{ color: '#f3f4f6' }}
+                                contentStyle={{ backgroundColor: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '8px', color: 'var(--ink)' }}
+                                labelStyle={{ color: 'var(--ink)' }}
                             />
                         </PieChart>
                     </ResponsiveContainer>
                 </div>
 
                 {/* Risk Distribution */}
-                <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                    <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-                        <AlertTriangle className="w-5 h-5 text-red-400" />
+                <div className="bg-[var(--surface)] rounded-xl p-6 border border-[var(--line)] shadow-sm">
+                    <h3 className="text-sm font-semibold text-[var(--ink)] mb-4 flex items-center gap-2">
+                        <AlertTriangle className="w-4 h-4 text-[var(--danger)]" />
                         Risk Distribution
                     </h3>
                     <ResponsiveContainer width="100%" height={250}>
@@ -173,8 +168,8 @@ const AdminOverviewPage = () => {
                                 ))}
                             </Pie>
                             <Tooltip
-                                contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151', borderRadius: '8px' }}
-                                labelStyle={{ color: '#f3f4f6' }}
+                                contentStyle={{ backgroundColor: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '8px', color: 'var(--ink)' }}
+                                labelStyle={{ color: 'var(--ink)' }}
                             />
                         </PieChart>
                     </ResponsiveContainer>
@@ -182,51 +177,50 @@ const AdminOverviewPage = () => {
             </div>
 
             {/* Activity Chart */}
-            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-                    <Activity className="w-5 h-5 text-purple-400" />
+            <div className="bg-[var(--surface)] rounded-xl p-6 border border-[var(--line)] shadow-sm">
+                <h3 className="text-sm font-semibold text-[var(--ink)] mb-4 flex items-center gap-2">
+                    <Activity className="w-4 h-4 text-[var(--brand)]" />
                     Activity Overview
                 </h3>
                 <ResponsiveContainer width="100%" height={250}>
                     <BarChart data={activityData}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                        <XAxis dataKey="name" stroke="#9ca3af" />
-                        <YAxis stroke="#9ca3af" />
+                        <CartesianGrid strokeDasharray="3 3" stroke="var(--line)" />
+                        <XAxis dataKey="name" stroke="var(--ink-muted)" fontSize={12} />
+                        <YAxis stroke="var(--ink-muted)" fontSize={12} />
                         <Tooltip
-                            contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151', borderRadius: '8px' }}
-                            labelStyle={{ color: '#f3f4f6' }}
+                            contentStyle={{ backgroundColor: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '8px', color: 'var(--ink)' }}
                         />
-                        <Bar dataKey="value" fill="#8b5cf6" radius={[8, 8, 0, 0]} />
+                        <Bar dataKey="value" fill="var(--brand)" radius={[4, 4, 0, 0]} />
                     </BarChart>
                 </ResponsiveContainer>
             </div>
 
             {/* System Health */}
-            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-                    <Server className="w-5 h-5 text-green-400" />
+            <div className="bg-[var(--surface)] rounded-xl p-6 border border-[var(--line)] shadow-sm">
+                <h3 className="text-sm font-semibold text-[var(--ink)] mb-4 flex items-center gap-2">
+                    <Server className="w-4 h-4 text-[var(--success)]" />
                     System Health
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div className="bg-gray-700/30 rounded-lg p-4 text-center">
-                        <p className="text-sm text-gray-400 mb-1">Assignment Rate</p>
-                        <p className="text-3xl font-bold text-blue-400">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="bg-[var(--surface-hover)]/50 rounded-lg p-4 text-center">
+                        <p className="text-xs text-[var(--ink-muted)] mb-1">Assignment Rate</p>
+                        <p className="text-2xl font-bold text-[var(--brand)]">
                             {stats.students.total > 0
                                 ? Math.round((stats.students.assigned / stats.students.total) * 100)
                                 : 0}%
                         </p>
                     </div>
-                    <div className="bg-gray-700/30 rounded-lg p-4 text-center">
-                        <p className="text-sm text-gray-400 mb-1">Active Users (7d)</p>
-                        <p className="text-3xl font-bold text-green-400">{stats.activity.activeUsersCount}</p>
+                    <div className="bg-[var(--surface-hover)]/50 rounded-lg p-4 text-center">
+                        <p className="text-xs text-[var(--ink-muted)] mb-1">Active Users (7d)</p>
+                        <p className="text-2xl font-bold text-[var(--success)]">{stats.activity.activeUsersCount}</p>
                     </div>
-                    <div className="bg-gray-700/30 rounded-lg p-4 text-center">
-                        <p className="text-sm text-gray-400 mb-1">Unread Alerts</p>
-                        <p className="text-3xl font-bold text-yellow-400">{stats.alerts.unread}</p>
+                    <div className="bg-[var(--surface-hover)]/50 rounded-lg p-4 text-center">
+                        <p className="text-xs text-[var(--ink-muted)] mb-1">Unread Alerts</p>
+                        <p className="text-2xl font-bold text-[var(--warning)]">{stats.alerts.unread}</p>
                     </div>
-                    <div className="bg-gray-700/30 rounded-lg p-4 text-center">
-                        <p className="text-sm text-gray-400 mb-1">Avg Messages</p>
-                        <p className="text-3xl font-bold text-purple-400">
+                    <div className="bg-[var(--surface-hover)]/50 rounded-lg p-4 text-center">
+                        <p className="text-xs text-[var(--ink-muted)] mb-1">Avg Messages</p>
+                        <p className="text-2xl font-bold text-[var(--brand)]">
                             {stats.users.total > 0
                                 ? Math.round(stats.messages.total / stats.users.total)
                                 : 0}
@@ -236,32 +230,32 @@ const AdminOverviewPage = () => {
             </div>
 
             {/* Quick Actions */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div
-                    onClick={() => navigate('/admin/users')}
-                    className="bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-xl p-6 transition-all cursor-pointer transform hover:scale-105"
+                    onClick={() => navigate('/dashboard/admin/users')}
+                    className="bg-[var(--surface)] hover:bg-[var(--surface-hover)] border border-[var(--line)] rounded-xl p-6 transition-all cursor-pointer shadow-sm hover:translate-y-[-2px] duration-200 group"
                 >
-                    <UserCheck className="w-8 h-8 text-blue-400 mb-3" />
-                    <h4 className="text-white font-semibold text-lg mb-2">Manage Users</h4>
-                    <p className="text-gray-400 text-sm">{stats.users.total} total users</p>
+                    <UserCheck className="w-7 h-7 text-[var(--brand)] mb-3 group-hover:scale-105 transition" />
+                    <h4 className="text-[var(--ink)] font-semibold text-sm mb-1">Manage Users</h4>
+                    <p className="text-[var(--ink-muted)] text-xs">{stats.users.total} total accounts active</p>
                 </div>
 
                 <div
-                    onClick={() => navigate('/admin/alerts')}
-                    className="bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-xl p-6 transition-all cursor-pointer transform hover:scale-105"
+                    onClick={() => navigate('/dashboard/admin/alerts')}
+                    className="bg-[var(--surface)] hover:bg-[var(--surface-hover)] border border-[var(--line)] rounded-xl p-6 transition-all cursor-pointer shadow-sm hover:translate-y-[-2px] duration-200 group"
                 >
-                    <AlertTriangle className="w-8 h-8 text-red-400 mb-3" />
-                    <h4 className="text-white font-semibold text-lg mb-2">Review Alerts</h4>
-                    <p className="text-gray-400 text-sm">{stats.alerts.urgent} urgent alerts</p>
+                    <AlertTriangle className="w-7 h-7 text-[var(--danger)] mb-3 group-hover:scale-105 transition" />
+                    <h4 className="text-[var(--ink)] font-semibold text-sm mb-1">Review Alerts</h4>
+                    <p className="text-[var(--ink-muted)] text-xs">{stats.alerts.urgent} urgent notifications</p>
                 </div>
 
                 <div
-                    onClick={() => navigate('/admin/activity')}
-                    className="bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-xl p-6 transition-all cursor-pointer transform hover:scale-105"
+                    onClick={() => navigate('/dashboard/admin/activity')}
+                    className="bg-[var(--surface)] hover:bg-[var(--surface-hover)] border border-[var(--line)] rounded-xl p-6 transition-all cursor-pointer shadow-sm hover:translate-y-[-2px] duration-200 group"
                 >
-                    <Activity className="w-8 h-8 text-purple-400 mb-3" />
-                    <h4 className="text-white font-semibold text-lg mb-2">View Activity</h4>
-                    <p className="text-gray-400 text-sm">{stats.activity.recentAuditLogs} recent logs</p>
+                    <Activity className="w-7 h-7 text-[var(--brand)] mb-3 group-hover:scale-105 transition" />
+                    <h4 className="text-[var(--ink)] font-semibold text-sm mb-1">View Activity</h4>
+                    <p className="text-[var(--ink-muted)] text-xs">{stats.activity.recentAuditLogs} audits recorded</p>
                 </div>
             </div>
         </div>

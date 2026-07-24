@@ -14,6 +14,8 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import PublicSurveyPage from './pages/PublicSurveyPage';
+import PublicInfoPage from './pages/PublicInfoPage';
+import StatusPage from './pages/StatusPage';
 
 // Mentor Imports
 import MentorDashboard from './dashboard/mentor/MentorDashboard';
@@ -52,10 +54,40 @@ const router = createBrowserRouter([
     element: <PublicLayout />,
     children: [
       { index: true, element: <HomePage /> },
+      { path: 'about', element: <PublicInfoPage type="about" /> },
+      { path: 'features', element: <PublicInfoPage type="features" /> },
+      { path: 'why-bodhyai', element: <PublicInfoPage type="why-bodhyai" /> },
+      { path: 'how-it-works', element: <PublicInfoPage type="how-it-works" /> },
+      { path: 'solutions', element: <PublicInfoPage type="solutions" /> },
+      { path: 'students', element: <PublicInfoPage type="students" /> },
+      { path: 'mentors', element: <PublicInfoPage type="mentors" /> },
+      { path: 'institutions', element: <PublicInfoPage type="universities" /> },
+      { path: 'courses', element: <PublicInfoPage type="courses" /> },
+      { path: 'research', element: <PublicInfoPage type="research" /> },
+      { path: 'security', element: <PublicInfoPage type="security" /> },
+      { path: 'ai-technology', element: <PublicInfoPage type="ai-technology" /> },
+      { path: 'testimonials', element: <PublicInfoPage type="testimonials" /> },
+      { path: 'case-studies', element: <PublicInfoPage type="case-studies" /> },
+      { path: 'pricing', element: <PublicInfoPage type="pricing" /> },
+      { path: 'faq', element: <PublicInfoPage type="faq" /> },
+      { path: 'blog', element: <PublicInfoPage type="blog" /> },
+      { path: 'documentation', element: <PublicInfoPage type="documentation" /> },
+      { path: 'contact', element: <PublicInfoPage type="contact" /> },
+      { path: 'privacy', element: <PublicInfoPage type="privacy" /> },
+      { path: 'terms', element: <PublicInfoPage type="terms" /> },
+      { path: 'cookies', element: <PublicInfoPage type="cookies" /> },
+      { path: 'careers', element: <PublicInfoPage type="careers" /> },
+      { path: 'roadmap', element: <PublicInfoPage type="roadmap" /> },
+      { path: 'release-notes', element: <PublicInfoPage type="release-notes" /> },
+      { path: 'partners', element: <PublicInfoPage type="partners" /> },
+      { path: 'press', element: <PublicInfoPage type="press" /> },
+      { path: 'support', element: <PublicInfoPage type="support" /> },
+      { path: 'community', element: <PublicInfoPage type="community" /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'register', element: <RegisterPage /> },
       { path: 'survey/:token', element: <PublicSurveyPage /> },
     ],
+    errorElement: <StatusPage />,
   },
   {
     path: '/dashboard',
@@ -117,15 +149,17 @@ const router = createBrowserRouter([
               { path: 'alerts', element: <AlertsPage /> },
               { path: 'activity', element: <ActivityLogsPage /> },
               { path: 'chat', element: <ChatListPage /> },
+              { path: 'settings', element: <SettingsPage /> },
             ]
           }
         ]
       },
     ],
   },
+  { path: '*', element: <StatusPage /> },
   {
     path: '/unauthorized',
-    element: <div className="flex items-center justify-center min-h-screen"><h1>403 - Unauthorized Access</h1></div>
+    element: <StatusPage code="403" title="You don’t have access to this workspace" message="Your account does not have the permission required for this page. Return to the public site or sign in with the appropriate role." />
   }
 ]);
 

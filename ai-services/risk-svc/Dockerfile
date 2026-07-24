@@ -1,29 +1,26 @@
-# Stage 1: Build stage with build dependencies
-FROM python:3.9-slim as builder
+FROM python:3.10-slim
 
-# Set working directory
 WORKDIR /app
 
-# Install build dependencies
-RUN pip install --no-cache-dir --upgrade pip
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy requirements and package setup
+COPY requirements.txt pyproject.toml /app/
 
-# Copy the application code
-COPY . .
+# Install base python dependencies
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
-# Stage 2: Final stage with runtime dependencies
-FROM python:3.9-slim
+# Copy and install the shared common package
+COPY common/ /app/common/
+RUN pip install --no-cache-dir .
 
-# Set working directory
-WORKDIR /app
+# Copy the service specific files
+COPY risk-svc/ /app/risk-svc/
 
-# Copy installed packages from builder stage
-COPY --from=builder /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
-COPY --from=builder /app /app
+# Set the working directory to the service
+WORKDIR /app/risk-svc
 
-# Expose the port the app runs on
-EXPOSE 8000
+# Expose port
+EXPOSE 8001
 
-# Command to run the application
-CMD ["uvicorn", "service:app", "--host", "0.0.0.0", "--port", "8000"]
+# Start service
+CMD ["uvicorn", "service:app", "--host", "0.0.0.0", "--port", "8001"]

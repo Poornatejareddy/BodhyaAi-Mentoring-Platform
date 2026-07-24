@@ -1,0 +1,13 @@
+node_modules/
+dist/
+build/
+coverage/
+archive/
+docs/reports/
+ai-services/venv/
+package-lock.json
+*.pdf
+*.png
+*.jpg
+*.jpeg
+*.ico

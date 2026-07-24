@@ -1,0 +1,154 @@
+services:
+  # MongoDB Database (No public port binding)
+  mongodb:
+    image: mongo:6
+    container_name: bodhyai-mongodb-prod
+    restart: unless-stopped
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=bodhyai
+    networks:
+      - bodhyai-network-prod
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Backend Service (No public port binding)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: bodhyai-backend-prod
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
+      - MONGODB_URI=mongodb://mongodb:27017/bodhyai
+      - JWT_SECRET=${JWT_SECRET}
+      - FRONTEND_URL=http://frontend:80
+      - COG_SERVICE_URL=http://cogservice:8000
+      - RISK_SERVICE_URL=http://riskservice:8001
+      - XAI_SERVICE_URL=http://xaiservice:8002
+      - LLM_SERVICE_URL=http://llmservice:8003
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      cogservice:
+        condition: service_healthy
+      riskservice:
+        condition: service_healthy
+      xaiservice:
+        condition: service_healthy
+      llmservice:
+        condition: service_healthy
+    networks:
+      - bodhyai-network-prod
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:5000/api/auth/me', (r) => {if (r.statusCode !== 401 && r.statusCode !== 200) process.exit(1)})"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # Frontend Service (Exposes Port 80)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: bodhyai-frontend-prod
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    environment:
+      - VITE_API_URL=http://backend:5000
+    depends_on:
+      - backend
+    networks:
+      - bodhyai-network-prod
+
+  # LLM Service (Internal Only)
+  llmservice:
+    build:
+      context: ./ai-services
+      dockerfile: llm-svc/Dockerfile
+    container_name: bodhyai-llm-prod
+    restart: unless-stopped
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - HOST=0.0.0.0
+      - PORT=8003
+    volumes:
+      - llm_data:/app/data
+    networks:
+      - bodhyai-network-prod
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # Cognitive Profiling Service (Internal Only)
+  cogservice:
+    build:
+      context: ./ai-services
+      dockerfile: cog-svc/Dockerfile
+    container_name: bodhyai-cog-prod
+    restart: unless-stopped
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8000
+    networks:
+      - bodhyai-network-prod
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # Risk Prediction Service (Internal Only)
+  riskservice:
+    build:
+      context: ./ai-services
+      dockerfile: risk-svc/Dockerfile
+    container_name: bodhyai-risk-prod
+    restart: unless-stopped
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8001
+    networks:
+      - bodhyai-network-prod
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # XAI Service (Internal Only)
+  xaiservice:
+    build:
+      context: ./ai-services
+      dockerfile: xai-svc/Dockerfile
+    container_name: bodhyai-xai-prod
+    restart: unless-stopped
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8002
+    networks:
+      - bodhyai-network-prod
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+networks:
+  bodhyai-network-prod:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+    driver: local
+  llm_data:
+    driver: local

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Download, FileText, FileSpreadsheet, Loader2 } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
+import { API_BASE_URL } from '../../../utils/api';
 
 const ExportButton = ({ studentId, studentName, type = 'button' }) => {
     const { token } = useAuth();
@@ -9,7 +10,7 @@ const ExportButton = ({ studentId, studentName, type = 'button' }) => {
     const handleExportPDF = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:5000/api/mentors/report/pdf/${studentId}`, {
+            const response = await fetch(`${API_BASE_URL}/mentors/report/pdf/${studentId}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
@@ -35,7 +36,7 @@ const ExportButton = ({ studentId, studentName, type = 'button' }) => {
     const handleExportCSV = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:5000/api/mentors/report/csv/${studentId}`, {
+            const response = await fetch(`${API_BASE_URL}/mentors/report/csv/${studentId}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
@@ -61,7 +62,7 @@ const ExportButton = ({ studentId, studentName, type = 'button' }) => {
     const handleGenerateAIReport = async () => {
         setLoading(true);
         try {
-            const response = await fetch('http://localhost:5000/api/mentors/report', {
+            const response = await fetch(`${API_BASE_URL}/mentors/report`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -95,17 +96,17 @@ const ExportButton = ({ studentId, studentName, type = 'button' }) => {
         return (
             <div className="relative group">
                 <button
-                    className="flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 bg-[var(--surface)] hover:bg-[var(--surface)] text-[var(--ink)] rounded-lg font-medium transition-colors"
                     disabled={loading}
                 >
                     {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
                     Export
                 </button>
 
-                <div className="absolute right-0 mt-2 w-48 bg-gray-800 border border-gray-700 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
+                <div className="absolute right-0 mt-2 w-48 bg-[var(--surface)] border border-[var(--line)] rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
                     <button
                         onClick={handleExportPDF}
-                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-700 text-white text-left transition-colors"
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[var(--surface)] text-[var(--ink)] text-left transition-colors"
                         disabled={loading}
                     >
                         <FileText className="w-4 h-4" />
@@ -113,7 +114,7 @@ const ExportButton = ({ studentId, studentName, type = 'button' }) => {
                     </button>
                     <button
                         onClick={handleExportCSV}
-                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-700 text-white text-left transition-colors"
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[var(--surface)] text-[var(--ink)] text-left transition-colors"
                         disabled={loading}
                     >
                         <FileSpreadsheet className="w-4 h-4" />
@@ -122,10 +123,10 @@ const ExportButton = ({ studentId, studentName, type = 'button' }) => {
                     {!studentId && (
                         <button
                             onClick={handleGenerateAIReport}
-                            className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-700 text-white text-left transition-colors border-t border-gray-700"
+                            className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[var(--surface)] text-[var(--ink)] text-left transition-colors border-t border-[var(--line)]"
                             disabled={loading}
                         >
-                            <FileText className="w-4 h-4 text-purple-400" />
+                            <FileText className="w-4 h-4 text-[var(--brand)]" />
                             <span>AI Class Report</span>
                         </button>
                     )}
@@ -138,7 +139,7 @@ const ExportButton = ({ studentId, studentName, type = 'button' }) => {
         <div className="flex gap-2">
             <button
                 onClick={handleExportPDF}
-                className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-[var(--danger-muted)] hover:bg-[var(--danger-muted)] text-[var(--ink)] rounded-lg font-medium transition-colors"
                 disabled={loading}
             >
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
@@ -146,7 +147,7 @@ const ExportButton = ({ studentId, studentName, type = 'button' }) => {
             </button>
             <button
                 onClick={handleExportCSV}
-                className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-[var(--success-muted)] hover:bg-[var(--success-muted)] text-[var(--ink)] rounded-lg font-medium transition-colors"
                 disabled={loading}
             >
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileSpreadsheet className="w-4 h-4" />}

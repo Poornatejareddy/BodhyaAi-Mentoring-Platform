@@ -1,29 +1,61 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import {
+  LayoutDashboard,
+  Brain,
+  ShieldQuestion,
+  BookOpen,
+  ClipboardList,
+  Sparkles,
+  MessageSquare,
+  UserCircle,
+  Settings
+} from 'lucide-react';
 
-function StudentNavLinks() {
-  const baseLinkClass = "flex items-center p-2 space-x-3 rounded-md hover:bg-gray-700";
-  const activeLinkClass = "bg-gray-700 font-bold";
+function StudentNavLinks({ isCollapsed }) {
+  const baseLinkClass = "flex items-center p-3 rounded-lg transition-all duration-200 group relative font-medium text-sm";
+  const activeLinkClass = "bg-[var(--sidebar-active)] text-[var(--sidebar-text-active)] before:absolute before:left-0 before:top-2 before:bottom-2 before:w-0.5 before:rounded-full before:bg-[var(--brand)]";
+  const inactiveLinkClass = "text-[var(--sidebar-text)] hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-text-active)]";
+
+  const links = [
+    { to: "/dashboard/student/overview", icon: LayoutDashboard, label: "Overview" },
+    { to: "/dashboard/student/personality", icon: Brain, label: "Cognitive Profile" },
+    { to: "/dashboard/student/risk-explanation", icon: ShieldQuestion, label: "Risk Insights" },
+    { to: "/dashboard/student/study-plan", icon: BookOpen, label: "Study Plan" },
+    { to: "/dashboard/student/survey", icon: ClipboardList, label: "Take Survey" },
+    { to: "/dashboard/student/chatbot", icon: Sparkles, label: "AI Advisor" },
+    { to: "/dashboard/student/chat", icon: MessageSquare, label: "Messages" },
+    { to: "/dashboard/student/settings", icon: Settings, label: "Settings" },
+  ];
 
   return (
-    <>
-      <NavLink to="/dashboard/student/overview" className={({ isActive }) => `${baseLinkClass} ${isActive ? activeLinkClass : ''}`}>
-        <span>👤</span>
-        <span>Overview</span>
-      </NavLink>
-      <NavLink to="/dashboard/student/survey" className={({ isActive }) => `${baseLinkClass} ${isActive ? activeLinkClass : ''}`}>
-        <span>📝</span>
-        <span>Take Survey</span>
-      </NavLink>
-      <NavLink to="/dashboard/student/profile" className={({ isActive }) => `${baseLinkClass} ${isActive ? activeLinkClass : ''}`}>
-        <span>⚙️</span>
-        <span>Profile</span>
-      </NavLink>
-      <NavLink to="/dashboard/student/chat" className={({ isActive }) => `${baseLinkClass} ${isActive ? activeLinkClass : ''}`}>
-        <span>💬</span>
-        <span>Messages</span>
-      </NavLink>
-    </>
+    <div className="space-y-1.5 w-full">
+      {links.map((link) => (
+        <NavLink
+          key={link.to}
+          to={link.to}
+          className={({ isActive }) =>
+            `${baseLinkClass} ${isActive ? activeLinkClass : inactiveLinkClass} ${isCollapsed ? 'justify-center pl-3' : 'pl-4'}`
+          }
+          title={isCollapsed ? link.label : ""}
+        >
+          <link.icon className={`w-5 h-5 flex-shrink-0 ${!isCollapsed ? 'mr-3' : ''}`} />
+
+          {!isCollapsed && (
+            <span className="whitespace-nowrap transition-opacity duration-200">
+              {link.label}
+            </span>
+          )}
+
+          {/* Tooltip for collapsed state */}
+          {isCollapsed && (
+            <div className="absolute left-full ml-2 px-2.5 py-1.5 bg-[var(--surface)] text-[var(--ink)] text-xs rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50 border border-[var(--line)] shadow-xl transition-all duration-200">
+              {link.label}
+            </div>
+          )}
+        </NavLink>
+      ))}
+    </div>
   );
 }
 

@@ -83,7 +83,7 @@ app.get('/api/mentor-dashboard', protect, authorize('mentor', 'admin'), (req, re
 });
 
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 // Use server.listen instead of app.listen (for Socket.IO)
 server.listen(PORT, () => {

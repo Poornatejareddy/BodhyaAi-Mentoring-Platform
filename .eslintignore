@@ -1,0 +1,10 @@
+node_modules/
+dist/
+build/
+coverage/
+archive/
+docs/
+ai-services/
+*.config.js
+*.config.ts
+vite.config.js

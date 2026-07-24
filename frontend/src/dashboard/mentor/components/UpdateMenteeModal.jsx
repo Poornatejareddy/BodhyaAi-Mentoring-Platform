@@ -107,15 +107,15 @@ const UpdateMenteeModal = ({ isOpen, onClose, student, onUpdate }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-            <div className="bg-gray-800 rounded-xl p-6 w-full max-w-4xl border border-gray-700 shadow-2xl max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[color:var(--overlay)] backdrop-blur-sm">
+            <div className="bg-[var(--surface)] rounded-xl p-6 w-full max-w-4xl border border-[var(--line)] shadow-2xl max-h-[90vh] overflow-y-auto">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
                     <div>
-                        <h2 className="text-2xl font-bold text-white">Update Student Data</h2>
-                        <p className="text-gray-400 text-sm mt-1">{student?.user?.name} - Comprehensive Risk Profile</p>
+                        <h2 className="text-2xl font-bold text-[var(--ink)]">Update Student Data</h2>
+                        <p className="text-[var(--ink)] text-sm mt-1">{student?.user?.name} - Comprehensive Risk Profile</p>
                     </div>
-                    <button onClick={onClose} className="text-gray-400 hover:text-white">
+                    <button onClick={onClose} className="text-[var(--ink)] hover:text-[var(--ink)]">
                         <X className="w-6 h-6" />
                     </button>
                 </div>
@@ -124,54 +124,54 @@ const UpdateMenteeModal = ({ isOpen, onClose, student, onUpdate }) => {
                 <form onSubmit={handleSubmit} className="space-y-8">
                     {/* 1. Academic Performance */}
                     <div>
-                        <h3 className="text-lg font-semibold text-blue-400 mb-4 border-b border-gray-700 pb-2">Academic Performance</h3>
+                        <h3 className="text-lg font-semibold text-[var(--brand)] mb-4 border-b border-[var(--line)] pb-2">Academic Performance</h3>
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-2">CGPA *</label>
-                                <input type="number" name="CGPA" value={formData.CGPA} onChange={handleChange} step="0.01" min="0" max="10" className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white" required />
+                                <label className="block text-sm font-medium text-[var(--ink)] mb-2">CGPA *</label>
+                                <input type="number" name="CGPA" value={formData.CGPA} onChange={handleChange} step="0.01" min="0" max="10" className="w-full bg-[var(--surface)] border border-[var(--line)] rounded-lg px-3 py-2 text-[var(--ink)]" required />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-2">Attendance (%) *</label>
-                                <input type="number" name="Attendance" value={formData.Attendance} onChange={handleChange} min="0" max="100" className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white" required />
+                                <label className="block text-sm font-medium text-[var(--ink)] mb-2">Attendance (%) *</label>
+                                <input type="number" name="Attendance" value={formData.Attendance} onChange={handleChange} min="0" max="100" className="w-full bg-[var(--surface)] border border-[var(--line)] rounded-lg px-3 py-2 text-[var(--ink)]" required />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-2">Backlogs</label>
-                                <input type="number" name="Backlogs" value={formData.Backlogs} onChange={handleChange} min="0" className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white" />
+                                <label className="block text-sm font-medium text-[var(--ink)] mb-2">Backlogs</label>
+                                <input type="number" name="Backlogs" value={formData.Backlogs} onChange={handleChange} min="0" className="w-full bg-[var(--surface)] border border-[var(--line)] rounded-lg px-3 py-2 text-[var(--ink)]" />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-2">Study Hrs/Day</label>
-                                <input type="number" name="StudyHoursPerDay" value={formData.StudyHoursPerDay} onChange={handleChange} min="0" max="24" className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white" />
+                                <label className="block text-sm font-medium text-[var(--ink)] mb-2">Study Hrs/Day</label>
+                                <input type="number" name="StudyHoursPerDay" value={formData.StudyHoursPerDay} onChange={handleChange} min="0" max="24" className="w-full bg-[var(--surface)] border border-[var(--line)] rounded-lg px-3 py-2 text-[var(--ink)]" />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-2">IAT 1 Score</label>
-                                <input type="number" name="IAT1" value={formData.IAT1} onChange={handleChange} min="0" max="100" className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white" />
+                                <label className="block text-sm font-medium text-[var(--ink)] mb-2">IAT 1 Score</label>
+                                <input type="number" name="IAT1" value={formData.IAT1} onChange={handleChange} min="0" max="100" className="w-full bg-[var(--surface)] border border-[var(--line)] rounded-lg px-3 py-2 text-[var(--ink)]" />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-2">IAT 2 Score</label>
-                                <input type="number" name="IAT2" value={formData.IAT2} onChange={handleChange} min="0" max="100" className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white" />
+                                <label className="block text-sm font-medium text-[var(--ink)] mb-2">IAT 2 Score</label>
+                                <input type="number" name="IAT2" value={formData.IAT2} onChange={handleChange} min="0" max="100" className="w-full bg-[var(--surface)] border border-[var(--line)] rounded-lg px-3 py-2 text-[var(--ink)]" />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-2">IAT 3 Score</label>
-                                <input type="number" name="IAT3" value={formData.IAT3} onChange={handleChange} min="0" max="100" className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white" />
+                                <label className="block text-sm font-medium text-[var(--ink)] mb-2">IAT 3 Score</label>
+                                <input type="number" name="IAT3" value={formData.IAT3} onChange={handleChange} min="0" max="100" className="w-full bg-[var(--surface)] border border-[var(--line)] rounded-lg px-3 py-2 text-[var(--ink)]" />
                             </div>
                         </div>
                     </div>
 
                     {/* 2. Socio-Economic Background */}
                     <div>
-                        <h3 className="text-lg font-semibold text-green-400 mb-4 border-b border-gray-700 pb-2">Socio-Economic Background</h3>
+                        <h3 className="text-lg font-semibold text-[var(--success)] mb-4 border-b border-[var(--line)] pb-2">Socio-Economic Background</h3>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-2">Father's Income (Annual)</label>
-                                <input type="number" name="FatherIncome" value={formData.FatherIncome} onChange={handleChange} min="0" className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white" />
+                                <label className="block text-sm font-medium text-[var(--ink)] mb-2">Father's Income (Annual)</label>
+                                <input type="number" name="FatherIncome" value={formData.FatherIncome} onChange={handleChange} min="0" className="w-full bg-[var(--surface)] border border-[var(--line)] rounded-lg px-3 py-2 text-[var(--ink)]" />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-2">Mother's Income (Annual)</label>
-                                <input type="number" name="MotherIncome" value={formData.MotherIncome} onChange={handleChange} min="0" className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white" />
+                                <label className="block text-sm font-medium text-[var(--ink)] mb-2">Mother's Income (Annual)</label>
+                                <input type="number" name="MotherIncome" value={formData.MotherIncome} onChange={handleChange} min="0" className="w-full bg-[var(--surface)] border border-[var(--line)] rounded-lg px-3 py-2 text-[var(--ink)]" />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-2">Parent Education</label>
-                                <select name="ParentEducation" value={formData.ParentEducation} onChange={handleChange} className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white">
+                                <label className="block text-sm font-medium text-[var(--ink)] mb-2">Parent Education</label>
+                                <select name="ParentEducation" value={formData.ParentEducation} onChange={handleChange} className="w-full bg-[var(--surface)] border border-[var(--line)] rounded-lg px-3 py-2 text-[var(--ink)]">
                                     <option value="None">None</option>
                                     <option value="High School">High School</option>
                                     <option value="Graduate">Graduate</option>
@@ -180,15 +180,15 @@ const UpdateMenteeModal = ({ isOpen, onClose, student, onUpdate }) => {
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-2">Internet Access</label>
-                                <select name="InternetAccess" value={formData.InternetAccess} onChange={handleChange} className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white">
+                                <label className="block text-sm font-medium text-[var(--ink)] mb-2">Internet Access</label>
+                                <select name="InternetAccess" value={formData.InternetAccess} onChange={handleChange} className="w-full bg-[var(--surface)] border border-[var(--line)] rounded-lg px-3 py-2 text-[var(--ink)]">
                                     <option value="Yes">Yes</option>
                                     <option value="No">No</option>
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-2">Part-Time Job</label>
-                                <select name="PartTimeJob" value={formData.PartTimeJob} onChange={handleChange} className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white">
+                                <label className="block text-sm font-medium text-[var(--ink)] mb-2">Part-Time Job</label>
+                                <select name="PartTimeJob" value={formData.PartTimeJob} onChange={handleChange} className="w-full bg-[var(--surface)] border border-[var(--line)] rounded-lg px-3 py-2 text-[var(--ink)]">
                                     <option value="Yes">Yes</option>
                                     <option value="No">No</option>
                                 </select>
@@ -198,67 +198,67 @@ const UpdateMenteeModal = ({ isOpen, onClose, student, onUpdate }) => {
 
                     {/* 3. Lifestyle & Health */}
                     <div>
-                        <h3 className="text-lg font-semibold text-purple-400 mb-4 border-b border-gray-700 pb-2">Lifestyle & Health</h3>
+                        <h3 className="text-lg font-semibold text-[var(--brand)] mb-4 border-b border-[var(--line)] pb-2">Lifestyle & Health</h3>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-2">Stress Score (0-10)</label>
-                                <input type="number" name="StressScore" value={formData.StressScore} onChange={handleChange} min="0" max="10" className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white" />
+                                <label className="block text-sm font-medium text-[var(--ink)] mb-2">Stress Score (0-10)</label>
+                                <input type="number" name="StressScore" value={formData.StressScore} onChange={handleChange} min="0" max="10" className="w-full bg-[var(--surface)] border border-[var(--line)] rounded-lg px-3 py-2 text-[var(--ink)]" />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-2">Sleep Hours</label>
-                                <input type="number" name="SleepHours" value={formData.SleepHours} onChange={handleChange} min="0" max="24" className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white" />
+                                <label className="block text-sm font-medium text-[var(--ink)] mb-2">Sleep Hours</label>
+                                <input type="number" name="SleepHours" value={formData.SleepHours} onChange={handleChange} min="0" max="24" className="w-full bg-[var(--surface)] border border-[var(--line)] rounded-lg px-3 py-2 text-[var(--ink)]" />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-2">Mental Health Index (0-10)</label>
-                                <input type="number" name="MentalHealthIndex" value={formData.MentalHealthIndex} onChange={handleChange} min="0" max="10" step="0.1" className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white" />
+                                <label className="block text-sm font-medium text-[var(--ink)] mb-2">Mental Health Index (0-10)</label>
+                                <input type="number" name="MentalHealthIndex" value={formData.MentalHealthIndex} onChange={handleChange} min="0" max="10" step="0.1" className="w-full bg-[var(--surface)] border border-[var(--line)] rounded-lg px-3 py-2 text-[var(--ink)]" />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-2">Exercise Hours/Week</label>
-                                <input type="number" name="ExerciseHours" value={formData.ExerciseHours} onChange={handleChange} min="0" className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white" />
+                                <label className="block text-sm font-medium text-[var(--ink)] mb-2">Exercise Hours/Week</label>
+                                <input type="number" name="ExerciseHours" value={formData.ExerciseHours} onChange={handleChange} min="0" className="w-full bg-[var(--surface)] border border-[var(--line)] rounded-lg px-3 py-2 text-[var(--ink)]" />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-2">Screen Time (Hrs/Day)</label>
-                                <input type="number" name="ScreenTime" value={formData.ScreenTime} onChange={handleChange} min="0" max="24" className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white" />
+                                <label className="block text-sm font-medium text-[var(--ink)] mb-2">Screen Time (Hrs/Day)</label>
+                                <input type="number" name="ScreenTime" value={formData.ScreenTime} onChange={handleChange} min="0" max="24" className="w-full bg-[var(--surface)] border border-[var(--line)] rounded-lg px-3 py-2 text-[var(--ink)]" />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-2">Social Hours/Week</label>
-                                <input type="number" name="SocialHours" value={formData.SocialHours} onChange={handleChange} min="0" className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white" />
+                                <label className="block text-sm font-medium text-[var(--ink)] mb-2">Social Hours/Week</label>
+                                <input type="number" name="SocialHours" value={formData.SocialHours} onChange={handleChange} min="0" className="w-full bg-[var(--surface)] border border-[var(--line)] rounded-lg px-3 py-2 text-[var(--ink)]" />
                             </div>
                         </div>
                     </div>
 
                     {/* 4. Engagement */}
                     <div>
-                        <h3 className="text-lg font-semibold text-yellow-400 mb-4 border-b border-gray-700 pb-2">Engagement</h3>
+                        <h3 className="text-lg font-semibold text-[var(--warning)] mb-4 border-b border-[var(--line)] pb-2">Engagement</h3>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-2">Club Participation</label>
-                                <select name="ClubParticipation" value={formData.ClubParticipation} onChange={handleChange} className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white">
+                                <label className="block text-sm font-medium text-[var(--ink)] mb-2">Club Participation</label>
+                                <select name="ClubParticipation" value={formData.ClubParticipation} onChange={handleChange} className="w-full bg-[var(--surface)] border border-[var(--line)] rounded-lg px-3 py-2 text-[var(--ink)]">
                                     <option value="Yes">Yes</option>
                                     <option value="No">No</option>
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-2">Mentor Meetings</label>
-                                <input type="number" name="MentorMeetings" value={formData.MentorMeetings} onChange={handleChange} min="0" className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white" />
+                                <label className="block text-sm font-medium text-[var(--ink)] mb-2">Mentor Meetings</label>
+                                <input type="number" name="MentorMeetings" value={formData.MentorMeetings} onChange={handleChange} min="0" className="w-full bg-[var(--surface)] border border-[var(--line)] rounded-lg px-3 py-2 text-[var(--ink)]" />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-2">Counseling Sessions</label>
-                                <input type="number" name="CounselingSessions" value={formData.CounselingSessions} onChange={handleChange} min="0" className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white" />
+                                <label className="block text-sm font-medium text-[var(--ink)] mb-2">Counseling Sessions</label>
+                                <input type="number" name="CounselingSessions" value={formData.CounselingSessions} onChange={handleChange} min="0" className="w-full bg-[var(--surface)] border border-[var(--line)] rounded-lg px-3 py-2 text-[var(--ink)]" />
                             </div>
                         </div>
                     </div>
 
                     {/* Actions */}
-                    <div className="flex gap-3 pt-4 border-t border-gray-700">
+                    <div className="flex gap-3 pt-4 border-t border-[var(--line)]">
                         <button
                             type="submit"
                             disabled={loading}
-                            className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                            className="flex-1 bg-[var(--brand)] hover:bg-[var(--brand)] disabled:bg-[var(--surface)] text-[var(--ink)] py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
                         >
                             {loading ? (
                                 <>
-                                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[var(--line)]"></div>
                                     Updating...
                                 </>
                             ) : (
@@ -271,7 +271,7 @@ const UpdateMenteeModal = ({ isOpen, onClose, student, onUpdate }) => {
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-6 bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-lg font-medium transition-colors"
+                            className="px-6 bg-[var(--surface)] hover:bg-[var(--surface)] text-[var(--ink)] py-3 rounded-lg font-medium transition-colors"
                         >
                             Cancel
                         </button>

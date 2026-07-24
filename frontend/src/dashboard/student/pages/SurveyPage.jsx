@@ -5,7 +5,7 @@ function SurveyPage() {
   return (
     <div>
       <h2 className="text-2xl font-semibold mb-4">Cognitive & Psychological Survey</h2>
-      <p className="mb-6 text-gray-400">
+      <p className="mb-6 text-[var(--ink)]">
         Please answer the following questions honestly to help us understand your personality traits. 
         This will provide valuable insights for your mentoring journey.
       </p>

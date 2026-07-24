@@ -1,20 +1,21 @@
 # app/main.py
-from dotenv import load_dotenv
-load_dotenv() 
+import common.config
 
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional, Dict, List
+import importlib.metadata
+import logging
+
 from app.schemas import ChatRequest, ChatResponse
 from app.prompt_manager import build_prompt
-from app.inference import generate_response, stream_response
+from app.inference import generate_response, stream_response, model_manager
 from app.memory import save_message, get_recent
 from app.safety import sanitize_reply
 from app.emotion_detector import detect_intent
 from app.rag_engine import get_rag_engine
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -46,6 +47,11 @@ class InterventionRequest(BaseModel):
     academic_data: Dict
     behavioral_data: Optional[Dict] = None
 
+class ReportRequest(BaseModel):
+    mentor_id: str
+    class_data: List[Dict]  # List of student data
+    focus_area: Optional[str] = "general"
+
 app = FastAPI(
     title="BodhyaAI LLM Service",
     version="2.0",
@@ -65,15 +71,17 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup_event():
     logger.info("Initializing RAG engine...")
-    rag_engine = get_rag_engine()
-    logger.info(f"RAG engine ready with {rag_engine.vector_store.index.ntotal} documents")
+    try:
+        rag_engine = get_rag_engine()
+        logger.info(f"RAG engine ready with {rag_engine.vector_store.index.ntotal} documents")
+    except Exception as e:
+        logger.error(f"Failed to initialize RAG engine: {e}")
 
 # ------------------------
 # Non-streaming chat
 # ------------------------
 @app.post("/chat", response_model=ChatResponse)
 def chat(req: ChatRequest):
-    # Adapt new schema to old logic
     user_id = req.student_id or "unknown"
     role = "student" # Default since role was removed from schema
     
@@ -89,39 +97,73 @@ def chat(req: ChatRequest):
         user_context += "\nRecent conversation:\n" + "\n".join(recent_history)
 
     # Build prompt differently based on intent
-    # Note: req.docs is removed from schema, passing empty list
     prompt = build_prompt(role, user_context, req.message, [], intent)
 
-    reply = generate_response(prompt, model_name=req.model)
-    safe_reply = sanitize_reply(reply, role)
-    save_message(user_id, role, req.message, safe_reply)
-    return ChatResponse(reply=safe_reply)
+    try:
+        reply = generate_response(prompt, model_name=req.model)
+        safe_reply = sanitize_reply(reply, role)
+        save_message(user_id, role, req.message, safe_reply)
+        return ChatResponse(reply=safe_reply)
+    except Exception as e:
+        logger.error(f"Chat error: {e}")
+        # Always return user-friendly errors
+        return ChatResponse(reply=str(e))
 
 # ------------------------
 # Streaming chat
 # ------------------------
 @app.post("/chat/stream")
 def chat_stream(req: ChatRequest):
+    user_id = req.student_id or "unknown"
+    role = "student"
+    
     intent = detect_intent(req.message)
-    recent_history = get_recent(req.userId)
-    user_context = req.context
+    recent_history = get_recent(user_id)
+    
+    user_context = ""
+    if req.context:
+        import json
+        user_context = json.dumps(req.context)
+        
     if recent_history:
         user_context += "\nRecent conversation:\n" + "\n".join(recent_history)
 
-    prompt = build_prompt(req.role, user_context, req.message, req.docs, intent)
+    prompt = build_prompt(role, user_context, req.message, [], intent)
 
-    # StreamingResponse with generator
-    return StreamingResponse(
-        stream_response(prompt, max_tokens=128),
-        media_type="text/plain"
-    )
+    try:
+        # StreamingResponse with generator
+        return StreamingResponse(
+            stream_response(prompt, model_name=req.model),
+            media_type="text/plain"
+        )
+    except Exception as e:
+        logger.error(f"Chat stream error: {e}")
+        # Return error generator
+        def err_generator():
+            yield str(e)
+        return StreamingResponse(err_generator(), media_type="text/plain")
 
 # ------------------------
 # Health endpoint
 # ------------------------
 @app.get("/health")
 def health():
-    return {"status": "ok", "service": "llm-svc", "version": "2.0"}
+    """
+    Returns improved health status of LLM service.
+    """
+    try:
+        sdk_version = importlib.metadata.version('google-genai')
+    except Exception:
+        sdk_version = "unknown"
+
+    return {
+        "status": "ok",
+        "service": "llm-svc",
+        "sdk version": sdk_version,
+        "current selected model": model_manager.current_model or "None (Ready)",
+        "API configured": model_manager.api_key is not None,
+        "last successful request": model_manager.last_successful_request
+    }
 
 # ------------------------
 # RAG Endpoints
@@ -251,11 +293,6 @@ def get_rag_stats():
     except Exception as e:
         logger.error(f"Stats error: {e}")
         return {"success": False, "error": str(e)}
-
-class ReportRequest(BaseModel):
-    mentor_id: str
-    class_data: List[Dict]  # List of student data
-    focus_area: Optional[str] = "general"
 
 @app.post("/rag/report")
 def generate_class_report(req: ReportRequest):

@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useSocket } from './SocketContext';
+import { API_BASE_URL } from '../utils/api';
 
 const AuthContext = createContext(null);
 
@@ -12,7 +13,7 @@ export function AuthProvider({ children }) {
     const validateToken = async () => {
       if (token) {
         try {
-          const res = await fetch('http://localhost:5000/api/me', {
+          const res = await fetch(`${API_BASE_URL}/me`, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
           if (res.ok) {

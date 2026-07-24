@@ -1,6 +1,8 @@
 import { getMe } from "./authService"; // We can reuse this logic if we want
 
-const API_URL = 'http://localhost:5000/api';
+import { API_BASE_URL } from '../utils/api';
+
+const API_URL = API_BASE_URL;
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem('authToken');

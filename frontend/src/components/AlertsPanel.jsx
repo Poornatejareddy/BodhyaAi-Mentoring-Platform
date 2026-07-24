@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useSocket } from '../context/SocketContext';
 import { useAuth } from '../context/AuthContext';
+import { API_BASE_URL } from '../utils/api';
+import { Bell, Trash2, Check, X, Inbox } from 'lucide-react';
 
 const AlertsPanel = () => {
     const { alerts, unreadAlertsCount, clearAlert, clearAllAlerts } = useSocket();
@@ -19,7 +21,7 @@ const AlertsPanel = () => {
     const fetchAlerts = async () => {
         setLoading(true);
         try {
-            const res = await fetch('http://localhost:5000/api/alerts/my-alerts?limit=50', {
+            const res = await fetch(`${API_BASE_URL}/alerts/my-alerts?limit=50`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             if (res.ok) {
@@ -35,7 +37,7 @@ const AlertsPanel = () => {
 
     const handleMarkAsRead = async (alertId) => {
         try {
-            const res = await fetch(`http://localhost:5000/api/alerts/${alertId}/read`, {
+            const res = await fetch(`${API_BASE_URL}/alerts/${alertId}/read`, {
                 method: 'PUT',
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -55,7 +57,7 @@ const AlertsPanel = () => {
 
     const handleMarkAllAsRead = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/alerts/mark-all-read', {
+            const res = await fetch(`${API_BASE_URL}/alerts/mark-all-read`, {
                 method: 'PUT',
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -70,7 +72,7 @@ const AlertsPanel = () => {
 
     const handleDeleteAlert = async (alertId) => {
         try {
-            const res = await fetch(`http://localhost:5000/api/alerts/${alertId}`, {
+            const res = await fetch(`${API_BASE_URL}/alerts/${alertId}`, {
                 method: 'DELETE',
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -83,18 +85,18 @@ const AlertsPanel = () => {
         }
     };
 
-    const getPriorityColor = (priority) => {
+    const getPriorityStyle = (priority) => {
         switch (priority) {
             case 'URGENT':
-                return 'bg-red-100 border-red-500 text-red-900';
+                return 'bg-[var(--danger-muted)] border-[var(--danger)] text-[var(--danger)]';
             case 'HIGH':
-                return 'bg-orange-100 border-orange-500 text-orange-900';
+                return 'var-warning var-warning var-warning';
             case 'MEDIUM':
-                return 'bg-yellow-100 border-yellow-500 text-yellow-900';
+                return 'bg-[var(--brand)] border-[var(--brand)] text-[var(--brand)]';
             case 'LOW':
-                return 'bg-blue-100 border-blue-500 text-blue-900';
+                return 'bg-[var(--success-muted)] border-[var(--success)] text-[var(--success)]';
             default:
-                return 'bg-gray-100 border-gray-500 text-gray-900';
+                return 'bg-[var(--surface)] border-[var(--line)] text-[var(--ink)]';
         }
     };
 
@@ -107,7 +109,7 @@ const AlertsPanel = () => {
             case 'MEDIUM':
                 return '📌';
             case 'LOW':
-                return 'ℹ️';
+                return '✨';
             default:
                 return '📢';
         }
@@ -125,24 +127,12 @@ const AlertsPanel = () => {
             {/* Bell Icon Button */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="relative p-2 rounded-full hover:bg-gray-100 transition-colors"
+                className="relative p-2 rounded-lg border border-[var(--line)] bg-[var(--surface)] text-[var(--ink-secondary)] hover:bg-[var(--surface-hover)] transition-all cursor-pointer"
                 aria-label="Notifications"
             >
-                <svg
-                    className="w-6 h-6 text-gray-700"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                    />
-                </svg>
+                <Bell size={16} />
                 {unreadAlertsCount > 0 && (
-                    <span className="absolute top-0 right-0 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-600 rounded-full">
+                    <span className="absolute -top-1.5 -right-1.5 inline-flex items-center justify-center min-w-5 h-5 px-1 text-[10px] font-bold text-[var(--ink)] bg-[var(--danger)] rounded-full border-2 border-[var(--surface)]">
                         {unreadAlertsCount > 9 ? '9+' : unreadAlertsCount}
                     </span>
                 )}
@@ -150,102 +140,103 @@ const AlertsPanel = () => {
 
             {/* Alerts Dropdown Panel */}
             {isOpen && (
-                <div className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-h-[600px] overflow-hidden flex flex-col">
-                    {/* Header */}
-                    <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-gradient-to-r from-blue-500 to-purple-600 text-white">
-                        <h3 className="font-semibold text-lg">Notifications</h3>
-                        <div className="flex gap-2">
-                            {unreadAlertsCount > 0 && (
-                                <button
-                                    onClick={handleMarkAllAsRead}
-                                    className="text-xs bg-white/20 hover:bg-white/30 px-3 py-1 rounded transition"
-                                >
-                                    Mark all read
-                                </button>
-                            )}
-                            <button
-                                onClick={() => setIsOpen(false)}
-                                className="text-white hover:bg-white/20 rounded p-1"
-                            >
-                                ✕
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Alerts List */}
-                    <div className="overflow-y-auto flex-1">
-                        {loading ? (
-                            <div className="p-8 text-center text-gray-500">
-                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                                <p className="mt-2">Loading alerts...</p>
+                <>
+                    {/* Backdrop for easy closing */}
+                    <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
+                    
+                    <div className="absolute right-0 mt-2 w-96 bg-[var(--surface)] rounded-xl shadow-xl border border-[var(--line)] z-50 max-h-[500px] overflow-hidden flex flex-col animate-fade-in">
+                        {/* Header */}
+                        <div className="p-4 border-b border-[var(--line)] flex justify-between items-center bg-[var(--surface-muted)]">
+                            <div>
+                                <h3 className="font-semibold text-sm text-[var(--ink)]">Notifications</h3>
+                                <p className="text-[10px] text-[var(--ink-muted)]">Stay updated on risk flags & messages</p>
                             </div>
-                        ) : combinedAlerts.length === 0 ? (
-                            <div className="p-8 text-center text-gray-500">
-                                <svg
-                                    className="w-16 h-16 mx-auto mb-4 text-gray-300"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
-                                    />
-                                </svg>
-                                <p className="font-medium">No notifications</p>
-                                <p className="text-sm">You're all caught up!</p>
-                            </div>
-                        ) : (
-                            <div className="divide-y divide-gray-200">
-                                {combinedAlerts.map((alert) => (
-                                    <div
-                                        key={alert._id}
-                                        className={`p-4 hover:bg-gray-50 transition ${!alert.read ? 'bg-blue-50' : ''
-                                            }`}
+                            <div className="flex items-center gap-2">
+                                {unreadAlertsCount > 0 && (
+                                    <button
+                                        onClick={handleMarkAllAsRead}
+                                        className="text-xs text-[var(--brand)] hover:underline flex items-center gap-1 font-medium bg-transparent border-0 cursor-pointer"
                                     >
-                                        <div className="flex items-start gap-3">
-                                            <span className="text-2xl">{getPriorityIcon(alert.priority)}</span>
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex items-start justify-between gap-2">
-                                                    <h4 className="font-semibold text-sm text-gray-900">
-                                                        {alert.title}
-                                                    </h4>
-                                                    {!alert.read && (
-                                                        <span className="inline-block w-2 h-2 bg-blue-600 rounded-full flex-shrink-0 mt-1"></span>
-                                                    )}
-                                                </div>
-                                                <p className="text-sm text-gray-700 mt-1">{alert.message}</p>
-                                                <div className="flex items-center justify-between mt-2">
-                                                    <span className="text-xs text-gray-500">
-                                                        {new Date(alert.createdAt).toLocaleString()}
-                                                    </span>
-                                                    <div className="flex gap-2">
+                                        <Check size={12} />
+                                        Mark all read
+                                    </button>
+                                )}
+                                <button
+                                    onClick={() => setIsOpen(false)}
+                                    className="text-[var(--ink-muted)] hover:text-[var(--ink)] hover:bg-[var(--surface-hover)] rounded-lg p-1 transition cursor-pointer"
+                                    aria-label="Close notifications"
+                                >
+                                    <X size={14} />
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Alerts List */}
+                        <div className="overflow-y-auto flex-1 divide-y divide-[var(--line)]">
+                            {loading ? (
+                                <div className="p-8 text-center text-[var(--ink-muted)]">
+                                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[var(--brand)] mx-auto mb-3"></div>
+                                    <p className="text-xs">Loading notifications...</p>
+                                </div>
+                            ) : combinedAlerts.length === 0 ? (
+                                <div className="p-8 text-center text-[var(--ink-muted)] flex flex-col items-center">
+                                    <div className="w-12 h-12 rounded-full bg-[var(--surface-hover)] flex items-center justify-center mb-3">
+                                        <Inbox size={20} className="text-[var(--ink-muted)]" />
+                                    </div>
+                                    <p className="font-semibold text-sm text-[var(--ink)]">All caught up!</p>
+                                    <p className="text-xs text-[var(--ink-muted)] mt-0.5">No notifications at the moment.</p>
+                                </div>
+                            ) : (
+                                <div className="divide-y divide-[var(--line)]">
+                                    {combinedAlerts.map((alert) => (
+                                        <div
+                                            key={alert._id}
+                                            className={`p-4 transition hover:bg-[var(--surface-hover)] ${
+                                                !alert.read ? 'bg-[var(--brand-light)]/20' : ''
+                                            }`}
+                                        >
+                                            <div className="flex items-start gap-3">
+                                                <span className="text-xl leading-none">{getPriorityIcon(alert.priority)}</span>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-start justify-between gap-2">
+                                                        <h4 className="font-semibold text-xs text-[var(--ink)] leading-snug">
+                                                            {alert.title}
+                                                        </h4>
                                                         {!alert.read && (
-                                                            <button
-                                                                onClick={() => handleMarkAsRead(alert._id)}
-                                                                className="text-xs text-blue-600 hover:text-blue-800"
-                                                            >
-                                                                Mark read
-                                                            </button>
+                                                            <span className="inline-block w-1.5 h-1.5 bg-[var(--brand)] rounded-full flex-shrink-0 mt-1.5"></span>
                                                         )}
-                                                        <button
-                                                            onClick={() => handleDeleteAlert(alert._id)}
-                                                            className="text-xs text-red-600 hover:text-red-800"
-                                                        >
-                                                            Delete
-                                                        </button>
+                                                    </div>
+                                                    <p className="text-xs text-[var(--ink-secondary)] mt-1 leading-relaxed">{alert.message}</p>
+                                                    <div className="flex items-center justify-between mt-3">
+                                                        <span className="text-[10px] text-[var(--ink-muted)]">
+                                                            {new Date(alert.createdAt).toLocaleString()}
+                                                        </span>
+                                                        <div className="flex gap-2">
+                                                            {!alert.read && (
+                                                                <button
+                                                                    onClick={() => handleMarkAsRead(alert._id)}
+                                                                    className="text-[10px] text-[var(--brand)] hover:underline bg-transparent border-0 cursor-pointer"
+                                                                >
+                                                                    Mark read
+                                                                </button>
+                                                            )}
+                                                            <button
+                                                                onClick={() => handleDeleteAlert(alert._id)}
+                                                                className="text-[10px] text-[var(--danger)] hover:underline bg-transparent border-0 cursor-pointer"
+                                                            >
+                                                                Delete
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
-                </div>
+                </>
             )}
         </div>
     );

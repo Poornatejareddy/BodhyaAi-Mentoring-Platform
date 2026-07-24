@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bodhyaai-services"
+version = "1.0.0"
+description = "BodhyaAI Platform Microservices and Shared Package"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    # Dependencies are managed via requirements.txt
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["common*"]

@@ -21,9 +21,9 @@ const RiskGauge = ({ risk = 'MEDIUM', confidence = 0.8, className = '' }) => {
 
     // Color mapping
     const riskColors = {
-        'HIGH': '#ef4444',
-        'MEDIUM': '#f59e0b',
-        'LOW': '#10b981'
+        'HIGH': 'var(--danger)',
+        'MEDIUM': 'var(--warning)',
+        'LOW': 'var(--success)'
     };
 
     const color = riskColors[risk] || riskColors.MEDIUM;
@@ -34,7 +34,7 @@ const RiskGauge = ({ risk = 'MEDIUM', confidence = 0.8, className = '' }) => {
         { name: 'Safe', value: 100 - score }
     ];
 
-    const COLORS = [color, '#1e293b'];
+    const COLORS = [color, 'var(--chart-grid)'];
 
     return (
         <div className={`flex flex-col items-center ${className}`}>
@@ -66,7 +66,7 @@ const RiskGauge = ({ risk = 'MEDIUM', confidence = 0.8, className = '' }) => {
                     <p className="text-4xl font-bold" style={{ color }}>
                         {score}
                     </p>
-                    <p className="text-sm text-gray-400">Risk Score</p>
+                    <p className="text-sm text-[var(--ink)]">Risk Score</p>
                 </div>
             </div>
 
@@ -75,7 +75,7 @@ const RiskGauge = ({ risk = 'MEDIUM', confidence = 0.8, className = '' }) => {
                 <p className="text-2xl font-bold" style={{ color }}>
                     {risk === 'HIGH' ? 'High Risk' : risk === 'MEDIUM' ? 'Medium Risk' : 'Low Risk'}
                 </p>
-                <p className="text-sm text-gray-400 mt-1">
+                <p className="text-sm text-[var(--ink)] mt-1">
                     Confidence: {(confidence * 100).toFixed(1)}%
                 </p>
             </div>

@@ -1,102 +1,10 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Link, NavLink } from 'react-router-dom';
+import { Menu, X, Sun, Moon, Monitor } from 'lucide-react';
+import { useTheme } from '../../context/ThemeContext';
 import logo from '../../assets/logo.png';
 
-function PublicNavbar() {
-    const [isOpen, setIsOpen] = useState(false);
-
-    const navLinks = [
-        { name: 'Home', path: '/' },
-        { name: 'Features', path: '/#features' },
-        { name: 'About', path: '/#about' },
-    ];
-
-    return (
-        <nav className="sticky top-0 z-50 w-full bg-gray-900/90 backdrop-blur-md border-b border-gray-800 transition-all duration-300 shadow-sm">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center justify-between h-20">
-                    {/* Logo */}
-                    <Link to="/" className="flex items-center gap-3 group">
-                        <img src={logo} alt="BodhyaAI" className="h-9 w-auto group-hover:scale-105 transition-transform" />
-                        <span className="text-xl font-bold text-white tracking-tight group-hover:text-blue-400 transition-colors">BodhyaAI</span>
-                    </Link>
-
-                    {/* Desktop Nav */}
-                    <div className="hidden md:flex items-center space-x-8">
-                        {navLinks.map((link) => (
-                            <a
-                                key={link.name}
-                                href={link.path}
-                                className="text-sm font-medium text-gray-300 hover:text-white transition-colors relative group"
-                            >
-                                {link.name}
-                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-500 transition-all group-hover:w-full"></span>
-                            </a>
-                        ))}
-                        <div className="flex items-center gap-4 pl-6 border-l border-gray-700">
-                            <Link
-                                to="/login"
-                                className="text-sm font-semibold text-white hover:text-blue-400 transition-colors"
-                            >
-                                Login
-                            </Link>
-                            <Link
-                                to="/register"
-                                className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-full text-sm font-bold transition-all hover:shadow-lg hover:shadow-blue-500/30 transform hover:-translate-y-0.5"
-                            >
-                                Get Started
-                            </Link>
-                        </div>
-                    </div>
-
-                    {/* Mobile Menu Button */}
-                    <div className="md:hidden flex items-center gap-4">
-                        <button
-                            onClick={() => setIsOpen(!isOpen)}
-                            className="text-gray-400 hover:text-white p-2 rounded-lg hover:bg-gray-800 transition-colors"
-                        >
-                            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            {/* Mobile Menu */}
-            {isOpen && (
-                <div className="md:hidden bg-gray-900 border-b border-gray-800 absolute w-full shadow-xl">
-                    <div className="px-4 pt-2 pb-6 space-y-2">
-                        {navLinks.map((link) => (
-                            <a
-                                key={link.name}
-                                href={link.path}
-                                className="block px-4 py-3 text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800 rounded-xl transition-colors"
-                                onClick={() => setIsOpen(false)}
-                            >
-                                {link.name}
-                            </a>
-                        ))}
-                        <div className="pt-4 mt-4 border-t border-gray-800 flex flex-col gap-3">
-                            <Link
-                                to="/login"
-                                className="block w-full text-center px-4 py-3 text-white font-semibold border border-gray-700 rounded-xl hover:bg-gray-800 transition-colors"
-                                onClick={() => setIsOpen(false)}
-                            >
-                                Login
-                            </Link>
-                            <Link
-                                to="/register"
-                                className="block w-full text-center px-4 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-500/30 transition-colors"
-                                onClick={() => setIsOpen(false)}
-                            >
-                                Get Started
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-            )}
-        </nav>
-    );
-}
-
+const links = [{name:'Platform',path:'/features'},{name:'Solutions',path:'/solutions'},{name:'Research & AI',path:'/research'},{name:'Resources',path:'/resources'}];
+function ThemeToggle() { const {theme,setTheme}=useTheme(); const Icon=theme==='dark'?Moon:theme==='light'?Sun:Monitor; return <button onClick={()=>setTheme(theme==='light'?'dark':theme==='dark'?'system':'light')} aria-label="Change color theme" className="grid h-9 w-9 place-items-center rounded-lg text-[var(--ink-muted)] hover:bg-[var(--surface-muted)]"><Icon size={18}/></button>; }
+function PublicNavbar() { const [open,setOpen]=useState(false); const homeClick=()=>{ setOpen(false); if (window.location.pathname === '/') window.scrollTo({ top: 0, behavior: 'smooth' }); }; return <nav className="sticky top-0 z-50 border-b border-[var(--line)] bg-[color:var(--surface)]/90 backdrop-blur"><div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8"><Link to="/" onClick={homeClick} className="flex items-center gap-2.5"><img src={logo} alt="BodhyaAI" className="h-8 w-8 object-contain"/><span className="text-base font-semibold tracking-tight text-[var(--ink)]">BodhyaAI</span></Link><div className="hidden items-center gap-7 md:flex">{links.map(link=><NavLink key={link.path} to={link.path} className={({isActive})=>`text-sm font-medium ${isActive?'text-[var(--brand)]':'app-muted hover:text-[var(--ink)]'}`}>{link.name}</NavLink>)}</div><div className="hidden items-center gap-2 md:flex"><ThemeToggle/><Link to="/login" className="px-3 py-2 text-sm font-semibold text-[var(--ink)]">Sign in</Link><Link to="/register" className="rounded-lg bg-[var(--brand)] px-3.5 py-2 text-sm font-semibold text-[var(--accent-ink)] hover:bg-[var(--brand-hover)]">Get started</Link></div><button onClick={()=>setOpen(!open)} aria-expanded={open} aria-label="Toggle navigation" className="p-2 md:hidden">{open?<X/>:<Menu/>}</button></div>{open&&<div className="border-t border-[var(--line)] bg-[var(--surface)] px-5 py-4 md:hidden"><div className="flex flex-col gap-1">{links.map(link=><NavLink onClick={()=>setOpen(false)} key={link.path} to={link.path} className="rounded-lg px-3 py-2 text-sm font-medium app-muted hover:bg-[var(--surface-muted)]">{link.name}</NavLink>)}<div className="mt-3 flex items-center gap-2 border-t border-[var(--line)] pt-3"><ThemeToggle/><Link onClick={()=>setOpen(false)} to="/login" className="px-3 py-2 text-sm font-semibold">Sign in</Link><Link onClick={()=>setOpen(false)} to="/register" className="rounded-lg bg-[var(--brand)] px-3 py-2 text-sm font-semibold text-[var(--accent-ink)]">Get started</Link></div></div></div>}</nav>; }
 export default PublicNavbar;

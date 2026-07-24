@@ -1,18 +1,20 @@
+#!/usr/bin/env python3
+"""
+Debug script to verify google-genai SDK installation and client initialization.
+"""
+import importlib.metadata
+
 try:
     from google import genai
-    print("Successfully imported google.genai")
-    print(f"File: {genai.__file__}")
-    print(f"Dir: {dir(genai)}")
-    
+    version = importlib.metadata.version('google-genai')
+    print(f"✅ google.genai imported successfully (v{version})")
+    print(f"   Module: {genai.__file__}")
+
     if hasattr(genai, 'Client'):
-        print("genai.Client exists")
-    
+        print("✅ genai.Client class available")
+    else:
+        print("❌ genai.Client class NOT found")
+
 except ImportError as e:
-    print(f"ImportError: {e}")
-    
-try:
-    import google.generativeai as old_genai
-    print("Successfully imported google.generativeai")
-    print(f"Version: {old_genai.__version__}")
-except ImportError:
-    print("google.generativeai not found")
+    print(f"❌ ImportError: {e}")
+    print("   Run: pip install google-genai")

@@ -33,9 +33,9 @@ function Chatbot({ isOpen, onClose }) {
 
   return (
     // This is the main modal container, fixed to the bottom-right
-    <div className="fixed bottom-20 right-5 w-96 h-[60vh] flex flex-col bg-gray-800 rounded-lg shadow-2xl z-50">
+    <div className="fixed bottom-20 right-5 w-96 h-[60vh] flex flex-col bg-[var(--surface)] rounded-lg shadow-2xl z-50">
       {/* Header with a close button */}
-      <div className="flex justify-between items-center p-3 border-b border-gray-700">
+      <div className="flex justify-between items-center p-3 border-b border-[var(--line)]">
         <h3 className="font-bold text-lg">Chat with Bodhya</h3>
         <button onClick={onClose} className="font-bold text-xl">&times;</button>
       </div>
@@ -45,26 +45,26 @@ function Chatbot({ isOpen, onClose }) {
         {messages.map((msg, index) => (
           <div key={index} className={`my-2 p-3 rounded-lg max-w-xs ${
             msg.sender === 'user' 
-              ? 'bg-blue-600 text-white ml-auto' 
-              : 'bg-gray-700 text-gray-200 mr-auto'
+              ? 'bg-[var(--brand)] text-[var(--ink)] ml-auto' 
+              : 'bg-[var(--surface)] text-[var(--ink)] mr-auto'
           }`}>
             {msg.text}
           </div>
         ))}
-        {isLoading && <div className="p-3 bg-gray-700 rounded-lg max-w-xs">Typing...</div>}
+        {isLoading && <div className="p-3 bg-[var(--surface)] rounded-lg max-w-xs">Typing...</div>}
       </div>
       
       {/* Input Form */}
-      <form onSubmit={handleSendMessage} className="p-4 border-t border-gray-700 flex">
+      <form onSubmit={handleSendMessage} className="p-4 border-t border-[var(--line)] flex">
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask me anything..."
-          className="flex-1 p-2 bg-gray-700 rounded-l-md focus:outline-none"
+          className="flex-1 p-2 bg-[var(--surface)] rounded-l-md focus:outline-none"
           disabled={isLoading}
         />
-        <button type="submit" className="px-4 py-2 bg-blue-600 rounded-r-md" disabled={isLoading}>
+        <button type="submit" className="px-4 py-2 bg-[var(--brand)] rounded-r-md" disabled={isLoading}>
           Send
         </button>
       </form>

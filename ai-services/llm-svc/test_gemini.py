@@ -1,64 +1,57 @@
 #!/usr/bin/env python3
 """
-Quick test script to verify Gemini API integration
+Quick test script to verify Gemini API integration using the new google-genai SDK
 """
 import os
+import sys
 from dotenv import load_dotenv
+
+# Set up system paths
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), "app"))
+
+from app.inference import generate_response, model_manager
 
 # Load environment variables
 load_dotenv()
 
 print("=" * 60)
-print("GEMINI API TEST")
+print("GEMINI NEW SDK API TEST")
 print("=" * 60)
 
 # Check if API key is loaded
 api_key = os.getenv('GEMINI_API_KEY')
 if api_key:
-    print(f"✅ GEMINI_API_KEY found: {api_key[:20]}...")
+    print(f"✅ GEMINI_API_KEY found: {api_key[:10]}...")
 else:
     print("❌ GEMINI_API_KEY not found in environment!")
     exit(1)
 
-# Try to import and use Gemini
+# Try to import and use google-genai
 try:
-    import google.generativeai as genai
-    print("✅ google.generativeai package imported successfully")
+    from google import genai
+    print("✅ google.genai package imported successfully")
 except ImportError as e:
-    print(f"❌ Failed to import google.generativeai: {e}")
+    print(f"❌ Failed to import google.genai: {e}")
     exit(1)
 
-# Configure Gemini
-try:
-    genai.configure(api_key=api_key)
-    print("✅ Gemini API configured successfully")
-except Exception as e:
-    print(f"❌ Failed to configure Gemini: {e}")
-    exit(1)
-
-# Create model instance
-try:
-    model = genai.GenerativeModel('gemini-2.5-flash')
-    print("✅ Gemini 2.5 Flash model instance created")
-except Exception as e:
-    print(f"❌ Failed to create model: {e}")
-    exit(1)
-
-# Test generation
+# Test generation via ModelManager/Service
 print("\n" + "=" * 60)
-print("TESTING GENERATION")
+print("TESTING GENERATION VIA SERVICE LAYER")
 print("=" * 60)
-print("Prompt: 'Explain the Pomodoro technique in 2 sentences.'")
+prompt = "Explain the Pomodoro technique in 2 sentences."
+print(f"Prompt: '{prompt}'")
 print("\nGenerating response...\n")
 
 try:
-    response = model.generate_content("Explain the Pomodoro technique in 2 sentences.")
+    response = generate_response(prompt)
     print("✅ Response generated successfully!")
     print("\n" + "-" * 60)
     print("RESPONSE:")
     print("-" * 60)
-    print(response.text)
+    print(response)
     print("-" * 60)
+    print(f"Model used: {model_manager.current_model}")
     print("\n✅ GEMINI API TEST PASSED!")
     print("=" * 60)
 except Exception as e:

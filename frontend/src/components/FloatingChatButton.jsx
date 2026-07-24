@@ -19,7 +19,7 @@ const FloatingChatButton = () => {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 rounded-full shadow-2xl hover:shadow-3xl transform hover:scale-110 transition-all duration-200 z-40 flex items-center gap-2"
+          className="fixed bottom-6 right-6 bg-[var(--surface)]   text-[var(--ink)] p-4 rounded-full shadow-2xl hover:shadow-3xl transform hover:scale-110 transition-all duration-200 z-40 flex items-center gap-2"
           aria-label="Chat with AI Assistant"
         >
           <MessageCircle className="w-6 h-6" />

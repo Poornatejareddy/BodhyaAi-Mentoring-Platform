@@ -22,13 +22,13 @@ const FeatureImpactChart = ({ features = [] }) => {
         if (active && payload && payload.length) {
             const data = payload[0].payload;
             return (
-                <div className="bg-gray-900 border border-gray-700 rounded-lg p-3 shadow-xl">
-                    <p className="text-white font-semibold">{data.name}</p>
-                    <p className="text-sm text-gray-300">Current Value: {data.value}</p>
-                    <p className={`text-sm ${data.impact > 0 ? 'text-red-400' : 'text-green-400'}`}>
+                <div className="bg-[var(--surface)] border border-[var(--line)] rounded-lg p-3 shadow-xl">
+                    <p className="text-[var(--ink)] font-semibold">{data.name}</p>
+                    <p className="text-sm text-[var(--ink)]">Current Value: {data.value}</p>
+                    <p className={`text-sm ${data.impact > 0 ? 'text-[var(--danger)]' : 'text-[var(--success)]'}`}>
                         Impact: {data.impact > 0 ? '+' : ''}{data.impact.toFixed(3)}
                     </p>
-                    <p className="text-xs text-gray-400 mt-1">
+                    <p className="text-xs text-[var(--ink)] mt-1">
                         {data.impact > 0 ? 'Increases Risk' : 'Decreases Risk'}
                     </p>
                 </div>
@@ -38,9 +38,9 @@ const FeatureImpactChart = ({ features = [] }) => {
     };
 
     return (
-        <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-            <h3 className="text-lg font-semibold text-white mb-4">Feature Impact Analysis</h3>
-            <p className="text-sm text-gray-400 mb-6">
+        <div className="bg-[var(--surface)] rounded-xl p-6 border border-[var(--line)]">
+            <h3 className="text-lg font-semibold text-[var(--ink)] mb-4">Feature Impact Analysis</h3>
+            <p className="text-sm text-[var(--ink)] mb-6">
                 How each factor affects the risk prediction
             </p>
 
@@ -50,15 +50,15 @@ const FeatureImpactChart = ({ features = [] }) => {
                     layout="vertical"
                     margin={{ top: 5, right: 30, left: 120, bottom: 5 }}
                 >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis type="number" stroke="#9ca3af" />
-                    <YAxis type="category" dataKey="name" stroke="#9ca3af" width={110} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
+                    <XAxis type="number" stroke="var(--chart-text)" />
+                    <YAxis type="category" dataKey="name" stroke="var(--chart-text)" width={110} />
                     <Tooltip content={<CustomTooltip />} />
                     <Bar dataKey="impact" radius={[0, 8, 8, 0]}>
                         {chartData.map((entry, index) => (
                             <Cell
                                 key={`cell-${index}`}
-                                fill={entry.impact > 0 ? '#ef4444' : '#10b981'}
+                                fill={entry.impact > 0 ? 'var(--danger)' : 'var(--success)'}
                             />
                         ))}
                     </Bar>
@@ -68,12 +68,12 @@ const FeatureImpactChart = ({ features = [] }) => {
             {/* Legend */}
             <div className="flex items-center justify-center gap-6 mt-4 text-sm">
                 <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 bg-red-500 rounded"></div>
-                    <span className="text-gray-300">Increases Risk</span>
+                    <div className="w-4 h-4 bg-[var(--danger-muted)] rounded"></div>
+                    <span className="text-[var(--ink)]">Increases Risk</span>
                 </div>
                 <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 bg-green-500 rounded"></div>
-                    <span className="text-gray-300">Decreases Risk</span>
+                    <div className="w-4 h-4 bg-[var(--success-muted)] rounded"></div>
+                    <span className="text-[var(--ink)]">Decreases Risk</span>
                 </div>
             </div>
         </div>

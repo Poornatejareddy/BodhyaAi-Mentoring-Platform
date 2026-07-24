@@ -2,62 +2,62 @@ import React from 'react';
 
 /**
  * Loading Skeleton Component
- * Animated placeholder for loading states
+ * Animated placeholder for loading states, fully supports theme tokens.
  */
 
 export const CardSkeleton = () => (
-    <div className="bg-gray-800 rounded-xl border border-gray-700 p-6 animate-pulse">
-        <div className="h-4 bg-gray-700 rounded w-1/4 mb-4"></div>
-        <div className="h-8 bg-gray-700 rounded w-1/2 mb-2"></div>
-        <div className="h-3 bg-gray-700 rounded w-3/4"></div>
+    <div className="bg-[var(--surface)] rounded-xl border border-[var(--line)] p-6 animate-pulse">
+        <div className="h-4 bg-[var(--surface-hover)] rounded w-1/4 mb-4"></div>
+        <div className="h-8 bg-[var(--surface-hover)] rounded w-1/2 mb-2"></div>
+        <div className="h-3 bg-[var(--surface-hover)] rounded w-3/4"></div>
     </div>
 );
 
 export const StatCardSkeleton = () => (
-    <div className="bg-gray-800 rounded-xl border border-gray-700 p-6 animate-pulse">
+    <div className="bg-[var(--surface)] rounded-xl border border-[var(--line)] p-6 animate-pulse">
         <div className="flex justify-between items-start mb-4">
             <div className="flex-1">
-                <div className="h-3 bg-gray-700 rounded w-1/2 mb-3"></div>
-                <div className="h-8 bg-gray-700 rounded w-3/4"></div>
+                <div className="h-3 bg-[var(--surface-hover)] rounded w-1/2 mb-3"></div>
+                <div className="h-8 bg-[var(--surface-hover)] rounded w-3/4"></div>
             </div>
-            <div className="w-12 h-12 bg-gray-700 rounded-lg"></div>
+            <div className="w-12 h-12 bg-[var(--surface-hover)] rounded-lg"></div>
         </div>
-        <div className="h-3 bg-gray-700 rounded w-1/3"></div>
+        <div className="h-3 bg-[var(--surface-hover)] rounded w-1/3"></div>
     </div>
 );
 
 export const TableRowSkeleton = () => (
-    <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 animate-pulse">
+    <div className="bg-[var(--surface)] border border-[var(--line)] rounded-lg p-4 animate-pulse">
         <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-gray-700 rounded-full"></div>
+            <div className="w-12 h-12 bg-[var(--surface-hover)] rounded-full"></div>
             <div className="flex-1 space-y-2">
-                <div className="h-4 bg-gray-700 rounded w-1/4"></div>
-                <div className="h-3 bg-gray-700 rounded w-1/3"></div>
+                <div className="h-4 bg-[var(--surface-hover)] rounded w-1/4"></div>
+                <div className="h-3 bg-[var(--surface-hover)] rounded w-1/3"></div>
             </div>
-            <div className="h-8 w-24 bg-gray-700 rounded"></div>
+            <div className="h-8 w-24 bg-[var(--surface-hover)] rounded"></div>
         </div>
     </div>
 );
 
 export const ChartSkeleton = () => (
-    <div className="bg-gray-800 rounded-xl border border-gray-700 p-6 animate-pulse">
-        <div className="h-5 bg-gray-700 rounded w-1/4 mb-6"></div>
-        <div className="h-64 bg-gray-700 rounded"></div>
+    <div className="bg-[var(--surface)] rounded-xl border border-[var(--line)] p-6 animate-pulse">
+        <div className="h-5 bg-[var(--surface-hover)] rounded w-1/4 mb-6"></div>
+        <div className="h-64 bg-[var(--surface-hover)] rounded"></div>
     </div>
 );
 
 export const ProfileSkeleton = () => (
-    <div className="bg-gray-800 rounded-xl border border-gray-700 p-6 animate-pulse">
+    <div className="bg-[var(--surface)] rounded-xl border border-[var(--line)] p-6 animate-pulse">
         <div className="flex items-center gap-4 mb-6">
-            <div className="w-20 h-20 bg-gray-700 rounded-full"></div>
+            <div className="w-20 h-20 bg-[var(--surface-hover)] rounded-full"></div>
             <div className="flex-1 space-y-3">
-                <div className="h-6 bg-gray-700 rounded w-1/3"></div>
-                <div className="h-4 bg-gray-700 rounded w-1/2"></div>
+                <div className="h-6 bg-[var(--surface-hover)] rounded w-1/3"></div>
+                <div className="h-4 bg-[var(--surface-hover)] rounded w-1/2"></div>
             </div>
         </div>
         <div className="grid grid-cols-4 gap-4">
             {[1, 2, 3, 4].map(i => (
-                <div key={i} className="h-20 bg-gray-700 rounded"></div>
+                <div key={i} className="h-20 bg-[var(--surface-hover)] rounded"></div>
             ))}
         </div>
     </div>

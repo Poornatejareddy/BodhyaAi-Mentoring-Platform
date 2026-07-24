@@ -10,15 +10,15 @@ function DashboardLayout() {
   const [isCollapsed, setIsCollapsed] = useState(false); // State lives here
 
   return (
-    <div className="flex h-screen bg-gray-900 text-gray-100 overflow-hidden">
+    <div className="dashboard-shell flex h-screen overflow-hidden">
       {/* Pass state and setter to Sidebar */}
       <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
 
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="min-w-0 flex-1 flex flex-col overflow-hidden">
         {/* TopNav doesn't need the toggle function anymore */}
         <TopNav /> 
         
-        <main className="flex-1 overflow-y-auto p-6 lg:p-8 bg-gray-900 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
+        <main className="min-w-0 flex-1 overflow-y-auto p-5 sm:p-6 lg:p-8">
           <Outlet />
         </main>
       </div>

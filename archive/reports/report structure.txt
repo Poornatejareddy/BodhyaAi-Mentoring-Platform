@@ -1,0 +1,151 @@
+PRELIMINARIES
+
+Cover Page
+Certificate
+Declaration
+Acknowledgement
+Abstract
+Table of Contents
+List of Figures
+List of Tables
+List of Abbreviations
+
+CHAPTER 1 — INTRODUCTION
+
+1.1 Background and Context
+1.2 Challenges in Academic Risk Prediction and Mentoring
+1.3 Importance of Early Intervention Systems in Education
+1.4 Motivation for Developing BodhyaAI
+1.5 Problem Statement
+1.6 Project Objectives
+1.7 Scope of the Project
+1.8 Methodology Overview
+1.9 Report Organization
+
+CHAPTER 2 — LITERATURE REVIEW
+
+2.1 Introduction
+2.2 Evolution of Educational Data Mining and Learning Analytics
+2.3 Machine Learning in Student Performance Prediction
+2.4 Cognitive and Psychological Models in Education (BFI, MBTI, etc.)
+2.5 Explainable AI Techniques and Their Educational Relevance
+2.5.1 SHAP
+2.5.2 LIME
+2.5.3 Model Transparency Challenges
+2.6 Generative AI for Personalized Guidance (RAG + LLMs)
+2.7 Comparative Review of Existing Academic Risk Systems
+2.8 Research Gaps Identified
+2.9 Summary
+
+CHAPTER 3 — METHODOLOGY (updated as per your final structure)
+
+3.1 Overview
+3.1.1 Purpose of the Methodology
+3.1.2 Core Components of BodhyaAI
+3.1.3 Integrated Workflow
+
+3.2 Data Collection
+3.2.1 Academic Dataset
+3.2.2 Cognitive Dataset (BFI-44)
+3.2.3 Ethical Data Handling
+
+3.3 Dataset Description
+3.3.1 Structure of Academic Dataset
+3.3.2 Structure of Cognitive Dataset
+3.3.3 Dataset Selection Justification
+
+3.4 Data Preprocessing
+3.4.1 Cleaning & Imputation
+3.4.2 BFI-44 Processing
+3.4.3 Outlier Detection
+3.4.4 Encoding & Transformation
+3.4.5 Train–Test Split
+
+3.5 Feature Engineering
+3.5.1 Derived Academic Indicators
+3.5.2 Cognitive Trait Integration
+3.5.3 Feature Selection Rationale
+
+3.6 Machine Learning Model Architecture
+3.6.1 XGBoost Risk Classifier
+3.6.2 Mathematical Formulation
+3.6.3 Hyperparameter Tuning
+3.6.4 Model Evaluation
+
+3.7 Cognitive Profiling Methodology
+3.7.1 Reverse Scoring
+3.7.2 Trait Normalization
+3.7.3 Mentoring Integration
+
+3.8 Explainable AI (XAI) Methodology
+3.8.1 SHAP
+3.8.2 LIME
+3.8.3 Interpretation Workflow
+
+3.9 MentorBot (Generative Mentoring)
+3.9.1 RAG Pipeline
+3.9.2 Prompt Engineering
+3.9.3 Context Integration
+3.9.4 Recommendation Generation
+
+3.10 System Architecture and Integration
+3.10.1 Microservice Architecture
+3.10.2 Service Responsibilities
+3.10.3 API Gateway & Communication
+3.10.4 End-to-End Data Flow
+3.10.5 System Reliability
+
+3.11 Deployment Methodology
+3.11.1 Containerization
+3.11.2 Backend Deployment
+3.11.3 Frontend Deployment
+3.11.4 Scalability & Fault Tolerance
+
+3.12 Summary
+
+CHAPTER 4 — SYSTEM DESIGN (Highly recommended for academic reports)
+
+4.1 Introduction
+4.2 System Requirements
+4.2.1 Functional Requirements
+4.2.2 Non-Functional Requirements
+4.3 Use Case Diagrams
+4.4 UML Diagrams
+4.4.1 Class Diagram
+4.4.2 Sequence Diagrams
+4.4.3 Activity Diagrams
+4.5 Data Flow Diagrams (DFD Level 0, Level 1, Level 2)
+4.6 ER Diagram / Database Schema
+4.7 Architectural Diagrams (Microservices, API Gateway Flows)
+
+CHAPTER 5 — SYSTEM IMPLEMENTATION
+
+5.1 Technology Stack Overview
+5.2 Backend Implementation (Node.js, Services, APIs)
+5.3 Machine Learning Model Implementation (Training Scripts, Experiments)
+5.4 XAI Service Implementation
+5.5 MentorBot Implementation
+5.6 Frontend Implementation (React Components & Screens)
+5.7 Integration Testing & Module Interaction
+5.8 Security Measures (JWT Auth, Rate Limiting, Role-Based Access)
+
+CHAPTER 6 — RESULTS & DISCUSSION
+
+6.1 Experimental Setup
+6.2 Model Performance
+6.2.1 Accuracy, Precision, Recall, F1
+6.2.2 Confusion Matrix
+6.2.3 SHAP Analysis Results
+6.3 Cognitive Trait Distribution
+6.4 MentorBot Output Examples
+6.5 User Evaluation / Mentor Feedback
+6.6 Comparison with Existing Systems
+6.7 Discussion of Findings
+
+CHAPTER 7 — CONCLUSION & FUTURE WORK
+
+7.1 Summary of Contributions
+7.2 Practical Impact of BodhyaAI
+7.3 Limitations
+7.4 Recommendations for Future Enhancement
+7.5 Final Conclusion

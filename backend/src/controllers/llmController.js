@@ -15,7 +15,7 @@ const Mentor = require('../models/Mentor');
 exports.getStudyPlan = async (req, res) => {
     try {
         const studentId = req.user._id;
-        const { targetCgpa, weeks, studyHours } = req.body;
+        const { currentCgpa, weakSubjects, targetCgpa, weeks, studyHours } = req.body;
 
         // Fetch student academic data
         const student = await Student.findOne({ user: studentId });
@@ -23,9 +23,18 @@ exports.getStudyPlan = async (req, res) => {
             return res.status(404).json({ success: false, message: 'Student profile not found' });
         }
 
+        const requestedCgpa = Number(currentCgpa);
+        const requestedSubjects = Array.isArray(weakSubjects)
+            ? weakSubjects.map((subject) => String(subject).trim()).filter(Boolean)
+            : [];
+
         const academicData = {
-            cgpa: student.riskInputs?.CGPA || 0,
-            weakSubjects: student.academicHistory?.weakSubjects || [], // Assuming this field exists or will be added
+            cgpa: Number.isFinite(requestedCgpa) && requestedCgpa >= 0
+                ? requestedCgpa
+                : student.riskInputs?.CGPA || 0,
+            weakSubjects: requestedSubjects.length > 0
+                ? requestedSubjects
+                : student.academicHistory?.weakSubjects || [],
             studyHours: studyHours || student.riskInputs?.StudyHoursPerDay * 7 || 14,
             targetCgpa: targetCgpa || (student.riskInputs?.CGPA ? student.riskInputs.CGPA + 0.5 : 7.0),
             weeks: weeks || 4
@@ -95,6 +104,13 @@ exports.getClassReport = async (req, res) => {
             return res.status(404).json({ success: false, message: 'Mentor profile not found' });
         }
 
+        if (!mentor.mentees || mentor.mentees.length === 0) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'No mentees assigned. Please assign students before generating a report.' 
+            });
+        }
+
         // Prepare anonymized class data
         const classData = mentor.mentees.map(m => ({
             risk: m.academicRisk?.prediction,
@@ -105,12 +121,20 @@ exports.getClassReport = async (req, res) => {
 
         const report = await llmService.generateClassReport(req.user._id, classData, focusArea);
 
+        // Check if the LLM microservice returned an error
+        if (report && report.success === false) {
+            return res.status(503).json({ 
+                success: false, 
+                message: report.error || 'AI service is temporarily unavailable. Please try again later.' 
+            });
+        }
+
         res.status(200).json({
             success: true,
             data: report
         });
     } catch (error) {
         console.error('Error generating class report:', error);
-        res.status(500).json({ success: false, message: 'Failed to generate report' });
+        res.status(500).json({ success: false, message: 'Failed to generate report. The AI service may be temporarily unavailable.' });
     }
 };

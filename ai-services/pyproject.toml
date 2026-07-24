@@ -15,3 +15,12 @@ dependencies = [
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["common*"]
+
+[tool.pyright]
+extraPaths = [
+    "cog-svc",
+    "risk-svc",
+    "xai-svc",
+    "llm-svc"
+]
+

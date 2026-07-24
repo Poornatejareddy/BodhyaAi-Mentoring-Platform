@@ -20,8 +20,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Converted `ai-services/common` to a shared package installed in editable/production mode, allowing seamless cross-service configuration and schemas.
 - Modified Dockerfiles to compile AI services relative to the monorepo root context, allowing correct resolution of the `common` package during container builds.
 - Cleaned unused dependencies from `frontend/package.json` (`@heroicons/react` and `date-fns`).
+- Updated preferred Gemini fallback models cascade to target modern active models (`gemini-3.5-flash` and `gemini-2.0-flash`).
 
 ### Fixed
+- Fixed Gemini API connectivity by correcting `http_options` timeout parameter conversion (seconds to milliseconds) in the Python client SDK wrapper, preventing SSL handshake timeouts.
+- Fixed backend `llmController` error propagation to correctly pass error response statuses (400/503) to the gateway instead of wrapping them in a silent success response.
+- Fixed frontend `MentorAIReport.jsx` silent failures by adding robust response validations and displaying user-friendly error banners on report generation failures.
 - Fixed user schema password re-hashing lockout bug on updating profiles (prevented double hashing by correctly returning `next()` inside the pre-save hook).
 - Fixed port binding mismatch for `cog-svc` inside its Dockerfile (aligned with `docker-compose.yml` port 8000).
 - Fixed duplicate pages (`SettingsPage.jsx` and `MyMenteesPage.jsx`) and obsolete components.
+
